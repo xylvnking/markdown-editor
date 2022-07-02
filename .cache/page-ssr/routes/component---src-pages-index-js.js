@@ -328,9 +328,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ // import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
 
 
-const markdown = "Hello **world!**"; // markup
+const markdown = `Here is some JavaScript code:
+
+~~~js
+console.log('It works!')
+~~~
+`; // markup
 
 const IndexPage = () => {
   const [input, setInput] = react__WEBPACK_IMPORTED_MODULE_0__.useState();
@@ -342,23 +348,27 @@ const IndexPage = () => {
     onChange: e => setInput(e.target.value)
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_markdown__WEBPACK_IMPORTED_MODULE_2__.ReactMarkdown, {
     children: input,
-    className: "textarea",
+    className: "markdown",
     renderers: {
       code: Component
     }
   }));
 };
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (IndexPage);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (IndexPage); // const Component = ({value}) => {
+//   return (
+//     <SyntaxHighlighter language="javascript" style={docco}>
+//       {value}
+//     </SyntaxHighlighter>
+//   );
+// };
 
-const Component = ({
-  value,
-  language
-}) => {
+const Component = () => {
+  const codeString = '(num) => num + 1';
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_syntax_highlighter__WEBPACK_IMPORTED_MODULE_3__["default"], {
-    language: language,
+    language: "javascript",
     style: react_syntax_highlighter_dist_esm_styles_hljs__WEBPACK_IMPORTED_MODULE_4__["default"]
-  }, value);
+  }, codeString);
 };
 
 /***/ }),

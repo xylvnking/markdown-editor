@@ -22,15 +22,25 @@ body{
     padding: 20px;
     
     font-size: 1rem;
+    border-style: none;
+    border-right-style: solid;
     outline: none;
     /* font-family: 'Roboto Mono', monospace; */
+
 }
 
 .markdown {
-    width: 50%;
+    max-width: 50%;
     height: 100vh;
+    overflow-y: auto; /* this gives the markdown display have a scrollbar */
+    
+
     font-size: 1rem;
     padding: 20px;
     outline: none;
-    /* font-family: 'Roboto Mono', monospace; */
+    font-family: 'Roboto Mono', monospace;
+}
+
+.markdown img {
+    max-width: 100%;
 }

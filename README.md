@@ -1,6 +1,8 @@
 # Markdown Editor
 
 [react-markdown](https://www.npmjs.com/package/react-markdown)
+[react-syntax-highlighter styles](https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/)
+[react-scroll-sync](https://github.com/okonet/react-scroll-sync)
 
 
 ```shell
@@ -34,3 +36,21 @@ body{
 }
 ```
 
+
+getting scroll position for window (didn't need because i neede it for element)
+```js
+ 
+const [scrollPosition, setScrollPosition] = React.useState(0);
+  const handleScroll = () => {
+    const position = window.pageYOffset;
+    setScrollPosition(position);
+  }
+
+  React.useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+```
