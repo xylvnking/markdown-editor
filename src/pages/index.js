@@ -2,9 +2,18 @@ import * as React from "react"
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
 
-const markdown = "Hello **world!**"
+// import SyntaxHighlighter from 'react-syntax-highlighter';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 
+const markdown = `Here is some JavaScript code:
+
+~~~js
+console.log('It works!')
+~~~
+`
 
 // markup
 const IndexPage = () => {
@@ -22,9 +31,21 @@ const IndexPage = () => {
       
       <ReactMarkdown 
       children={input}
-      className="textarea" />
+      className="markdown"
+      renderers={{
+        code: Component
+      }} />
     </main>
   )
 }
 
 export default IndexPage
+
+const Component = ({value}) => {
+  
+  return (
+    <SyntaxHighlighter language="javascript" style={docco}>
+      {value}
+    </SyntaxHighlighter>
+  );
+};

@@ -13,7 +13,7 @@ body{
 .app {
     
     display: flex;
-    font-family: 'Roboto Mono', monospace;
+    /* font-family: 'Roboto Mono', monospace; */
 }
 
 .textarea {
@@ -21,17 +21,16 @@ body{
     height: 100vh;
     padding: 20px;
     
-    font-size: 2rem;
+    font-size: 1rem;
     outline: none;
-    font-family: 'Roboto Mono', monospace;
+    /* font-family: 'Roboto Mono', monospace; */
 }
 
 .markdown {
     width: 50%;
     height: 100vh;
-    font-size: 2rem;
-    
+    font-size: 1rem;
     padding: 20px;
     outline: none;
-    font-family: 'Roboto Mono', monospace;
+    /* font-family: 'Roboto Mono', monospace; */
 }
