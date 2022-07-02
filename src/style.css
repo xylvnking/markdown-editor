@@ -7,7 +7,10 @@ body{
     height: 100%;
     margin: 0;
     padding: 0;
+    /* overflow:hidden; */
+
 }
+
 
 
 .app {
@@ -17,26 +20,39 @@ body{
 }
 
 .textarea {
+    /* position: sticky;
+    top: 20px; */
+
+
     width: 50%;
-    height: 100vh;
+    height: 150vh;
     padding: 20px;
     
     font-size: 1rem;
     border-style: none;
     border-right-style: solid;
     outline: none;
+    /* overflow-y: auto; */
     /* font-family: 'Roboto Mono', monospace; */
+    
 
 }
 
 .markdown {
+
+    position: sticky;
+    top: 0px;
+    
+    /* K so I want these two sections to scroll together so like when you're at 50% in the textarea you're in 50% of the markdown. */
+
+
     max-width: 50%;
     height: 100vh;
-    overflow-y: auto; /* this gives the markdown display have a scrollbar */
-    
+    overflow-y: scroll; /* this gives the markdown display have a scrollbar 8/
+    /* overflow-x:hidden; */
 
     font-size: 1rem;
-    padding: 20px;
+    padding: 0px;
     outline: none;
     font-family: 'Roboto Mono', monospace;
 }
