@@ -17,11 +17,13 @@ console.log('It works!')
 ~~~
 `
 
+
+
 // markup
 const IndexPage = () => {
 
   
-
+  
   const [input, setInput] = React.useState();
 
   return (
@@ -32,6 +34,7 @@ const IndexPage = () => {
       onChange={
         (e) => setInput(e.target.value)
       }/>
+
 
       <ReactMarkdown
         children={input}
@@ -66,3 +69,4 @@ const IndexPage = () => {
 
 export default IndexPage
 
+// console.log(IndexPage)
