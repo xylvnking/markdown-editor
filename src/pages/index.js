@@ -19,7 +19,12 @@ import { BoxGeometry } from "three"
 
 // extend({ Text });
 
+
+
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+
+
 const CameraController = () => {
   const { camera, gl } = useThree();
   React.useEffect(
@@ -38,33 +43,34 @@ const CameraController = () => {
 };
 
 
-const markdown = `Here is some JavaScript code:
 
-~~~js
-console.log('It works!')
-~~~
-`
 
 const Box = (props) => {
   const boxRef = React.useRef();
 
   useFrame(() => {
-    boxRef.current.rotation.y += 0.01;
+    boxRef.current.rotation.y += 0.001;
   });
 
   return (
     <mesh ref={boxRef} rotation-x={Math.PI * 0.25} rotation-y={Math.PI * 0.25}>
-          <Html position={[1, 1, 1]} style={{width:"450px"}}> 
+        <Text color="black" anchorX="center" anchorY="middle">
+        Text Node from drei
+        </Text>
+          <Html position={[1, 1, 1]} style={{width:"450px", backgroundColor: "blue"}} > 
           <ReactMarkdown 
+            //this has to be in the html tag or else three js can't figure it out
                 children={props.input}
                 className="markdown"
                 
+                
+                
                 />
           </Html>
-          <ambientLight />
-          <pointLight position={[10, 10, 10]} />
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color={"#7BEDFA"}/>
+          {/* <ambientLight /> */}
+          {/* <pointLight position={[10, 10, 10]} /> */}
+          {/* <boxGeometry args={[1, 1, 1]} /> */}
+          {/* <meshStandardMaterial color={"#7BEDFA"}/> */}
           
 
 
@@ -89,24 +95,25 @@ const Box = (props) => {
   return (
     <main className="app">
 
-    <div style={{ width: "50vw", height: "50vh", backgroundColor: "lightblue"}}>
+    <div style={{ width: "50vw", height: "100vh", backgroundColor: "lightblue"}}>
         
         <Canvas>
           
         <CameraController />
         
         <Box input={input}/>
+        
 
 
         </Canvas>
       </div>
+
       <textarea
       className="textarea"
       value={input}
       onChange={
         (e) => setInput(e.target.value)
       }/>
-
 
       <ReactMarkdown 
                 children={input}
