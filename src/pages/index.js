@@ -17,7 +17,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 
-import { getFirestore, collection, addDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data } from "firebase/firestore";
  
 
 import { getDatabase, ref, set, onValue } from "firebase/database";
@@ -105,62 +105,167 @@ const Box = (props) => {
   // markup
   const IndexPage = () => {
     
-    const [input, setInput] = React.useState("TEST INPUT");
-
     // writeUserData("yeah", "uwu", "pleas", "begging", input)
-  
     
-
-    
-    
-    React.useEffect(() => {
-      const createCollection1 = async () => {
-        const docRef = await addDoc(collection(db, "users"), {
-          first: "Ada",
-          last: "Lovelace",
-          born: 1815
-        });
-        console.log("Document written with ID: ", docRef.id);
-      }
-      createCollection1()
-    }, []);
+    // React.useEffect(() => {
+    //   const createCollection1 = async () => {
+    //     const docRef = await addDoc(collection(db, "users"), {
+    //       first: "Ada",
+    //       last: "Lovelace",
+    //       born: 1815
+    //     });
+    //     console.log("Document written with ID: ", docRef.id);
+    //   }
+    //   createCollection1()
+    // }, []);
     
     
-    React.useEffect(() => {
-      const addNewDoc = async () => {
-        const docRef = await addDoc(collection(db, "users"), {
-          first: "Alan",
-          middle: "Mathison",
-          last: "Turing",
-          born: 1912
-        });
-        console.log("documentAdded: ", docRef.id);
-      }
-      addNewDoc()
-    }, []);
+    // React.useEffect(() => {
+    //   const addNewDoc = async () => {
+    //     const docRef = await addDoc(collection(db, "users"), {
+    //       first: "Alan",
+    //       middle: "Mathison",
+    //       last: "Turing",
+    //       born: 1912
+    //     });
+    //     console.log("documentAdded: ", docRef.id);
+    //   }
+    //   addNewDoc()
+    // }, []);
 
     
 
-    React.useEffect(() => {
-      const commitRichText = async () => {
-        docRefId = docRef.id
-        const docRef = await addDoc(collection(db, "users"), {
+    // React.useEffect(() => {
+    //   const commitRichText = async () => {
+        
+    //     const docRef = await addDoc(collection(db, "users"), {
           
-          entry: input
-        });
-        console.log("documentAdded: ", docRef.id);
+    //       entry: input
+    //     });
+    //     console.log("documentAdded: ", docRef.id);
+    //   }
+    //   commitRichText()
+    // }, []);
+    
+
+    const [input, setInput] = React.useState("");
+
+
+    const docDefault = doc(db, "Collection1", "document1") //setting reference to document
+    // const docSnap = await getDoc(docDefault)
+    // const [input, setInput] = React.useState(docDefault.data());
+
+    
+
+    React.useEffect(() => {
+      const waitForDoc = async () => {
+        const docSnap = await getDoc(docDefault)
+        // console.log(docSnap.data())
+        const dataTemp = docSnap.data()
+        
+        setInput(dataTemp.entry)
       }
-      commitRichText()
-    }, []);
-    
-    // need to update single document with rich text, dependency array should be set to input
-    // spaces and formating must be respected so that it can be loaded back into the text area later on
-    // create sidebar with documents
-    // security rules for limits, get around authentication with a password maybe just to keep it simple but not fully public
+      waitForDoc()
+    }, [])
+
+    //
+
+    //
+
+    //
+
+
+
+
+
+
 
 
     
 
+    // need to figure out how get the value of a document and set it as the default state of "input"
+    // I've got textarea updating the document as i type but since I have to put something as the default value it wipes on refresh
+    // I need something in the default because its existence is the dependency array for update doc
+          // but maybe I should trigger that with an onChange handler instead
+    // either way I just need to figure out how to 
+        // write rich text, 
+            // have it update the document, 
+                // and load it back into state after a refresh
+
+
+
+    // IT WORKS IF I DISABLE THE UPDATE METHOD BUT U OBVIOUSLY NEED THIS. 
+    // FIGURE IT OUT
+    
+
+    // React.useEffect(() => {
+    //   const document1Reference = doc(db, "Collection1", "document1")
+    //   const updateSingleDoc = async () => {
+        
+    //     await updateDoc(document1Reference, {
+          
+    //       entry: input
+    //     });
+        
+    //   }
+    //   updateSingleDoc()
+    // }, [input]);
+
+
+
+
+
+
+
+
+
+
+
+
+    //
+
+    //
+
+    //
+
+    
+    // console.log(docSnap.data())
+    
+    
+    // const docRef = doc(db, "cities", "SF");
+    // const docSnap = await getDoc(docRef);
+
+    // if (docSnap.exists()) {
+    //   console.log("Document data:", docSnap.data());
+    // } else {
+    //   // doc.data() will be undefined in this case
+    //   console.log("No such document!");
+    // }
+    
+    // React.useEffect(() => {
+    //   const docDefaultSnap = async () => {
+    //     await getDoc(docDefault)
+    //   }
+    //   docDefaultSnap()
+    // }, []);
+
+
+
+    // React.useEffect(() => {
+    //   const document1Reference = doc(db, "Collection1", "document1")
+    //   const updateSingleDoc = async () => {
+        
+    //     await updateDoc(document1Reference, {
+          
+    //       entry: input
+    //     });
+        
+    //   }
+    //   updateSingleDoc()
+    // }, [input]);
+
+
+    
 
   return (
     <main className="app">
@@ -181,7 +286,9 @@ const Box = (props) => {
       value={input}
       onChange={
         (e) => setInput(e.target.value)
-      }/>
+      }
+      
+      />
 
       <ReactMarkdown 
                 children={input}
