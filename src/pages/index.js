@@ -14,7 +14,7 @@ import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
 
 // import { Text } from "troika-three-text";
 
-import {Text, Html} from "@react-three/drei"
+import {Text, Html, Stars, Sparkles, Sky} from "@react-three/drei"
 import { BoxGeometry } from "three"
 
 // extend({ Text });
@@ -93,21 +93,16 @@ const Box = (props) => {
   return (
     <main className="app">
 
-    <div style={{ width: "50vw", height: "100vh", backgroundColor: "lightblue"}}>
+    <div className="canvasContainer">
         
-        <Canvas>
-          
-        <CameraController />
-        
-        {/* <Box input={input}/> */}
-        <EffectComposer>
-        {/* <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} /> */}
-        <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
-        <Noise opacity={0.5} />
-        {/* <Vignette eskil={false} offset={0.1} darkness={1.1} /> */}
-      </EffectComposer>
-        </Canvas>
-      </div>
+      {/* <Canvas>
+      <Stars radius={200} depth={25} count={5000} factor={4} saturation={10} fade speed={2} />
+      <Sparkles count={50} size={5} scale={10} color="white" noise={1}/>
+      
+      
+      </Canvas> */}
+    </div>
+    <div className="markdownEditorContainer">
 
       <textarea
       className="textarea"
@@ -151,6 +146,8 @@ const Box = (props) => {
           }
         }}
       /> */}
+    </div>
+
 
 
       
