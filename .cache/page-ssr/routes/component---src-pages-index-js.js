@@ -13186,20 +13186,23 @@ const Box = props => {
     "rotation-x": Math.PI * 0.25,
     "rotation-y": Math.PI * 0.25
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_drei__WEBPACK_IMPORTED_MODULE_4__.Text, {
-    color: "black",
+    color: "pink",
     anchorX: "center",
     anchorY: "middle"
   }, "Text Node from drei"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_drei__WEBPACK_IMPORTED_MODULE_5__.Html, {
     position: [1, 1, 1],
     style: {
-      width: "450px",
-      backgroundColor: "blue"
+      width: "450px"
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(react_markdown__WEBPACK_IMPORTED_MODULE_6__.ReactMarkdown //this has to be in the html tag or else three js can't figure it out
   , {
     children: props.input,
     className: "markdown"
-  })));
+  })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("ambientLight", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("pointLight", {
+    position: [10, 10, 10]
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("meshStandardMaterial", {
+    color: "#7BEDFA"
+  }));
 }; // markup
 
 
@@ -13215,21 +13218,12 @@ const IndexPage = () => {
     }
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_fiber__WEBPACK_IMPORTED_MODULE_7__.Canvas, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(CameraController, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(Box, {
     input: input
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.EffectComposer, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.DepthOfField, {
-    focusDistance: 0,
-    focalLength: 0.02,
-    bokehScale: 2,
-    height: 480
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.Bloom, {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.EffectComposer, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.Bloom, {
     luminanceThreshold: 0,
     luminanceSmoothing: 0.9,
     height: 300
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.Noise, {
-    opacity: 0.02
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement(_react_three_postprocessing__WEBPACK_IMPORTED_MODULE_8__.Vignette, {
-    eskil: false,
-    offset: 0.1,
-    darkness: 1.1
+    opacity: 0.5
   })))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0__.createElement("textarea", {
     className: "textarea",
     value: input,

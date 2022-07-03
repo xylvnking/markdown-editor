@@ -63,9 +63,6 @@ const Box = (props) => {
             //this has to be in the html tag or else three js can't figure it out
                 children={props.input}
                 className="markdown"
-                
-                
-                
                 />
           </Html>
           <ambientLight />
@@ -102,9 +99,7 @@ const Box = (props) => {
           
         <CameraController />
         
-        <Box input={input}/>
-        
-
+        {/* <Box input={input}/> */}
         <EffectComposer>
         {/* <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} /> */}
         <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
