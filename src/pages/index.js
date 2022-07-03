@@ -45,7 +45,32 @@ console.log('It works!')
 ~~~
 `
 
+const Box = (props) => {
+  const boxRef = React.useRef();
 
+  useFrame(() => {
+    boxRef.current.rotation.y += 0.01;
+  });
+
+  return (
+    <mesh ref={boxRef} rotation-x={Math.PI * 0.25} rotation-y={Math.PI * 0.25}>
+          <Html position={[1, 1, 1]} style={{width:"450px"}}> 
+          <ReactMarkdown 
+                children={props.input}
+                className="markdown"
+                
+                />
+          </Html>
+          <ambientLight />
+          <pointLight position={[10, 10, 10]} />
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial color={"#7BEDFA"}/>
+          
+
+
+        </mesh>
+  );
+};
   
   
   
@@ -55,7 +80,11 @@ console.log('It works!')
     const [input, setInput] = React.useState();
 
 
-  // const texxxxt = "yeahyeahyeah"
+  
+    
+
+
+
 
   return (
     <main className="app">
@@ -66,27 +95,9 @@ console.log('It works!')
           
         <CameraController />
         
+        <Box input={input}/>
 
 
-
-        <mesh>
-          <Html position={[10, 10, 10]}> 
-          <ReactMarkdown 
-                children={input}
-                className="markdown"
-                
-                />
-          </Html>
-          <ambientLight />
-          <pointLight position={[10, 10, 10]} />
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color={"#7BEDFA"}/>
-          <Text color="black" anchorX="center" anchorY="middle" fontSize={1}>
-            {/* {input} */}
-                </Text>
-
-
-        </mesh>
         </Canvas>
       </div>
       <textarea
