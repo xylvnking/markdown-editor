@@ -5182,6 +5182,17 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "react-dom/client":
+/*!**************************************************************************************************!*\
+  !*** external "/Users/dylanking6132/xylvnking/markdown-editor/node_modules/react-dom/client.js" ***!
+  \**************************************************************************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("/Users/dylanking6132/xylvnking/markdown-editor/node_modules/react-dom/client.js");
+
+/***/ }),
+
 /***/ "react-dom/server":
 /*!**************************************************************************************************!*\
   !*** external "/Users/dylanking6132/xylvnking/markdown-editor/node_modules/react-dom/server.js" ***!
@@ -5204,47 +5215,47 @@ module.exports = require("/Users/dylanking6132/xylvnking/markdown-editor/node_mo
 
 /***/ }),
 
-/***/ "os":
-/*!*********************!*\
-  !*** external "os" ***!
-  \*********************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("os");
-
-/***/ }),
-
-/***/ "path":
+/***/ "http":
 /*!***********************!*\
-  !*** external "path" ***!
+  !*** external "http" ***!
   \***********************/
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("path");
+module.exports = require("http");
 
 /***/ }),
 
-/***/ "process":
-/*!**************************!*\
-  !*** external "process" ***!
-  \**************************/
+/***/ "https":
+/*!************************!*\
+  !*** external "https" ***!
+  \************************/
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("process");
+module.exports = require("https");
 
 /***/ }),
 
-/***/ "tty":
-/*!**********************!*\
-  !*** external "tty" ***!
-  \**********************/
+/***/ "punycode":
+/*!***************************!*\
+  !*** external "punycode" ***!
+  \***************************/
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("tty");
+module.exports = require("punycode");
+
+/***/ }),
+
+/***/ "stream":
+/*!*************************!*\
+  !*** external "stream" ***!
+  \*************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("stream");
 
 /***/ }),
 
@@ -5259,14 +5270,14 @@ module.exports = require("url");
 
 /***/ }),
 
-/***/ "util":
+/***/ "zlib":
 /*!***********************!*\
-  !*** external "util" ***!
+  !*** external "zlib" ***!
   \***********************/
 /***/ ((module) => {
 
 "use strict";
-module.exports = require("util");
+module.exports = require("zlib");
 
 /***/ }),
 

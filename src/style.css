@@ -48,7 +48,7 @@ body{
 
     max-width: 50%;
     height: 100vh;
-    overflow-y: scroll; /* this gives the markdown display have a scrollbar 8/
+    /* overflow-y: scroll; /* this gives the markdown display have a scrollbar 8/ */
     /* overflow-x:hidden; */
 
     font-size: 1rem;

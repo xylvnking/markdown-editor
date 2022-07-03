@@ -15,11 +15,16 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "@react-three/drei": "^9.14.3",
+    "@react-three/fiber": "^8.0.27",
     "gatsby": "^4.17.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-markdown": "^8.0.3",
     "react-scroll-sync": "^0.11.0",
-    "react-syntax-highlighter": "^15.5.0"
+    "react-syntax-highlighter": "^15.5.0",
+    "three": "^0.142.0",
+    "troika-3d-text": "^0.46.4",
+    "troika-three-text": "^0.46.4"
   }
 }
