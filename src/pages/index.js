@@ -18,6 +18,7 @@ import {Text, Html} from "@react-three/drei"
 import { BoxGeometry } from "three"
 
 // extend({ Text });
+import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from '@react-three/postprocessing'
 
 
 
@@ -54,10 +55,10 @@ const Box = (props) => {
 
   return (
     <mesh ref={boxRef} rotation-x={Math.PI * 0.25} rotation-y={Math.PI * 0.25}>
-        <Text color="black" anchorX="center" anchorY="middle">
+        <Text color="pink" anchorX="center" anchorY="middle">
         Text Node from drei
         </Text>
-          <Html position={[1, 1, 1]} style={{width:"450px", backgroundColor: "blue"}} > 
+          <Html position={[1, 1, 1]} style={{width:"450px"}} > 
           <ReactMarkdown 
             //this has to be in the html tag or else three js can't figure it out
                 children={props.input}
@@ -67,10 +68,10 @@ const Box = (props) => {
                 
                 />
           </Html>
-          {/* <ambientLight /> */}
-          {/* <pointLight position={[10, 10, 10]} /> */}
+          <ambientLight />
+          <pointLight position={[10, 10, 10]} />
           {/* <boxGeometry args={[1, 1, 1]} /> */}
-          {/* <meshStandardMaterial color={"#7BEDFA"}/> */}
+          <meshStandardMaterial color={"#7BEDFA"}/>
           
 
 
@@ -104,7 +105,12 @@ const Box = (props) => {
         <Box input={input}/>
         
 
-
+        <EffectComposer>
+        {/* <DepthOfField focusDistance={0} focalLength={0.02} bokehScale={2} height={480} /> */}
+        <Bloom luminanceThreshold={0} luminanceSmoothing={0.9} height={300} />
+        <Noise opacity={0.5} />
+        {/* <Vignette eskil={false} offset={0.1} darkness={1.1} /> */}
+      </EffectComposer>
         </Canvas>
       </div>
 
