@@ -11,15 +11,9 @@ import {Text, Html, Stars, Sparkles, Sky} from "@react-three/drei"
 import { BoxGeometry } from "three"
 import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from '@react-three/postprocessing'
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-
-
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-
 import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data } from "firebase/firestore";
- 
-
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
 const firebaseConfig = {
@@ -32,26 +26,10 @@ const firebaseConfig = {
   databaseURL: "https://markdowneditor-a40c5-default-rtdb.firebaseio.com/",
 };
 
-
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig); // this has to go before the database is referenced below
 const database = getDatabase(app); // this has to go after the app is initialized
 const db = getFirestore(app);
-
-// realtime database function
-// function writeUserData(userId, name, email, imageUrl, entry) {
-//   const db = getDatabase();
-//   const reference = ref(db, 'users/' + userId);
-
-//   set(reference, {
-//     username: name,
-//     email: email,
-//     profile_picture : imageUrl,
-//     entry: entry
-//   });
-// }
-
 
 const CameraController = () => {
   const { camera, gl } = useThree();
@@ -100,67 +78,17 @@ const Box = (props) => {
   );
 };
   
-  
-  
   // markup
   const IndexPage = () => {
     
-    // writeUserData("yeah", "uwu", "pleas", "begging", input)
     
-    // React.useEffect(() => {
-    //   const createCollection1 = async () => {
-    //     const docRef = await addDoc(collection(db, "users"), {
-    //       first: "Ada",
-    //       last: "Lovelace",
-    //       born: 1815
-    //     });
-    //     console.log("Document written with ID: ", docRef.id);
-    //   }
-    //   createCollection1()
-    // }, []);
+    const docDefault = doc(db, "Collection1", "document1")
     
-    
-    // React.useEffect(() => {
-    //   const addNewDoc = async () => {
-    //     const docRef = await addDoc(collection(db, "users"), {
-    //       first: "Alan",
-    //       middle: "Mathison",
-    //       last: "Turing",
-    //       born: 1912
-    //     });
-    //     console.log("documentAdded: ", docRef.id);
-    //   }
-    //   addNewDoc()
-    // }, []);
-
-    
-
-    // React.useEffect(() => {
-    //   const commitRichText = async () => {
-        
-    //     const docRef = await addDoc(collection(db, "users"), {
-          
-    //       entry: input
-    //     });
-    //     console.log("documentAdded: ", docRef.id);
-    //   }
-    //   commitRichText()
-    // }, []);
-    
-
-    const [input, setInput] = React.useState("");
-
-
-    const docDefault = doc(db, "Collection1", "document1") //setting reference to document
-    // const docSnap = await getDoc(docDefault)
-    // const [input, setInput] = React.useState(docDefault.data());
-
-    
+    const [input, setInput] = React.useState();
 
     React.useEffect(() => {
       const waitForDoc = async () => {
         const docSnap = await getDoc(docDefault)
-        // console.log(docSnap.data())
         const dataTemp = docSnap.data()
         
         setInput(dataTemp.entry)
@@ -168,103 +96,26 @@ const Box = (props) => {
       waitForDoc()
     }, [])
 
-    //
+    const updatePost = async () => {
+      const document1Reference = doc(db, "Collection1", "document1")
 
-    //
+      if (input) { 
+        // this if statement it needed to stop the update doc function from using undefined data
+        // the input state cannot have a default or else it will overwrite itself ever load
+        // it has to be set by reading from firestore
+        // because this update relies on input being defined, the if statement prevents it from reading input before it's defined
+        // once input is loaded in it triggers useEffect > updatePost > defined input
 
-    //
-
-
-
-
-
-
-
-
-    
-
-    // need to figure out how get the value of a document and set it as the default state of "input"
-    // I've got textarea updating the document as i type but since I have to put something as the default value it wipes on refresh
-    // I need something in the default because its existence is the dependency array for update doc
-          // but maybe I should trigger that with an onChange handler instead
-    // either way I just need to figure out how to 
-        // write rich text, 
-            // have it update the document, 
-                // and load it back into state after a refresh
+        await updateDoc(document1Reference, {
+          entry: input
+        })
+      }
+    }
 
 
-
-    // IT WORKS IF I DISABLE THE UPDATE METHOD BUT U OBVIOUSLY NEED THIS. 
-    // FIGURE IT OUT
-    
-
-    // React.useEffect(() => {
-    //   const document1Reference = doc(db, "Collection1", "document1")
-    //   const updateSingleDoc = async () => {
-        
-    //     await updateDoc(document1Reference, {
-          
-    //       entry: input
-    //     });
-        
-    //   }
-    //   updateSingleDoc()
-    // }, [input]);
-
-
-
-
-
-
-
-
-
-
-
-
-    //
-
-    //
-
-    //
-
-    
-    // console.log(docSnap.data())
-    
-    
-    // const docRef = doc(db, "cities", "SF");
-    // const docSnap = await getDoc(docRef);
-
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    //   // doc.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
-    
-    // React.useEffect(() => {
-    //   const docDefaultSnap = async () => {
-    //     await getDoc(docDefault)
-    //   }
-    //   docDefaultSnap()
-    // }, []);
-
-
-
-    // React.useEffect(() => {
-    //   const document1Reference = doc(db, "Collection1", "document1")
-    //   const updateSingleDoc = async () => {
-        
-    //     await updateDoc(document1Reference, {
-          
-    //       entry: input
-    //     });
-        
-    //   }
-    //   updateSingleDoc()
-    // }, [input]);
-
-
+    React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
+      updatePost()
+    }, [input])
     
 
   return (
@@ -275,8 +126,6 @@ const Box = (props) => {
       {/* <Canvas>
       <Stars radius={200} depth={25} count={5000} factor={4} saturation={10} fade speed={2} />
       <Sparkles count={50} size={5} scale={10} color="white" noise={1}/>
-      
-      
       </Canvas> */}
     </div>
     <div className="markdownEditorContainer">
@@ -287,16 +136,12 @@ const Box = (props) => {
       onChange={
         (e) => setInput(e.target.value)
       }
-      
       />
 
       <ReactMarkdown 
                 children={input}
                 className="markdown"
-                
                 />
-
-
 
       {/* <ReactMarkdown
         children={input}
