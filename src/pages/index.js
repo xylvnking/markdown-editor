@@ -13,7 +13,7 @@ import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from '@react-thr
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data } from "firebase/firestore";
+import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs } from "firebase/firestore";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
 const firebaseConfig = {
@@ -30,6 +30,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig); // this has to go before the database is referenced below
 const database = getDatabase(app); // this has to go after the app is initialized
 const db = getFirestore(app);
+
 
 const CameraController = () => {
   const { camera, gl } = useThree();
@@ -79,7 +80,28 @@ const Box = (props) => {
 };
 
 
+
+// markup
 const Layout = ({children}) => {
+
+  // const [postLists, setPostList] = React.useState([]);
+  // const postsCollectionRef = collection(db, "Collection1")
+
+  // React.useEffect(() => {
+  //   const getPosts = async () => {
+  //     const data = await getDocs(postsCollectionRef);
+  //     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  //     // console.log(postLists[2])
+  //     console.log("yeahhh")
+      
+  //   };
+  //   getPosts();
+  // }, []);
+
+  // console.log(postLists[2])
+
+
+
   return (
     <div>
 
@@ -88,10 +110,32 @@ const Layout = ({children}) => {
   
         <nav>
           <ul>
-            <li className="navItem">yeah</li>
-            <li className="navItem">no</li>
-            <li className="navItem">maybe</li>
-            <li className="navItem">yerr</li>
+
+            <li className="navItem">
+
+            I'm baby tumeric dreamcatcher flexitarian +1 3 wolf moon unicorn cold-pressed skateboard intelligentsia la croix brunch truffaut. Umami quinoa PBR&B man bun, iceland listicle hell of 8-bit. Roof party gentrify pabst, sriracha austin semiotics microdosing truffaut. Fanny pack pok pok banh mi, pug celiac waistcoat 90's unicorn truffaut neutra locavore microdosing typewriter vegan. Pok pok PBR&B hexagon raw denim humblebrag actually. Meh deep v etsy, wolf pickled man braid mixtape cred salvia kickstarter tacos freegan succulents.
+
+
+
+            </li>
+
+            <li className="navItem">
+
+            Air plant try-hard affogato brunch, celiac vexillologist portland taiyaki kogi tote bag actually tousled wolf bespoke pabst. Sartorial wayfarers tilde unicorn tonx jianbing you probably haven't heard of them deep v normcore. Scenester helvetica salvia fashion axe prism coloring book kitsch poutine mlkshk offal cardigan. 90's ethical hoodie put a bird on it leggings irony salvia mumblecore health goth gochujang lo-fi bespoke portland. Biodiesel celiac green juice hashtag, pork belly blue bottle flexitarian tousled bespoke synth poutine. Brooklyn synth meditation, affogato lo-fi pitchfork kogi asymmetrical. Vape austin humblebrag art 
+
+            </li>
+
+            <li className="navItem">
+            
+            Beard ennui fixie, sartorial art party marfa la croix vice gastropub. Pork belly twee YOLO schlitz, meh cold-pressed locavore VHS tote bag food truck direct trade lomo vice. Readymade shabby chic normcore authentic. Art party meditation tattooed, keffiyeh af sartorial cold-pressed.
+
+            </li>
+
+            <li className="navItem">
+
+            Tonx 8-bit vaporware fixie leggings scenester yuccie mumblecore slow-carb trust fund. Poke artisan godard hot chicken direct trade. Edison bulb vegan tonx roof party before they sold out irony gastropub. Vaporware sartorial prism scenester copper mug, snackwave health goth lo-fi salvia green juice.
+              
+            </li>
           </ul>
         </nav>
         <main>
@@ -101,9 +145,7 @@ const Layout = ({children}) => {
     </div>
     )
 }
-  
-  // markup
-  const IndexPage = () => {
+const IndexPage = () => {
     
     
     const docDefault = doc(db, "Collection1", "document1")
@@ -146,7 +188,6 @@ const Layout = ({children}) => {
     <main className="app">
 
       <Layout>
-
     <div className="canvasContainer">
         
       {/* <Canvas>
@@ -195,6 +236,7 @@ const Layout = ({children}) => {
         }}
       /> */}
     </div>
+
       </Layout>
 
     </main>
