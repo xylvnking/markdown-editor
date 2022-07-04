@@ -77,6 +77,30 @@ const Box = (props) => {
         </mesh>
   );
 };
+
+
+const Layout = ({children}) => {
+  return (
+    <div>
+
+        <h1>title thing</h1>
+      <div className="layout">
+  
+        <nav>
+          <ul>
+            <li className="navItem">yeah</li>
+            <li className="navItem">no</li>
+            <li className="navItem">maybe</li>
+            <li className="navItem">yerr</li>
+          </ul>
+        </nav>
+        <main>
+          {children}
+        </main>
+      </div>
+    </div>
+    )
+}
   
   // markup
   const IndexPage = () => {
@@ -121,6 +145,8 @@ const Box = (props) => {
   return (
     <main className="app">
 
+      <Layout>
+
     <div className="canvasContainer">
         
       {/* <Canvas>
@@ -131,17 +157,15 @@ const Box = (props) => {
     <div className="markdownEditorContainer">
 
       <textarea
-      className="textarea"
-      value={input}
-      onChange={
-        (e) => setInput(e.target.value)
-      }
+        className="textarea"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
 
       <ReactMarkdown 
-                children={input}
-                className="markdown"
-                />
+        children={input}
+        className="markdown"
+      />
 
       {/* <ReactMarkdown
         children={input}
@@ -171,14 +195,10 @@ const Box = (props) => {
         }}
       /> */}
     </div>
+      </Layout>
 
-
-
-      
     </main>
   )
 }
 
 export default IndexPage
-
-// console.log(IndexPage)
