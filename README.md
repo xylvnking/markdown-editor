@@ -58,3 +58,35 @@ const [scrollPosition, setScrollPosition] = React.useState(0);
     };
   }, []);
 ```
+
+
+# learned:
+
+I was trying to load data from a firestore document into state (input) whenever the page loaded, but was also using the same state to drive the value of what was being used to update the value. This caused the issue where the updateDoc() function required a defined value, but I couldn't provide a default for the input state or else it would over write. I solved this simply by adding an if (input) logic check so that it wouldn't update the doc unless input was defined. The solution was simple but I was doing some net level stuff trying to use all these async functions and depenedancy arrays with triggers and it was a mess. The solution is very elegant if i do say so myself.
+
+```js
+const docDefault = doc(db, "Collection1", "document1")
+
+    const [input, setInput] = React.useState();
+
+    React.useEffect(() => {
+      const waitForDoc = async () => {
+        const docSnap = await getDoc(docDefault)
+        const dataTemp = docSnap.data()
+        setInput(dataTemp.entry)
+      }
+      waitForDoc()
+    }, [])
+
+    const updatePost = async () => {
+      const document1Reference = doc(db, "Collection1", "document1")
+      if (input) { 
+        await updateDoc(document1Reference, {
+          entry: input
+        })
+      }
+    }
+    React.useEffect(() => {
+      updatePost()
+    }, [input])
+```
