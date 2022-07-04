@@ -82,7 +82,7 @@ const Box = (props) => {
 
 
 // markup
-const Layout = ({children}, props) => {
+const Layout = ({children}, ...props) => {
 
   const [postLists, setPostList] = React.useState([]);
   const postsCollectionRef = collection(db, "Collection1")
@@ -131,7 +131,9 @@ const Layout = ({children}, props) => {
                 // why are on click events not firing at all?
 
 
-                // onClick={setDocSelected(post.id)}
+                // onClick={() => props.setDocSelected(post.id)}
+
+                onClick={() => console.log(post.id)}
                 
                 >
                   
@@ -238,6 +240,7 @@ const IndexPage = () => {
     <div className="markdownEditorContainer">
 
       <textarea
+      //  onClick={() => console.log("fuccccccccck")}
         className="textarea"
         value={input}
         onChange={(e) => setInput(e.target.value)}
