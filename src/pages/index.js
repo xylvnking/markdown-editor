@@ -84,58 +84,44 @@ const Box = (props) => {
 // markup
 const Layout = ({children}) => {
 
-  // const [postLists, setPostList] = React.useState([]);
-  // const postsCollectionRef = collection(db, "Collection1")
+  const [postLists, setPostList] = React.useState([]);
+  const postsCollectionRef = collection(db, "Collection1")
 
-  // React.useEffect(() => {
-  //   const getPosts = async () => {
-  //     const data = await getDocs(postsCollectionRef);
-  //     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  //     // console.log(postLists[2])
-  //     console.log("yeahhh")
+
+  // i think this could be optimized. it's reading all documents anytime a character is typed.
+  // for this small project it's fine (for now at least) but either cacheing the data or 
+  // I think if when the document is selected and it's being edited, we would want to drive the data for the preview
+  // by the state instead of by having to make a call to firebase for data we already have locally in state
+  // yeah that makes sense
+
+  React.useEffect(() => { 
+    const getPosts = async () => {
+      const data = await getDocs(postsCollectionRef);
+      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       
-  //   };
-  //   getPosts();
-  // }, []);
+      console.log("docsCalled")
+      
+    };
+    getPosts();
+  }, [children]);
 
-  // console.log(postLists[2])
 
+  // console.log(postLists)
 
-
+  
   return (
     <div>
-
-        <h1>title thing</h1>
+      <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1>
       <div className="layout">
   
         <nav>
           <ul>
-
-            <li className="navItem">
-
-            I'm baby tumeric dreamcatcher flexitarian +1 3 wolf moon unicorn cold-pressed skateboard intelligentsia la croix brunch truffaut. Umami quinoa PBR&B man bun, iceland listicle hell of 8-bit. Roof party gentrify pabst, sriracha austin semiotics microdosing truffaut. Fanny pack pok pok banh mi, pug celiac waistcoat 90's unicorn truffaut neutra locavore microdosing typewriter vegan. Pok pok PBR&B hexagon raw denim humblebrag actually. Meh deep v etsy, wolf pickled man braid mixtape cred salvia kickstarter tacos freegan succulents.
-
-
-
-            </li>
-
-            <li className="navItem">
-
-            Air plant try-hard affogato brunch, celiac vexillologist portland taiyaki kogi tote bag actually tousled wolf bespoke pabst. Sartorial wayfarers tilde unicorn tonx jianbing you probably haven't heard of them deep v normcore. Scenester helvetica salvia fashion axe prism coloring book kitsch poutine mlkshk offal cardigan. 90's ethical hoodie put a bird on it leggings irony salvia mumblecore health goth gochujang lo-fi bespoke portland. Biodiesel celiac green juice hashtag, pork belly blue bottle flexitarian tousled bespoke synth poutine. Brooklyn synth meditation, affogato lo-fi pitchfork kogi asymmetrical. Vape austin humblebrag art 
-
-            </li>
-
-            <li className="navItem">
-            
-            Beard ennui fixie, sartorial art party marfa la croix vice gastropub. Pork belly twee YOLO schlitz, meh cold-pressed locavore VHS tote bag food truck direct trade lomo vice. Readymade shabby chic normcore authentic. Art party meditation tattooed, keffiyeh af sartorial cold-pressed.
-
-            </li>
-
-            <li className="navItem">
-
-            Tonx 8-bit vaporware fixie leggings scenester yuccie mumblecore slow-carb trust fund. Poke artisan godard hot chicken direct trade. Edison bulb vegan tonx roof party before they sold out irony gastropub. Vaporware sartorial prism scenester copper mug, snackwave health goth lo-fi salvia green juice.
-              
-            </li>
+            {postLists.map((post) => {
+              return (
+                <li className="navItem" key={post.id}>{post.entry}</li>
+              )
+              // console.log(post.entry)
+            })}
           </ul>
         </nav>
         <main>
@@ -146,17 +132,28 @@ const Layout = ({children}) => {
     )
 }
 const IndexPage = () => {
+
+  /*
+    TO DO:
+    - make it so that when you select a document on the nav bar, it loads that into the editor
+      - I think I have to have state in IndexPage() which is set by a onClick/Change event called from clicking on <li>
+      - which then also passes the id of that document to the state which then reloads the editor. something like that.
+    - add date/metadata etc to documents
+    - create a pseudo userId which is just stored on local storage? pseudo password protection?
+    - export markdown
+    - export richtext
+    - contentful/github integration? would be AMAZING to be able to get readme.md docs from a repo
+    - optimize the nav bar populator so that it's not called every time a character changes
+  */
     
     
     const docDefault = doc(db, "Collection1", "document1")
-    
     const [input, setInput] = React.useState();
 
     React.useEffect(() => {
       const waitForDoc = async () => {
         const docSnap = await getDoc(docDefault)
         const dataTemp = docSnap.data()
-        
         setInput(dataTemp.entry)
       }
       waitForDoc()
@@ -164,14 +161,7 @@ const IndexPage = () => {
 
     const updatePost = async () => {
       const document1Reference = doc(db, "Collection1", "document1")
-
       if (input) { 
-        // this if statement it needed to stop the update doc function from using undefined data
-        // the input state cannot have a default or else it will overwrite itself ever load
-        // it has to be set by reading from firestore
-        // because this update relies on input being defined, the if statement prevents it from reading input before it's defined
-        // once input is loaded in it triggers useEffect > updatePost > defined input
-
         await updateDoc(document1Reference, {
           entry: input
         })

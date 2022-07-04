@@ -22,25 +22,33 @@ body{
 }
 
 .layout {
-    /* height: 100%; */
+    /* height: 450px; */
     /* min-height: 100vh; */
     display: flex;
     background-color: rgb(16, 152, 25);
     /* width: 100%; */
+    
 }
 
 nav {
+    /* position: fixed; */
+    /* top: 10px; */
     background-color: rgb(42, 42, 42);
     color: white;
     /* border-right-style: solid; */
     width: 250px;
-    min-height: 100%;
+    /* height: 100%; */
     /* justify-content: left; */
     
     
 }
 
+.headerTitle {
+    font-family: 'Roboto Mono', monospace;
+}
+
 ul {
+    
     list-style: none;
     font-family: 'Roboto Mono', monospace;
     font-size: .75rem;
@@ -95,6 +103,8 @@ li:hover {
     border-right-style: solid;
     border-color: rgb(255, 255, 255);
     outline: none;
+    overflow-wrap:break-word;
+    min-width: 50%;
     
     
 }
@@ -109,7 +119,7 @@ li:hover {
     
     
     overflow-wrap:break-word;
-    
+    min-width: 50%;
 }
 
 .markdown img {
