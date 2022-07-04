@@ -82,7 +82,7 @@ const Box = (props) => {
 
 
 // markup
-const Layout = ({children}) => {
+const Layout = ({children}, props) => {
 
   const [postLists, setPostList] = React.useState([]);
   const postsCollectionRef = collection(db, "Collection1")
@@ -105,9 +105,11 @@ const Layout = ({children}) => {
     getPosts();
   }, [children]);
 
+  // console.log(props)
+  // why can't i pass props to this?
 
-  // console.log(postLists)
-
+  
+  console.log(`${props.yerr} yeeeh`)
   
   return (
     <div>
@@ -116,11 +118,29 @@ const Layout = ({children}) => {
   
         <nav>
           <ul>
+            
             {postLists.map((post) => {
               return (
-                <li className="navItem" key={post.id}>{post.entry}</li>
-              )
-              // console.log(post.entry)
+
+                <li 
+
+                className="navItem" 
+                key={post.id}
+
+
+                // why are on click events not firing at all?
+
+
+                // onClick={setDocSelected(post.id)}
+                
+                >
+                  
+                  {post.entry}
+                
+                </li>
+
+              ) //when a list element is clicked pass the [post.id] into setDocSelected
+              
             })}
           </ul>
         </nav>
@@ -144,11 +164,15 @@ const IndexPage = () => {
     - export richtext
     - contentful/github integration? would be AMAZING to be able to get readme.md docs from a repo
     - optimize the nav bar populator so that it's not called every time a character changes
+    - security rules
+    - offline mode 
   */
     
     
-    const docDefault = doc(db, "Collection1", "document1")
-    const [input, setInput] = React.useState();
+ const [input, setInput] = React.useState();
+ 
+ const [docSelected, setDocSelected] = React.useState("document3")
+ const docDefault = doc(db, "Collection1", docSelected)
 
     React.useEffect(() => {
       const waitForDoc = async () => {
@@ -159,25 +183,51 @@ const IndexPage = () => {
       waitForDoc()
     }, [])
 
+    
+
+
+
+
+    // const updatePost = async () => {
+    //   const document1Reference = doc(db, "Collection1", "document1") // this document ref from nav selection
+    //   if (input) { 
+    //     await updateDoc(document1Reference, {
+    //       entry: input
+    //     })
+    //   }
+    // }
+
     const updatePost = async () => {
-      const document1Reference = doc(db, "Collection1", "document1")
-      if (input) { 
-        await updateDoc(document1Reference, {
-          entry: input
-        })
+      // const document1Reference = doc(db, "Collection1", "document1")
+      if (docDefault) {
+        const document1Reference = doc(db, "Collection1", docSelected)
+        if (input) { 
+          await updateDoc(document1Reference, {
+            entry: input
+          })
+        }
       }
     }
+
+
+    
+
+
 
 
     React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
       updatePost()
     }, [input])
     
-
+    const shit = "fuck"
   return (
     <main className="app">
 
-      <Layout>
+      <Layout
+      //  docSelected={docSelected}
+      //   setDocSelected={setDocSelected}
+        yerr="shit" WHWYWHWYWYWHWHYWH
+      >
     <div className="canvasContainer">
         
       {/* <Canvas>

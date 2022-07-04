@@ -5,6 +5,7 @@ html,
 body{
     width: 100%;
     height: 100%;
+    
     margin: 0;
     padding: 0;
     /* overflow:hidden; */
@@ -19,12 +20,18 @@ body{
     /* font-family: 'Roboto Mono', monospace; */
     /* -webkit-filter: invert(100%) */
     /* height: 100%; */
+    
 }
 
 .layout {
     /* height: 450px; */
     /* min-height: 100vh; */
+
+
     display: flex;
+    /* width: 100vw; */
+
+
     background-color: rgb(16, 152, 25);
     /* width: 100%; */
     
@@ -77,7 +84,7 @@ li:hover {
 }
 
 .canvasContainer {
-    width: 100%;
+    /* width: 100%; */
     background-color: rgb(199, 56, 56);
     position: absolute;
     
@@ -88,10 +95,17 @@ li:hover {
     color: aliceblue;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    
-    
     background-color: cornflowerblue;
+
+    /* margin: auto; */
+
     
+    /* position: fixed;
+    width: 100vw; */
+    /* top: 100px;
+    left: 250px;
+    right: 0;
+    bottom: 0; */
 }
 
 .textarea {
@@ -104,6 +118,7 @@ li:hover {
     border-color: rgb(255, 255, 255);
     outline: none;
     overflow-wrap:break-word;
+
     min-width: 50%;
     
     
@@ -116,10 +131,9 @@ li:hover {
     font-size: 1rem;
     outline: none;
     font-family: 'Roboto Mono', monospace;
-    
-    
     overflow-wrap:break-word;
     min-width: 50%;
+    /* width: 50%; */
 }
 
 .markdown img {
