@@ -80,37 +80,21 @@ const Box = (props) => {
 };
 
 
-
 // markup
-const Layout = ({children}, ...props) => {
+const Layout = ({children}) => {
 
   const [postLists, setPostList] = React.useState([]);
   const postsCollectionRef = collection(db, "Collection1")
-
-
-  // i think this could be optimized. it's reading all documents anytime a character is typed.
-  // for this small project it's fine (for now at least) but either cacheing the data or 
-  // I think if when the document is selected and it's being edited, we would want to drive the data for the preview
-  // by the state instead of by having to make a call to firebase for data we already have locally in state
-  // yeah that makes sense
 
   React.useEffect(() => { 
     const getPosts = async () => {
       const data = await getDocs(postsCollectionRef);
       setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      
-      console.log("docsCalled")
-      
     };
     getPosts();
   }, [children]);
 
-  // console.log(props)
-  // why can't i pass props to this?
 
-  
-  console.log(`${props.yerr} yeeeh`)
-  
   return (
     <div>
       <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1>
@@ -120,25 +104,17 @@ const Layout = ({children}, ...props) => {
           <ul>
             
             {postLists.map((post) => {
+              
               return (
 
                 <li 
 
                 className="navItem" 
                 key={post.id}
-
-
-                // why are on click events not firing at all?
-
-
-                // onClick={() => props.setDocSelected(post.id)}
-
                 onClick={() => console.log(post.id)}
                 
                 >
-                  
                   {post.entry}
-                
                 </li>
 
               ) //when a list element is clicked pass the [post.id] into setDocSelected
@@ -221,15 +197,11 @@ const IndexPage = () => {
       updatePost()
     }, [input])
     
-    const shit = "fuck"
+    
   return (
     <main className="app">
 
-      <Layout
-      //  docSelected={docSelected}
-      //   setDocSelected={setDocSelected}
-        yerr="shit" WHWYWHWYWYWHWHYWH
-      >
+      <Layout>
     <div className="canvasContainer">
         
       {/* <Canvas>
@@ -240,7 +212,6 @@ const IndexPage = () => {
     <div className="markdownEditorContainer">
 
       <textarea
-      //  onClick={() => console.log("fuccccccccck")}
         className="textarea"
         value={input}
         onChange={(e) => setInput(e.target.value)}
