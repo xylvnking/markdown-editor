@@ -80,55 +80,7 @@ const Box = (props) => {
 };
 
 
-// markup
-const Layout = ({children}) => {
 
-  const [postLists, setPostList] = React.useState([]);
-  const postsCollectionRef = collection(db, "Collection1")
-
-  React.useEffect(() => { 
-    const getPosts = async () => {
-      const data = await getDocs(postsCollectionRef);
-      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getPosts();
-  }, [children]);
-
-
-  return (
-    <div>
-      <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1>
-      <div className="layout">
-  
-        <nav>
-          <ul>
-            
-            {postLists.map((post) => {
-              
-              return (
-
-                <li 
-
-                className="navItem" 
-                key={post.id}
-                onClick={() => console.log(post.id)}
-                
-                >
-                  {post.entry}
-                </li>
-
-              ) //when a list element is clicked pass the [post.id] into setDocSelected
-              
-            })}
-          </ul>
-        </nav>
-        <main>
-          {children}
-        </main>
-      </div>
-    </div>
-    )
-}
 const IndexPage = () => {
 
   /*
@@ -145,13 +97,26 @@ const IndexPage = () => {
     - security rules
     - offline mode 
   */
+
+    const [postLists, setPostList] = React.useState([]);
+  const postsCollectionRef = collection(db, "Collection1")
+
+  React.useEffect(() => { 
+    const getPosts = async () => {
+      const data = await getDocs(postsCollectionRef);
+      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getPosts();
+  }, [input]);
     
     
  const [input, setInput] = React.useState();
  
- const [docSelected, setDocSelected] = React.useState("document3")
+ const [docSelected, setDocSelected] = React.useState("document1")
  const docDefault = doc(db, "Collection1", docSelected)
 
+
+    // GET DOCUMENT DATA FROM FIRESTORE
     React.useEffect(() => {
       const waitForDoc = async () => {
         const docSnap = await getDoc(docDefault)
@@ -159,21 +124,7 @@ const IndexPage = () => {
         setInput(dataTemp.entry)
       }
       waitForDoc()
-    }, [])
-
-    
-
-
-
-
-    // const updatePost = async () => {
-    //   const document1Reference = doc(db, "Collection1", "document1") // this document ref from nav selection
-    //   if (input) { 
-    //     await updateDoc(document1Reference, {
-    //       entry: input
-    //     })
-    //   }
-    // }
+    }, [docSelected]) 
 
     const updatePost = async () => {
       // const document1Reference = doc(db, "Collection1", "document1")
@@ -191,38 +142,90 @@ const IndexPage = () => {
     
 
 
-
+    // console.log(docSelected)
 
     React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
       updatePost()
     }, [input])
+
+
+
+    // const updateNavPreviews = () => {
+
+    // }
     
     
   return (
     <main className="app">
 
-      <Layout>
-    <div className="canvasContainer">
+      
+    {/* <div className="canvasContainer">
         
-      {/* <Canvas>
+      <Canvas>
       <Stars radius={200} depth={25} count={5000} factor={4} saturation={10} fade speed={2} />
       <Sparkles count={50} size={5} scale={10} color="white" noise={1}/>
-      </Canvas> */}
+    </Canvas>
+    </div> */}
+    
+    
+    <div>
+      {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
+      <div className="layout">
+  
+        <nav>
+          <ul>
+            
+            {postLists.map((post) => {
+              
+              return (
+
+                <li 
+
+                className="navItem" 
+                key={post.id}
+                // onClick={() => console.log(post.id)}
+                onClick={() => setDocSelected(post.id)}
+                
+                >
+                  {post.entry}
+                </li>
+
+              ) //when a list element is clicked pass the [post.id] into setDocSelected
+              
+            })}
+          </ul>
+        </nav>
+        
+          <div className="markdownEditorContainer">
+
+          <textarea
+            className="textarea"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+
+          <ReactMarkdown 
+            children={input}
+            className="markdown"
+          />
+
+
+          </div>
+        
+      </div>
     </div>
-    <div className="markdownEditorContainer">
+    
 
-      <textarea
-        className="textarea"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
+      
 
-      <ReactMarkdown 
-        children={input}
-        className="markdown"
-      />
+    </main>
+  )
+}
 
-      {/* <ReactMarkdown
+export default IndexPage
+
+
+/* <ReactMarkdown
         children={input}
         className="markdown"
         components={{
@@ -248,13 +251,4 @@ const IndexPage = () => {
             )
           }
         }}
-      /> */}
-    </div>
-
-      </Layout>
-
-    </main>
-  )
-}
-
-export default IndexPage
+      /> */

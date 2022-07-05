@@ -5,47 +5,36 @@ html,
 body{
     width: 100%;
     height: 100%;
-    
     margin: 0;
     padding: 0;
-    /* overflow:hidden; */
 
 }
 
 
 
 .app {
-    /* width: 100vw; */
-    /* display: flex; */
-    /* font-family: 'Roboto Mono', monospace; */
-    /* -webkit-filter: invert(100%) */
-    /* height: 100%; */
-    
+    width: 100%;
+    /* display: grid;
+    grid-template-columns: auto 1fr; */
 }
 
 .layout {
-    /* height: 450px; */
-    /* min-height: 100vh; */
-
-
+    
+    
+    background-color: rgb(108, 10, 97);
     display: flex;
-    /* width: 100vw; */
-
-
-    background-color: rgb(16, 152, 25);
-    /* width: 100%; */
+    /* justify-content: center; */
+    
     
 }
 
 nav {
-    /* position: fixed; */
-    /* top: 10px; */
-    background-color: rgb(42, 42, 42);
+    
+    background-color: rgb(172, 75, 75);
     color: white;
-    /* border-right-style: solid; */
     width: 250px;
-    /* height: 100%; */
-    /* justify-content: left; */
+    /* flex: 0; */
+
     
     
 }
@@ -91,26 +80,25 @@ li:hover {
 }
 
 .markdownEditorContainer {    
-    position: absolute;
+    
+    /* position: absolute; */
     color: aliceblue;
+    
     display: grid;
     grid-template-columns: 1fr 1fr;
-    background-color: cornflowerblue;
-
-    /* margin: auto; */
-
     
-    /* position: fixed;
-    width: 100vw; */
-    /* top: 100px;
-    left: 250px;
-    right: 0;
-    bottom: 0; */
+    /* grid-auto-flow: column; */
+    
+    background-color: cornflowerblue;
+    width: 100%;
+    
+    
 }
 
 .textarea {
+    /* flex-grow: 1; */
     resize: none;
-    background-color: rgba(0, 255, 255, 0);
+    /* background-color: rgba(0, 255, 255, 0); */
     color: aliceblue;
     font-size: 1rem;
     border-style: none;
@@ -118,27 +106,31 @@ li:hover {
     border-color: rgb(255, 255, 255);
     outline: none;
     overflow-wrap:break-word;
+    min-width: 50%; 
 
-    min-width: 50%;
-    
+    margin: 5px;
+    text-align: center;
+    background-color: blueviolet;
+
     
 }
 
 .markdown {
     position: sticky;
     top: 0px;
-    /* height: 100vh; */
     font-size: 1rem;
     outline: none;
     font-family: 'Roboto Mono', monospace;
     overflow-wrap:break-word;
-    min-width: 50%;
-    /* width: 50%; */
+    min-width: 50%; 
+    text-align: center;
+    margin: 5px;
+    background-color: blue;
+
+    
 }
 
 .markdown img {
     max-width: 100%;
 }
-
-
 
