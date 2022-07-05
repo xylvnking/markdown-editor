@@ -98,62 +98,72 @@ const IndexPage = () => {
     - offline mode 
   */
 
-    const [postLists, setPostList] = React.useState([]);
+  const [postLists, setPostList] = React.useState([]);
+  const [input, setInput] = React.useState();
+  const [docSelected, setDocSelected] = React.useState("document1")
   const postsCollectionRef = collection(db, "Collection1")
+  const docDefault = doc(db, "Collection1", docSelected)
 
+  
+
+  // Gets posts from firestore - unsure if both are needed?
   React.useEffect(() => { 
     const getPosts = async () => {
       const data = await getDocs(postsCollectionRef);
       setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getPosts();
-  }, [input]);
-    
-    
- const [input, setInput] = React.useState();
- 
- const [docSelected, setDocSelected] = React.useState("document1")
- const docDefault = doc(db, "Collection1", docSelected)
+  }, []);
+  
+  React.useEffect(() => {
+    const getPosts = async () => {
+      const data = await getDocs(postsCollectionRef);
+      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getPosts();
+  }, [input])
 
 
+
+
+
+
+  
     // GET DOCUMENT DATA FROM FIRESTORE
     React.useEffect(() => {
       const waitForDoc = async () => {
         const docSnap = await getDoc(docDefault)
         const dataTemp = docSnap.data()
         setInput(dataTemp.entry)
+        
       }
       waitForDoc()
     }, [docSelected]) 
 
     const updatePost = async () => {
-      // const document1Reference = doc(db, "Collection1", "document1")
       if (docDefault) {
         const document1Reference = doc(db, "Collection1", docSelected)
         if (input) { 
           await updateDoc(document1Reference, {
+            
             entry: input
           })
         }
       }
     }
-
-
-    
-
-
-    // console.log(docSelected)
-
     React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
       updatePost()
     }, [input])
 
 
 
-    // const updateNavPreviews = () => {
 
-    // }
+
     
+
+
+
+
     
   return (
     <main className="app">
@@ -174,25 +184,18 @@ const IndexPage = () => {
   
         <nav>
           <ul>
+          {postLists.map((post) => {
+            return (
+              <li 
+              className="navItem" 
+              key={post.id}
+              onClick={() => setDocSelected(post.id)} 
+              >
+                {post.entry}
+              </li>
+            )
+          })}
             
-            {postLists.map((post) => {
-              
-              return (
-
-                <li 
-
-                className="navItem" 
-                key={post.id}
-                // onClick={() => console.log(post.id)}
-                onClick={() => setDocSelected(post.id)}
-                
-                >
-                  {post.entry}
-                </li>
-
-              ) //when a list element is clicked pass the [post.id] into setDocSelected
-              
-            })}
           </ul>
         </nav>
         
