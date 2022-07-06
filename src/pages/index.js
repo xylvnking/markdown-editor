@@ -92,14 +92,16 @@ const IndexPage = () => {
     - make sure offline mode works - it seems to already
   */
 
+  const dummyText = " "
+  
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
   const [docSelected, setDocSelected] = React.useState("document1")
 
   const [collectionSelection, setCollectionSelection] = React.useState("Collection1")
 
-  const postsCollectionRef = collection(db, collectionSelection)
-  const docDefault = doc(db, collectionSelection, docSelected)
+  const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
+  const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
   
 
@@ -115,26 +117,31 @@ const IndexPage = () => {
   // get populates postList state with documents from firestore
   React.useEffect(() => {
     
-    const getPosts = async () => {
-      const data = await getDocs(postsCollectionRef);
-      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getPosts();
+
+      const getPosts = async () => {
+        const data = await getDocs(postsCollectionRef);
+        setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      };
+      getPosts();
+    
   }, [input, collectionSelection])
 
     // get single document data from firestore - for updating the editor with the document selected in the nav
     React.useEffect(() => {
-      const waitForDoc = async () => {
-        const docSnap = await getDoc(docDefault)
-        const dataTemp = docSnap.data()
-        setInput(dataTemp.entry)
-        
+      if (collectionSelection) {
+      
+        const waitForDoc = async () => {
+          const docSnap = await getDoc(docDefault)
+          const dataTemp = docSnap.data()
+          setInput(dataTemp.entry)
+          
+        }
+        waitForDoc()
       }
-      waitForDoc()
     }, [docSelected]) 
 
     const updatePost = async () => {
-      if (docDefault) {
+      if (docDefault && collectionSelection) {
         const document1Reference = doc(db, collectionSelection, docSelected)
         if (input) { 
           await updateDoc(document1Reference, {
