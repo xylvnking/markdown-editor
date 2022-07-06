@@ -156,7 +156,7 @@ const IndexPage = () => {
     }, [input])
 
 
-
+    
 
 
     
@@ -173,6 +173,7 @@ const IndexPage = () => {
         value={collectionSelection}
         onChange={(e) => setCollectionSelection(e.target.value)}
       ></input>
+     
     {/* <div className="canvasContainer">
         
       <Canvas>
@@ -191,12 +192,15 @@ const IndexPage = () => {
           {postLists.map((post) => {
             return (
               <li 
-              className="navItem" 
+              // className="navItem" 
+              className={(post.id == docSelected) ? "selected" : "navItem"}
               key={post.id}
+              // if it is selected set class to li selected
               onClick={() => setDocSelected(post.id)} 
               >
                 {/* {post.entry} */}
-                {input}
+                {/* {input} */}
+                {(post.id == docSelected) ? input : post.entry}
                 {/* if li being created's post.id equals the document selected then put the input here, otherwise put the post.entry? */}
               </li>
             )
