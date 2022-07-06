@@ -103,7 +103,7 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
-  
+  const [isAuthorized, setIsAuthorized] = React.useState(false)
 
   // Gets posts from firestore - unsure if both are needed? same as below
   // React.useEffect(() => { 
@@ -143,7 +143,7 @@ const IndexPage = () => {
     const updatePost = async () => {
       if (docDefault && collectionSelection) {
         const document1Reference = doc(db, collectionSelection, docSelected)
-        if (input) { 
+        if (input && isAuthorized) { 
           await updateDoc(document1Reference, {
             
             entry: input
@@ -195,7 +195,9 @@ const IndexPage = () => {
               key={post.id}
               onClick={() => setDocSelected(post.id)} 
               >
-                {post.entry}
+                {/* {post.entry} */}
+                {input}
+                {/* if li being created's post.id equals the document selected then put the input here, otherwise put the post.entry? */}
               </li>
             )
           })}
@@ -259,3 +261,14 @@ export default IndexPage
           }
         }}
       /> */
+
+
+//       rules_version = '2';
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     match /{document=**} {
+//       allow read, write: if
+//           request.time < timestamp.date(2022, 8, 2);
+//     }
+//   }
+// }
