@@ -31,7 +31,6 @@ const app = initializeApp(firebaseConfig); // this has to go before the database
 const database = getDatabase(app); // this has to go after the app is initialized
 const db = getFirestore(app);
 
-
 const CameraController = () => {
   const { camera, gl } = useThree();
   React.useEffect(
@@ -79,23 +78,18 @@ const Box = (props) => {
   );
 };
 
-
-
 const IndexPage = () => {
 
   /*
     TO DO:
-    - make it so that when you select a document on the nav bar, it loads that into the editor
-      - I think I have to have state in IndexPage() which is set by a onClick/Change event called from clicking on <li>
-      - which then also passes the id of that document to the state which then reloads the editor. something like that.
-    - add date/metadata etc to documents
     - create a pseudo userId which is just stored on local storage? pseudo password protection?
+    - add date/metadata etc to documents
     - export markdown
     - export richtext
     - contentful/github integration? would be AMAZING to be able to get readme.md docs from a repo
-    - optimize the nav bar populator so that it's not called every time a character changes
+    - optimize the nav bar populator so that it's not called every time a character changes???????
     - security rules
-    - offline mode 
+    - make sure offline mode works - it seems to already
   */
 
   const [postLists, setPostList] = React.useState([]);
@@ -160,15 +154,19 @@ const IndexPage = () => {
 
 
     
-
-
-
-
+    
+    const [collectionSelection, setCollectionSelection] = React.useState("")
+    // might have to add conditional logic like we did before to make it so that nothing is attempting to read the undefined state ^
+    console.log(`this is the collection selection: ${collectionSelection}`)
     
   return (
     <main className="app">
 
-      
+      <input 
+        type="text"
+        value={collectionSelection}
+        onChange={(e) => setCollectionSelection(e.target.value)}
+      ></input>
     {/* <div className="canvasContainer">
         
       <Canvas>
