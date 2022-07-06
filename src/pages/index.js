@@ -82,7 +82,7 @@ const IndexPage = () => {
 
   /*
     TO DO:
-    - create a pseudo userId which is just stored on local storage? pseudo password protection?
+    - definitely a safer way to protect the site but whatever.
     - add date/metadata etc to documents
     - export markdown
     - export richtext
@@ -114,6 +114,7 @@ const IndexPage = () => {
   
   // get populates postList state with documents from firestore
   React.useEffect(() => {
+    
     const getPosts = async () => {
       const data = await getDocs(postsCollectionRef);
       setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
