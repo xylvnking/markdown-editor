@@ -95,35 +95,33 @@ const IndexPage = () => {
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
   const [docSelected, setDocSelected] = React.useState("document1")
-  const postsCollectionRef = collection(db, "Collection1")
-  const docDefault = doc(db, "Collection1", docSelected)
+
+  const [collectionSelection, setCollectionSelection] = React.useState("Collection1")
+
+  const postsCollectionRef = collection(db, collectionSelection)
+  const docDefault = doc(db, collectionSelection, docSelected)
 
   
 
-  // Gets posts from firestore - unsure if both are needed?
-  React.useEffect(() => { 
-    const getPosts = async () => {
-      const data = await getDocs(postsCollectionRef);
-      setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getPosts();
-  }, []);
+  // Gets posts from firestore - unsure if both are needed? same as below
+  // React.useEffect(() => { 
+  //   const getPosts = async () => {
+  //     const data = await getDocs(postsCollectionRef);
+  //     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  //   };
+  //   getPosts();
+  // }, []);
   
+  // get populates postList state with documents from firestore
   React.useEffect(() => {
     const getPosts = async () => {
       const data = await getDocs(postsCollectionRef);
       setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getPosts();
-  }, [input])
+  }, [input, collectionSelection])
 
-
-
-
-
-
-  
-    // GET DOCUMENT DATA FROM FIRESTORE
+    // get single document data from firestore - for updating the editor with the document selected in the nav
     React.useEffect(() => {
       const waitForDoc = async () => {
         const docSnap = await getDoc(docDefault)
@@ -136,7 +134,7 @@ const IndexPage = () => {
 
     const updatePost = async () => {
       if (docDefault) {
-        const document1Reference = doc(db, "Collection1", docSelected)
+        const document1Reference = doc(db, collectionSelection, docSelected)
         if (input) { 
           await updateDoc(document1Reference, {
             
@@ -155,7 +153,7 @@ const IndexPage = () => {
 
     
     
-    const [collectionSelection, setCollectionSelection] = React.useState("")
+    
     // might have to add conditional logic like we did before to make it so that nothing is attempting to read the undefined state ^
     console.log(`this is the collection selection: ${collectionSelection}`)
     
