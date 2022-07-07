@@ -83,13 +83,23 @@ const IndexPage = () => {
   /*
     TO DO:
     - definitely a safer way to protect the site but whatever.
-    - add date/metadata etc to documents
-    - export markdown
-    - export richtext
-    - contentful/github integration? would be AMAZING to be able to get readme.md docs from a repo
-    - optimize the nav bar populator so that it's not called every time a character changes???????
     - security rules
     - make sure offline mode works - it seems to already
+
+    - i think a more elegant solution would be to load all the collections/documents into an object and then update values with state
+              - i want to be able to edit a document, switch to another, and then switch back and keep my edits. right now it all gets deleted
+                  since we aren't holding the data we get from firebase in a state which isn't being updated continuously
+                     - postlists is sort of that but it's being called elsewhere? wait no
+                              - would need to have pieces of states for each documents entry, not just holding everything in "input" and updating that
+                              maybe put all of th documents entry into an object held in state and then if write permissions update the object to/from firebase
+                              but if not just use it with state? hopefully this makes sense tomorrow. not going to get super crazy bout this mvp though.
+    
+    maybe to do:
+    - add date/metadata etc to documents
+    - contentful/github integration? would be AMAZING to be able to get readme.md docs from a repo
+    - optimize the nav bar populator so that it's not called every time a character changes???????
+    - export markdown
+    - export richtext
   */
 
   const dummyText = " "
@@ -123,18 +133,17 @@ const IndexPage = () => {
         setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       };
       getPosts();
-    
-  }, [input, collectionSelection])
+       // ternary stops the input from triggering this if isAuthorized is false so that the nav isn't updated with information we can't see
+    }, [(isAuthorized ? input : null), collectionSelection])
+    // }, [input, collectionSelection])
 
     // get single document data from firestore - for updating the editor with the document selected in the nav
     React.useEffect(() => {
       if (collectionSelection) {
-      
         const waitForDoc = async () => {
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data()
           setInput(dataTemp.entry)
-          
         }
         waitForDoc()
       }
@@ -143,9 +152,8 @@ const IndexPage = () => {
     const updatePost = async () => {
       if (docDefault && collectionSelection) {
         const document1Reference = doc(db, collectionSelection, docSelected)
-        if (input && isAuthorized) { 
+        if (input && isAuthorized) { // AUTH
           await updateDoc(document1Reference, {
-            
             entry: input
           })
         }
@@ -154,16 +162,6 @@ const IndexPage = () => {
     React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
       updatePost()
     }, [input])
-
-
-    
-
-
-    
-    
-    
-    // might have to add conditional logic like we did before to make it so that nothing is attempting to read the undefined state ^
-    console.log(`this is the collection selection: ${collectionSelection}`)
     
   return (
     <main className="app">
@@ -173,6 +171,11 @@ const IndexPage = () => {
         value={collectionSelection}
         onChange={(e) => setCollectionSelection(e.target.value)}
       ></input>
+      <button
+        onClick={() => setIsAuthorized(!isAuthorized)}
+      >
+        {`is authorized: ${isAuthorized}`}
+      </button>
      
     {/* <div className="canvasContainer">
         
