@@ -113,7 +113,7 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
-  const [isAuthorized, setIsAuthorized] = React.useState(false)
+  const [isAuthorized, setIsAuthorized] = React.useState(true)
 
   // Gets posts from firestore - unsure if both are needed? same as below
   // React.useEffect(() => { 
