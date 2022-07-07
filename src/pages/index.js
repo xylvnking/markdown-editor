@@ -226,7 +226,6 @@ const IndexPage = () => {
     // to update nav previews if authorized
     React.useEffect(() => {
       if (isAuthorized) {
-
         const getPosts = async () => {
           const data = await getDocs(postsCollectionRef);
           setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
@@ -243,7 +242,7 @@ const IndexPage = () => {
     }, [input, docSelected])
 
 
-
+    
 
 
     
@@ -287,9 +286,9 @@ const IndexPage = () => {
 
             {/* this would be for "online mode" if the data on the page is to be constantly sourced from firestore */}
 
-            
-          {/* {unauthorizedData.map((post) => { */}
-          {postLists.map((post) => {
+
+          
+          {(isAuthorized ? postLists : unauthorizedData).map((post) => { // using a ternary to choose whether to map through data sourced from firebase or the "unauthorizedData" which is set on load and never written to firebase again
             return (
               <li 
               // className="navItem" 
