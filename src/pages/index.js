@@ -113,7 +113,10 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
-  const [isAuthorized, setIsAuthorized] = React.useState(true)
+  const [isAuthorized, setIsAuthorized] = React.useState(false)
+
+
+  const [unauthorizedData, setUnauthorizedData] = React.useState([])
 
   // Gets posts from firestore - unsure if both are needed? same as below
   // React.useEffect(() => { 
@@ -123,19 +126,39 @@ const IndexPage = () => {
   //   };
   //   getPosts();
   // }, []);
-  
+  const docIndex = unauthorizedData.findIndex(x => {
+    return x.id === docSelected
+  })
+
+  // ON LOAD // ON LOAD // ON LOAD // ON LOAD
   // get populates postList state with documents from firestore
   React.useEffect(() => {
-    
-
       const getPosts = async () => {
         const data = await getDocs(postsCollectionRef);
         setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+
+        const docSnap = await getDoc(docDefault)
+        const dataTemp = docSnap.data()
+        setInput(dataTemp.entry)
+
+        // console.log(data)
+        // setDocumentData(data.docs.map((doc) => ({entry: doc.entry, id: doc.id })));
       };
       getPosts();
        // ternary stops the input from triggering this if isAuthorized is false so that the nav isn't updated with information we can't see
-    }, [(isAuthorized ? input : null), collectionSelection])
-    // }, [input, collectionSelection])
+    // }, [(isAuthorized ? input : null), collectionSelection])
+    }, [])
+    
+
+
+    
+
+
+
+
+
+
 
     // get single document data from firestore - for updating the editor with the document selected in the nav
     React.useEffect(() => {
@@ -143,25 +166,86 @@ const IndexPage = () => {
         const waitForDoc = async () => {
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data()
-          setInput(dataTemp.entry)
+
+          if (isAuthorized) {
+            setInput(dataTemp.entry)
+            console.log("setting input while authorized")
+          } else {
+            // loading the entry from unauthorizedData into the editor (input)
+            const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
+              return x.id === docSelected
+            })
+            let items = [...unauthorizedData]
+            let item = {...items[documentIndexBeingEdited]}
+            setInput(item.entry)
+            console.log("not authed else called")
+
+            
+
+          }
         }
         waitForDoc()
       }
     }, [docSelected]) 
+    
+    
 
     const updatePost = async () => {
       if (docDefault && collectionSelection) {
         const document1Reference = doc(db, collectionSelection, docSelected)
         if (input && isAuthorized) { // AUTH
+          console.log('update doc in firebase')
           await updateDoc(document1Reference, {
             entry: input
           })
+        } else  {
+          // set the entry in the unauthorized data's corresponding document to the input so that when we switch documents the entry stays
+          // how can i update the object within the unauthorizedData array's entry which has the id of documentSelected?
+
+          const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
+            return x.id === docSelected
+          })
+
+          let items = [...unauthorizedData]
+          let item = {...items[documentIndexBeingEdited]}
+          item.entry = input
+          items[documentIndexBeingEdited] = item
+          setUnauthorizedData(items)
+          
+          // console.log(JSON.stringify(unauthorizedData, null, 2))
+
         }
       }
     }
     React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
       updatePost()
     }, [input])
+
+
+
+    // to update nav previews if authorized
+    React.useEffect(() => {
+      if (isAuthorized) {
+
+        const getPosts = async () => {
+          const data = await getDocs(postsCollectionRef);
+          setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+  
+          const docSnap = await getDoc(docDefault)
+          const dataTemp = docSnap.data()
+          setInput(dataTemp.entry)
+  
+          // console.log(data)
+          // setDocumentData(data.docs.map((doc) => ({entry: doc.entry, id: doc.id })));
+        };
+        getPosts();
+      }
+    }, [input, docSelected])
+
+
+
+
+
     
   return (
     <main className="app">
@@ -192,6 +276,19 @@ const IndexPage = () => {
   
         <nav>
           <ul>
+
+
+
+          {/* need to make it so that if they are authorized, it sources the database for this always
+          and if they are not, it only sources the database on load and then afterwards uses unauthorizedData */}
+
+
+
+
+            {/* this would be for "online mode" if the data on the page is to be constantly sourced from firestore */}
+
+            
+          {/* {unauthorizedData.map((post) => { */}
           {postLists.map((post) => {
             return (
               <li 
@@ -201,30 +298,72 @@ const IndexPage = () => {
               // if it is selected set class to li selected
               onClick={() => setDocSelected(post.id)} 
               >
+
                 {/* {post.entry} */}
+                {(post.id == docSelected) ? input : post.entry} 
+
+
                 {/* {input} */}
-                {(post.id == docSelected) ? input : post.entry}
+                {/* {post.entry} */}
+                {/* ^^^ONLINE MODE^^^ */}
                 {/* if li being created's post.id equals the document selected then put the input here, otherwise put the post.entry? */}
               </li>
             )
           })}
-            
+
+
+
+
+            {/* this would be for "offline mode" where the initial page load gets data from firestore but doesn't write it to the database again (unless authorized) */}
+          {/* {postLists.map((post) => {
+            return (
+              <li 
+              // className="navItem" 
+              className={(post.id == docSelected) ? "selected" : "navItem"}
+              key={post.id}
+              // if it is selected set class to li selected
+              onClick={() => setDocSelected(post.id)} 
+              >
+                {(post.id == docSelected) ? input : post.entry} 
+                
+              </li>
+            )
+          })} */}
+
+
+
+
+
+
           </ul>
         </nav>
         
           <div className="markdownEditorContainer">
+
+
 
           <textarea
             className="textarea"
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-
           <ReactMarkdown 
             children={input}
             className="markdown"
           />
 
+
+
+
+          {/* <textarea
+            className="textarea"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <ReactMarkdown 
+            children={input}
+            className="markdown"
+          /> */}
 
           </div>
         
