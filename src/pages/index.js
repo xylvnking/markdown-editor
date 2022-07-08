@@ -131,20 +131,35 @@ const IndexPage = () => {
     }
   } 
 
-  
-
-  const setInputAccordingToUnauthorizedData = () => { 
+  const getUnauthorizedDataAtIndexOfCurrentlySelectedDocument = () => {
     let items = [...unauthorizedData]
     let item = {...items[getIndex()]}
-    setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
+    return item
   }
 
+  
+
   const setUnauthorizedDataAccordingToInput = () => {
+    // let items = [...unauthorizedData]
+    // let item = {...items[getIndex()]}
+    // item.entry = input
+    // items[getIndex()] = item
+    // setUnauthorizedData(items)
+
+    // this works but i don't really know if there's a point
     let items = [...unauthorizedData]
-    let item = {...items[getIndex()]}
+    let item = getUnauthorizedDataAtIndexOfCurrentlySelectedDocument()
     item.entry = input
     items[getIndex()] = item
     setUnauthorizedData(items)
+
+
+  }
+
+  const setInputAccordingToUnauthorizedData = () => { 
+    // let items = [...unauthorizedData]
+    // let item = {...items[getIndex()]}
+    setInput(getUnauthorizedDataAtIndexOfCurrentlySelectedDocument().entry) // loading the entry from unauthorizedData into the editor (input)
   }
   
   // LOAD DATA from firebase
