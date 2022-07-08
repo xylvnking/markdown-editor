@@ -94,8 +94,9 @@ li:hover {
 }
 
 .canvasContainer {
-    /* width: 100%; */
-    background-color: rgb(199, 56, 56);
+    width: 250px;
+    height: 100vh;
+    background-color: rgba(108, 56, 56, 0);
     position: absolute;
     
 }

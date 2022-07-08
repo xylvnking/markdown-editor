@@ -106,23 +106,12 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
-  const [docIndexEditing, setDocIndexEditing] = React.useState()
-
-  // setDocIndexEditing every time anything happens
-  React.useEffect(() => {
+  const getIndex = () => {
     const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
       return x.id === docSelected
     })
-    setDocIndexEditing(documentIndexBeingEdited) 
-  },[input, docSelected, collectionSelection, unauthorizedData])
-
-  console.log(`the doc index is: ${docIndexEditing}`)
-
-  
-
-// docSnap
-
-// setPostList - if authorized, this could be set on every action to keep nav updating in realtime
+    return documentIndexBeingEdited
+  }
   
   // LOAD DATA from firebase
   React.useEffect(() => {
@@ -151,7 +140,7 @@ const IndexPage = () => {
             console.log("setting input while authorized")
           } else {
             let items = [...unauthorizedData]
-            let item = {...items[docIndexEditing]}
+            let item = {...items[getIndex()]}
             setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
           }
         }
@@ -171,9 +160,9 @@ const IndexPage = () => {
             })
           } else  {
             let items = [...unauthorizedData]
-            let item = {...items[docIndexEditing]}
+            let item = {...items[getIndex()]}
             item.entry = input
-            items[docIndexEditing] = item
+            items[getIndex()] = item
             setUnauthorizedData(items)
           }
         }
@@ -219,8 +208,8 @@ const IndexPage = () => {
     {/* <div className="canvasContainer">
         
       <Canvas>
-      <Stars radius={200} depth={25} count={5000} factor={4} saturation={10} fade speed={2} />
-      <Sparkles count={50} size={5} scale={10} color="white" noise={1}/>
+      <Stars radius={200} depth={25} count={15000} factor={4} saturation={10} fade speed={2} />
+      <Sparkles count={50} size={6} scale={5} color="white" noise={1}/>
     </Canvas>
     </div> */}
     

@@ -95,3 +95,28 @@ const docDefault = doc(db, "Collection1", "document1")
   // prettify object data when logging it to the console:
   console.log(JSON.stringify(YOUR_OBJECT_HERE, null, 2))
 ```
+
+```js
+  /*
+  I was using the index of the current document which was selected in multiple places
+  Each time I'd needed it, I'd find it right before I needed it, meaning I was repeating code a lot
+  At first I tried solving this with a useEffect and useState which would happen with almost every action on the page
+  This was the wrong approach because I didn't need to hold the value in state, I just needed to know what it currently is. I only needed to read the index, not write it.
+  I was overcomplicating the situation. I already had a function that got the index whenever I needed it, so all I had to do was write that as a normal function, not a useEffect
+  When the only tool you've got is a hammer every problem looks like a nail
+  */
+  const getIndex = () => {
+    const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
+      return x.id === docSelected
+    })
+    return documentIndexBeingEdited
+  }
+
+  const [docIndexEditing, setDocIndexEditing] = React.useState()
+  React.useEffect(() => {
+    const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
+      return x.id === docSelected
+    })
+    setDocIndexEditing(documentIndexBeingEdited) 
+  },[input, collectionSelection, unauthorizedData])
+```
