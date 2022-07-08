@@ -82,19 +82,13 @@ const IndexPage = () => {
 
   /*
     TO DO:
-    - definitely a safer way to protect the site but whatever.
-    - security rules
-    - make sure offline mode works - it seems to already
-
-    - i think a more elegant solution would be to load all the collections/documents into an object and then update values with state
-              - i want to be able to edit a document, switch to another, and then switch back and keep my edits. right now it all gets deleted
-                  since we aren't holding the data we get from firebase in a state which isn't being updated continuously
-                     - postlists is sort of that but it's being called elsewhere? wait no
-                              - would need to have pieces of states for each documents entry, not just holding everything in "input" and updating that
-                              maybe put all of th documents entry into an object held in state and then if write permissions update the object to/from firebase
-                              but if not just use it with state? hopefully this makes sense tomorrow. not going to get super crazy bout this mvp though.
     
-    maybe to do:
+    - security rules
+    - syntax highlighter (had it working before just disabled for firebase integration to lower chance of edge case errors)
+    - replace fake auth with real auth
+
+    
+    To do if this was a real product:
     - add date/metadata etc to documents
     - contentful/github integration? would be AMAZING to be able to get readme.md docs from a repo
     - optimize the nav bar populator so that it's not called every time a character changes???????
@@ -103,32 +97,15 @@ const IndexPage = () => {
   */
 
   const dummyText = " "
-  
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
   const [docSelected, setDocSelected] = React.useState("document1")
-
   const [collectionSelection, setCollectionSelection] = React.useState("Collection1")
-
+  const [isAuthorized, setIsAuthorized] = React.useState(false)
+  const [unauthorizedData, setUnauthorizedData] = React.useState([])
+  const [validCollectionIsSelected, setValidCollectionIsSelected] = React.useState(false)
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
-
-  const [isAuthorized, setIsAuthorized] = React.useState(false)
-
-
-  const [unauthorizedData, setUnauthorizedData] = React.useState([])
-
-  // Gets posts from firestore - unsure if both are needed? same as below
-  // React.useEffect(() => { 
-  //   const getPosts = async () => {
-  //     const data = await getDocs(postsCollectionRef);
-  //     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  //   };
-  //   getPosts();
-  // }, []);
-  const docIndex = unauthorizedData.findIndex(x => {
-    return x.id === docSelected
-  })
 
   // ON LOAD // ON LOAD // ON LOAD // ON LOAD
   // get populates postList state with documents from firestore
@@ -137,36 +114,21 @@ const IndexPage = () => {
         const data = await getDocs(postsCollectionRef);
         setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
         setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
         const docSnap = await getDoc(docDefault)
         const dataTemp = docSnap.data()
-        setInput(dataTemp.entry)
-
-        // console.log(data)
-        // setDocumentData(data.docs.map((doc) => ({entry: doc.entry, id: doc.id })));
+        if (dataTemp) {
+          setInput(dataTemp.entry)
+          setValidCollectionIsSelected(true)
+        }
       };
       getPosts();
-       // ternary stops the input from triggering this if isAuthorized is false so that the nav isn't updated with information we can't see
-    // }, [(isAuthorized ? input : null), collectionSelection])
     }, [])
-    
 
-
-    
-
-
-
-
-
-
-
-    // get single document data from firestore - for updating the editor with the document selected in the nav
     React.useEffect(() => {
       if (collectionSelection) {
         const waitForDoc = async () => {
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data()
-
           if (isAuthorized) {
             setInput(dataTemp.entry)
             console.log("setting input while authorized")
@@ -179,19 +141,14 @@ const IndexPage = () => {
             let item = {...items[documentIndexBeingEdited]}
             setInput(item.entry)
             console.log("not authed else called")
-
-            
-
           }
         }
         waitForDoc()
       }
     }, [docSelected]) 
     
-    
-
     const updatePost = async () => {
-      if (docDefault && collectionSelection) {
+      if (docDefault && collectionSelection && validCollectionIsSelected) {
         const document1Reference = doc(db, collectionSelection, docSelected)
         if (input && isAuthorized) { // AUTH
           console.log('update doc in firebase')
@@ -199,31 +156,22 @@ const IndexPage = () => {
             entry: input
           })
         } else  {
-          // set the entry in the unauthorized data's corresponding document to the input so that when we switch documents the entry stays
-          // how can i update the object within the unauthorizedData array's entry which has the id of documentSelected?
-
           const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
             return x.id === docSelected
           })
-
           let items = [...unauthorizedData]
           let item = {...items[documentIndexBeingEdited]}
           item.entry = input
           items[documentIndexBeingEdited] = item
           setUnauthorizedData(items)
-          
           // console.log(JSON.stringify(unauthorizedData, null, 2))
-
         }
       }
     }
+
     React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
       updatePost()
     }, [input])
-
-
-
-    // think i need a piece of boolean state to check whether collection selection is selecting a real collection 
 
     // to update nav previews if authorized
     React.useEffect(() => {
@@ -231,25 +179,21 @@ const IndexPage = () => {
         const getPosts = async () => {
           const data = await getDocs(postsCollectionRef);
           setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-  
           // this block allows us to check whether a valid collection is selected
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data() // returns undefined if no valid collection is selected
           if (dataTemp) {
             setInput(dataTemp.entry)
+            setValidCollectionIsSelected(true)
+          } else {
+            setValidCollectionIsSelected(false)
+            // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
           }
-
         };
         getPosts();
       }
-    // }, [input, docSelected])
     }, [input, docSelected, collectionSelection])
 
-
-    
-
-
-    
   return (
     <main className="app">
 
