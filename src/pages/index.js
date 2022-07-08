@@ -117,22 +117,35 @@ const IndexPage = () => {
     const data = await getDocs(postsCollectionRef);
     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    
-    
   }
 
   const getSnapshot = async () => {
     const docSnap = await getDoc(docDefault)
     const dataTemp = docSnap.data()
     if (dataTemp) {
-      
       setInput(dataTemp.entry)
       setValidCollectionIsSelected(true)
     } else {
       setValidCollectionIsSelected(false)
-      // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
+      // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected. Looks a bit funny, better to do this elsewhere.
     }
   } 
+
+  
+
+  const setInputAccordingToUnauthorizedData = () => { 
+    let items = [...unauthorizedData]
+    let item = {...items[getIndex()]}
+    setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
+  }
+
+  const setUnauthorizedDataAccordingToInput = () => {
+    let items = [...unauthorizedData]
+    let item = {...items[getIndex()]}
+    item.entry = input
+    items[getIndex()] = item
+    setUnauthorizedData(items)
+  }
   
   // LOAD DATA from firebase
   React.useEffect(() => {
@@ -143,61 +156,48 @@ const IndexPage = () => {
       getPosts();
     }, [])
 
-    // SWITCH DOCUMENT
-    React.useEffect(() => {
-      if (collectionSelection) {
-        const waitForDoc = async () => {
-
-          // CAN THIS BE INCLUDED IN getSnapshot() ????????
-          const docSnap = await getDoc(docDefault)
-          const dataTemp = docSnap.data()
-          
-          if (isAuthorized) {
-            setInput(dataTemp.entry)
-            console.log("setting input while authorized")
-          } else {
-            // sets the content in the nav bar properly
-            let items = [...unauthorizedData]
-            let item = {...items[getIndex()]}
-            setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
-          }
+  // SWITCH DOCUMENT
+  React.useEffect(() => {
+    if (collectionSelection) {
+      const waitForDoc = async () => {
+        if (isAuthorized && validCollectionIsSelected) {
+          getSnapshot()
+        } else {
+          setInputAccordingToUnauthorizedData()
         }
-        waitForDoc()
       }
-    }, [docSelected]) 
+      waitForDoc()
+    }
+  }, [docSelected]) 
     
     // UPDATE FIREBASE or UPDATE UNAUTHORIZED DATA
-    React.useEffect(() => {
-      const updatePost = async () => {
-        if (docDefault && collectionSelection && validCollectionIsSelected) {
-          const document1Reference = doc(db, collectionSelection, docSelected)
-          if (input && isAuthorized) { // AUTH
-            await updateDoc(document1Reference, {
-              entry: input
-            })
-          } else  {
-            let items = [...unauthorizedData]
-            let item = {...items[getIndex()]}
-            item.entry = input
-            items[getIndex()] = item
-            setUnauthorizedData(items)
-          }
+  React.useEffect(() => {
+    const updatePost = async () => {
+      if (docDefault && collectionSelection && validCollectionIsSelected) {
+        const document1Reference = doc(db, collectionSelection, docSelected)
+        if (input && isAuthorized) {
+          await updateDoc(document1Reference, {
+            entry: input
+          })
+        } else  {
+          setUnauthorizedDataAccordingToInput()
         }
       }
-        updatePost()
-    }, [input])
+    }
+      updatePost()
+  }, [input])
 
-    // update nav previews in realtime - if authorized
-    React.useEffect(() => {
-      if (isAuthorized) {
-        const getPosts = async () => {
-          updateNav()
-          getSnapshot()
-        };
-        getPosts();
-      }
-    // }, [input, docSelected, collectionSelection])
-    }, [input, collectionSelection])
+  // update nav previews in realtime - if authorized
+  React.useEffect(() => {
+    if (isAuthorized) {
+      const getPosts = async () => {
+        updateNav()
+        getSnapshot()
+      };
+      getPosts();
+    }
+  // }, [input, docSelected, collectionSelection])
+  }, [input, collectionSelection])
 
   return (
     <main className="app">
