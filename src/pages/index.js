@@ -112,13 +112,20 @@ const IndexPage = () => {
     })
     return documentIndexBeingEdited
   }
+
+  const updateNav = async () => {
+    const data = await getDocs(postsCollectionRef);
+    setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    
+  }
   
   // LOAD DATA from firebase
   React.useEffect(() => {
       const getPosts = async () => {
-        const data = await getDocs(postsCollectionRef);
-        setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-        setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+
+        await updateNav()
+        
         const docSnap = await getDoc(docDefault)
         const dataTemp = docSnap.data()
         if (dataTemp) {
@@ -154,7 +161,7 @@ const IndexPage = () => {
         if (docDefault && collectionSelection && validCollectionIsSelected) {
           const document1Reference = doc(db, collectionSelection, docSelected)
           if (input && isAuthorized) { // AUTH
-            console.log('update doc in firebase')
+
             await updateDoc(document1Reference, {
               entry: input
             })
@@ -174,8 +181,9 @@ const IndexPage = () => {
     React.useEffect(() => {
       if (isAuthorized) {
         const getPosts = async () => {
-          const data = await getDocs(postsCollectionRef);
-          setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+
+          updateNav()
+
           // this block allows us to check whether a valid collection is selected
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data() // returns undefined if no valid collection is selected
