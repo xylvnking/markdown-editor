@@ -121,87 +121,46 @@ const IndexPage = () => {
     
   }
 
-  const [dataSnapshot, setDataSnapshot] = React.useState()
-
   const getSnapshot = async () => {
     const docSnap = await getDoc(docDefault)
     const dataTemp = docSnap.data()
-    
-    // return dataTemp
-    // await updateNav()
-
-
-
-    
     if (dataTemp) {
-      setDataSnapshot(dataTemp.entry)
+      
       setInput(dataTemp.entry)
       setValidCollectionIsSelected(true)
     } else {
       setValidCollectionIsSelected(false)
       // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
     }
-
-    
   } 
   
   // LOAD DATA from firebase
   React.useEffect(() => {
-    
     const getPosts = async () => {
-      
-      
       await updateNav()
       await getSnapshot()
-
-        // // await getSnapshot()
-        // // const docSnap = await getDoc(docDefault)
-        // // const dataTemp = await getSnapshot()
-        // if (dataSnapshot) {
-        //   console.log("yer")
-        //   setInput(dataSnapshot.entry)
-        //   setValidCollectionIsSelected(true)
-        // }
-
-
-        // const docSnap = await getDoc(docDefault)
-        // const dataTemp = docSnap.data()
-        // if (dataTemp) {
-        //   setInput(dataTemp.entry)
-        //   setValidCollectionIsSelected(true)
-        // }
-
-
-
-
-
       };
       getPosts();
     }, [])
 
     // SWITCH DOCUMENT
     React.useEffect(() => {
-      
       if (collectionSelection) {
         const waitForDoc = async () => {
-
-
 
           // CAN THIS BE INCLUDED IN getSnapshot() ????????
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data()
+          
           if (isAuthorized) {
             setInput(dataTemp.entry)
             console.log("setting input while authorized")
           } else {
+            // sets the content in the nav bar properly
             let items = [...unauthorizedData]
             let item = {...items[getIndex()]}
             setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
           }
-
-
-
-
         }
         waitForDoc()
       }
@@ -209,12 +168,10 @@ const IndexPage = () => {
     
     // UPDATE FIREBASE or UPDATE UNAUTHORIZED DATA
     React.useEffect(() => {
-      
       const updatePost = async () => {
         if (docDefault && collectionSelection && validCollectionIsSelected) {
           const document1Reference = doc(db, collectionSelection, docSelected)
           if (input && isAuthorized) { // AUTH
-
             await updateDoc(document1Reference, {
               entry: input
             })
@@ -234,24 +191,13 @@ const IndexPage = () => {
     React.useEffect(() => {
       if (isAuthorized) {
         const getPosts = async () => {
-
           updateNav()
-
           getSnapshot()
-          // // this block allows us to check whether a valid collection is selected
-          // const docSnap = await getDoc(docDefault)
-          // const dataTemp = docSnap.data() // returns undefined if no valid collection is selected
-          // if (dataTemp) {
-          //   setInput(dataTemp.entry)
-          //   setValidCollectionIsSelected(true)
-          // } else {
-          //   setValidCollectionIsSelected(false)
-          //   // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
-          // }
         };
         getPosts();
       }
-    }, [input, docSelected, collectionSelection])
+    // }, [input, docSelected, collectionSelection])
+    }, [input, collectionSelection])
 
   return (
     <main className="app">
