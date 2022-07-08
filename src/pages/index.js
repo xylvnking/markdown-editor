@@ -118,26 +118,70 @@ const IndexPage = () => {
     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     
+    
   }
+
+  const [dataSnapshot, setDataSnapshot] = React.useState()
+
+  const getSnapshot = async () => {
+    const docSnap = await getDoc(docDefault)
+    const dataTemp = docSnap.data()
+    
+    // return dataTemp
+    // await updateNav()
+
+
+
+    
+    if (dataTemp) {
+      setDataSnapshot(dataTemp.entry)
+      setInput(dataTemp.entry)
+      setValidCollectionIsSelected(true)
+    } else {
+      setValidCollectionIsSelected(false)
+      // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
+    }
+
+    
+  } 
   
   // LOAD DATA from firebase
   React.useEffect(() => {
-      const getPosts = async () => {
+    
+    const getPosts = async () => {
+      
+      
+      await updateNav()
+      await getSnapshot()
 
-        await updateNav()
-        
-        const docSnap = await getDoc(docDefault)
-        const dataTemp = docSnap.data()
-        if (dataTemp) {
-          setInput(dataTemp.entry)
-          setValidCollectionIsSelected(true)
-        }
+        // // await getSnapshot()
+        // // const docSnap = await getDoc(docDefault)
+        // // const dataTemp = await getSnapshot()
+        // if (dataSnapshot) {
+        //   console.log("yer")
+        //   setInput(dataSnapshot.entry)
+        //   setValidCollectionIsSelected(true)
+        // }
+
+
+        // const docSnap = await getDoc(docDefault)
+        // const dataTemp = docSnap.data()
+        // if (dataTemp) {
+        //   setInput(dataTemp.entry)
+        //   setValidCollectionIsSelected(true)
+        // }
+
+
+
+
+
       };
       getPosts();
     }, [])
 
     // SWITCH DOCUMENT
     React.useEffect(() => {
+      
       if (collectionSelection) {
         const waitForDoc = async () => {
           const docSnap = await getDoc(docDefault)
@@ -157,6 +201,7 @@ const IndexPage = () => {
     
     // UPDATE FIREBASE or UPDATE UNAUTHORIZED DATA
     React.useEffect(() => {
+      
       const updatePost = async () => {
         if (docDefault && collectionSelection && validCollectionIsSelected) {
           const document1Reference = doc(db, collectionSelection, docSelected)
@@ -184,16 +229,17 @@ const IndexPage = () => {
 
           updateNav()
 
-          // this block allows us to check whether a valid collection is selected
-          const docSnap = await getDoc(docDefault)
-          const dataTemp = docSnap.data() // returns undefined if no valid collection is selected
-          if (dataTemp) {
-            setInput(dataTemp.entry)
-            setValidCollectionIsSelected(true)
-          } else {
-            setValidCollectionIsSelected(false)
-            // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
-          }
+          getSnapshot()
+          // // this block allows us to check whether a valid collection is selected
+          // const docSnap = await getDoc(docDefault)
+          // const dataTemp = docSnap.data() // returns undefined if no valid collection is selected
+          // if (dataTemp) {
+          //   setInput(dataTemp.entry)
+          //   setValidCollectionIsSelected(true)
+          // } else {
+          //   setValidCollectionIsSelected(false)
+          //   // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected.
+          // }
         };
         getPosts();
       }
