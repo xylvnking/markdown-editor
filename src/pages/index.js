@@ -223,6 +223,8 @@ const IndexPage = () => {
 
 
 
+    // think i need a piece of boolean state to check whether collection selection is selecting a real collection 
+
     // to update nav previews if authorized
     React.useEffect(() => {
       if (isAuthorized) {
@@ -230,16 +232,18 @@ const IndexPage = () => {
           const data = await getDocs(postsCollectionRef);
           setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   
+          // this block allows us to check whether a valid collection is selected
           const docSnap = await getDoc(docDefault)
-          const dataTemp = docSnap.data()
-          setInput(dataTemp.entry)
-  
-          // console.log(data)
-          // setDocumentData(data.docs.map((doc) => ({entry: doc.entry, id: doc.id })));
+          const dataTemp = docSnap.data() // returns undefined if no valid collection is selected
+          if (dataTemp) {
+            setInput(dataTemp.entry)
+          }
+
         };
         getPosts();
       }
-    }, [input, docSelected])
+    // }, [input, docSelected])
+    }, [input, docSelected, collectionSelection])
 
 
     
