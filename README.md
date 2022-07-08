@@ -90,3 +90,8 @@ const docDefault = doc(db, "Collection1", "document1")
       updatePost()
     }, [input])
 ```
+
+```js
+  // prettify object data when logging it to the console:
+  console.log(JSON.stringify(YOUR_OBJECT_HERE, null, 2))
+```

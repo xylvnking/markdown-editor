@@ -86,7 +86,6 @@ const IndexPage = () => {
     - security rules
     - syntax highlighter (had it working before just disabled for firebase integration to lower chance of edge case errors)
     - replace fake auth with real auth
-
     
     To do if this was a real product:
     - add date/metadata etc to documents
@@ -107,8 +106,25 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
-  // ON LOAD // ON LOAD // ON LOAD // ON LOAD
-  // get populates postList state with documents from firestore
+  const [docIndexEditing, setDocIndexEditing] = React.useState()
+
+  // setDocIndexEditing every time anything happens
+  React.useEffect(() => {
+    const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
+      return x.id === docSelected
+    })
+    setDocIndexEditing(documentIndexBeingEdited) 
+  },[input, docSelected, collectionSelection, unauthorizedData])
+
+  console.log(`the doc index is: ${docIndexEditing}`)
+
+  
+
+// docSnap
+
+// setPostList - if authorized, this could be set on every action to keep nav updating in realtime
+  
+  // LOAD DATA from firebase
   React.useEffect(() => {
       const getPosts = async () => {
         const data = await getDocs(postsCollectionRef);
@@ -124,6 +140,7 @@ const IndexPage = () => {
       getPosts();
     }, [])
 
+    // SWITCH DOCUMENT
     React.useEffect(() => {
       if (collectionSelection) {
         const waitForDoc = async () => {
@@ -133,47 +150,38 @@ const IndexPage = () => {
             setInput(dataTemp.entry)
             console.log("setting input while authorized")
           } else {
-            // loading the entry from unauthorizedData into the editor (input)
-            const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
-              return x.id === docSelected
-            })
             let items = [...unauthorizedData]
-            let item = {...items[documentIndexBeingEdited]}
-            setInput(item.entry)
-            console.log("not authed else called")
+            let item = {...items[docIndexEditing]}
+            setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
           }
         }
         waitForDoc()
       }
     }, [docSelected]) 
     
-    const updatePost = async () => {
-      if (docDefault && collectionSelection && validCollectionIsSelected) {
-        const document1Reference = doc(db, collectionSelection, docSelected)
-        if (input && isAuthorized) { // AUTH
-          console.log('update doc in firebase')
-          await updateDoc(document1Reference, {
-            entry: input
-          })
-        } else  {
-          const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
-            return x.id === docSelected
-          })
-          let items = [...unauthorizedData]
-          let item = {...items[documentIndexBeingEdited]}
-          item.entry = input
-          items[documentIndexBeingEdited] = item
-          setUnauthorizedData(items)
-          // console.log(JSON.stringify(unauthorizedData, null, 2))
+    // UPDATE FIREBASE or UPDATE UNAUTHORIZED DATA
+    React.useEffect(() => {
+      const updatePost = async () => {
+        if (docDefault && collectionSelection && validCollectionIsSelected) {
+          const document1Reference = doc(db, collectionSelection, docSelected)
+          if (input && isAuthorized) { // AUTH
+            console.log('update doc in firebase')
+            await updateDoc(document1Reference, {
+              entry: input
+            })
+          } else  {
+            let items = [...unauthorizedData]
+            let item = {...items[docIndexEditing]}
+            item.entry = input
+            items[docIndexEditing] = item
+            setUnauthorizedData(items)
+          }
         }
       }
-    }
-
-    React.useEffect(() => { // this loads input after the 'get' finishes & updates it as changes are made
-      updatePost()
+        updatePost()
     }, [input])
 
-    // to update nav previews if authorized
+    // update nav previews in realtime - if authorized
     React.useEffect(() => {
       if (isAuthorized) {
         const getPosts = async () => {
