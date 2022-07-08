@@ -184,6 +184,10 @@ const IndexPage = () => {
       
       if (collectionSelection) {
         const waitForDoc = async () => {
+
+
+
+          // CAN THIS BE INCLUDED IN getSnapshot() ????????
           const docSnap = await getDoc(docDefault)
           const dataTemp = docSnap.data()
           if (isAuthorized) {
@@ -194,6 +198,10 @@ const IndexPage = () => {
             let item = {...items[getIndex()]}
             setInput(item.entry) // loading the entry from unauthorizedData into the editor (input)
           }
+
+
+
+
         }
         waitForDoc()
       }
