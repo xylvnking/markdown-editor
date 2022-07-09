@@ -180,12 +180,12 @@ I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND 
 
 
     // // if this is left here, then deleted after a sign up, it works.
-    //   setDoc(doc(db, auth.currentUser.uid, "document10"), {
-    //     // if you want this to work you'd need to getDoc ...spread it blah blah map =>
-    //     entry: "this can't be edited yet",
-    //     field2: 420
-    //     // 
-    //   });
+      setDoc(doc(db, auth.currentUser.uid, "document10"), {
+        // if you want this to work you'd need to getDoc ...spread it blah blah map =>
+        entry: "this can't be edited yet",
+        field2: 420
+        // 
+      });
     
     console.log("being called")
 
@@ -205,7 +205,14 @@ I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND 
       createDefaultDocuments()
       // console.log(postLists[0].id)
 
-      
+
+
+      setInput(postLists[0].entry)
+      // setInput("so close")
+
+
+
+
       updateNav()
       setDocSelected(postLists[0].id)
 
@@ -345,6 +352,7 @@ I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND 
         // await updateDoc(doc(db, collectionSelection, docSelected), {
           // you need to make it so that when you go to update this entry, it's for the document that's selected from the collection/user loaded in
           // right now it is always editing the "default" one
+          
           await updateDoc(doc(db, collectionSelection, postLists[getIndex()].id), { // i think you need this to work
           entry: input
         })
