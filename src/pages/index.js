@@ -308,7 +308,7 @@ const IndexPage = () => {
       }
 
 
-
+      // // thought we needed all of this but it turns out we do not, which is reliving and obvious in hindsight
       // if (docDefault && collectionSelection && validCollectionIsSelected) {
       //   const document1Reference = doc(db, collectionSelection, docSelected)
       //   if (input && isAuthorized) {
