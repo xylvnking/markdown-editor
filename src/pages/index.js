@@ -14,7 +14,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs, setDoc } from "firebase/firestore";
-import { getDatabase, ref, set, onValue } from "firebase/database";
+import { getDatabase, ref, set, onValue, update } from "firebase/database";
 
 
 
@@ -107,7 +107,21 @@ const IndexPage = () => {
 
 
 /*
- doc default is messing something up. it's taking that value and writing it to the signed in users document every time.
+ the problem i'm having is that the default values / whatever the current entry of doc 1 in unauthorized data is -- is writing itself to a 'document1' whenever a new user is created
+ and the program REQUIRES that this document exists in order to run because it's hard coded to be required elsewhere. 
+
+ set doc selected to the first available document in the users collection if they are signed in ON LOAD
+
+ the function to update  a doc should not require document 1 to exist?
+
+ i think you need to get all the users docs, then assign 'doc selected' according to one of those, probably the one more recently edited if fancy
+ right now the problem is that our UPDATE function requires "doc selected" to exist, so when a user signs up that document is required to be created, and it is created
+ using the current value of input (unauthorized data doc 1 entry).
+
+ to fix this, 
+ when the page is loaded AND the user is signed in, we need to get all the users docs and assign docSelected to the first one from that list
+ then also make sure the update doc method only requires that ANY document is selected, (so that is doesn't try to write to a firebase path which doesn't exist)
+
 */
 
   
@@ -116,28 +130,40 @@ const IndexPage = () => {
   const collectionDefault = "Collection1"
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
-  
+  const [docSelected, setDocSelected] = React.useState("document1")
   const [collectionSelection, setCollectionSelection] = React.useState(collectionDefault)
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [unauthorizedData, setUnauthorizedData] = React.useState([])
   const [validCollectionIsSelected, setValidCollectionIsSelected] = React.useState(false)
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
 
-  const [docSelected, setDocSelected] = React.useState("document1")
+
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
 
+
+  
+
+  // when signing a new user in, document1 cannot be found user
 
 
   const createDefaultDocuments = () => {
     // const checkUser = doc(db, `${auth.currentUser.uid}`, "document1")
     // console.log("no user exists, creating collection for them")
-    setDoc(doc(db, `${auth.currentUser.uid}`, "document1"), {
+    const userIdRef = auth.currentUser.uid
+
+    setDoc(doc(db, auth.currentUser.uid, "document1"), {
       name: "Los Angeles",
       state: "CA",
       country: "USA",
-      planet: "earth"
+      planet: "mars"
     });
+
+    setDoc(doc(db, auth.currentUser.uid, "document10"), {
+      entry: "this is a value in a field",
+      // field2: 420
+    });
+    console.log("being called")
 
   }
 
@@ -151,11 +177,14 @@ const IndexPage = () => {
     signInWithPopup(auth, provider).then((result) => {
       setIsAuthorized(true)
       // console.log(auth.currentUser.email)
-      createDefaultDocuments()
       setCollectionSelection(auth.currentUser.uid)
+      createDefaultDocuments()
 
-      // i think this works to automatically refresh the page - if i do it without creating and calling a function it does it before the rest of the sign happens
-      refreshPage()
+      // if i hadd this then i get no document to update, i think it refreshes before the rest of the function can finish.
+      // const refreshPage = () => {
+      //   window.location.pathname = '/'
+      // }
+      // refreshPage() //
       
     })
     
@@ -227,6 +256,9 @@ const IndexPage = () => {
   React.useEffect(() => {
     const getPosts = async () => {
       // checks whether the user was logged in before the page reloaded/refreshed and sets state accordingly
+
+      // set doc selected to the first available document in the users collection if they are signed in
+
       await updateNav()
       await getSnapshot()
 
@@ -265,18 +297,32 @@ const IndexPage = () => {
   React.useEffect(() => {
     
     const updatePost = async () => {
-      if (docDefault && collectionSelection && validCollectionIsSelected) {
-        const document1Reference = doc(db, collectionSelection, docSelected)
-        if (input && isAuthorized) {
-          
-          await updateDoc(document1Reference, {
-            entry: input
-          })
-          
-        } else  {
-          setUnauthorizedDataAccordingToInput()
-        }
+
+
+      if ( input && isAuthorized ) {
+        await updateDoc(doc(db, collectionSelection, docSelected), {
+          entry: input
+        })
+      } else {
+        setUnauthorizedDataAccordingToInput()
       }
+
+
+
+      // if (docDefault && collectionSelection && validCollectionIsSelected) {
+      //   const document1Reference = doc(db, collectionSelection, docSelected)
+      //   if (input && isAuthorized) {
+          
+      //     await updateDoc(document1Reference, {
+      //       entry: input
+      //     })
+          
+      //   } else  {
+      //     setUnauthorizedDataAccordingToInput()
+      //   }
+      // }
+
+
     }
       updatePost()
   }, [input])
