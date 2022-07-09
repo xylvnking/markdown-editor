@@ -13,7 +13,7 @@ import { EffectComposer, DepthOfField, Bloom, Noise, Vignette } from '@react-thr
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs } from "firebase/firestore";
+import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs, setDoc } from "firebase/firestore";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
 
@@ -105,31 +105,69 @@ const IndexPage = () => {
     - export richtext
   */
 
+
+/*
+ doc default is messing something up. it's taking that value and writing it to the signed in users document every time.
+*/
+
+  
+
   const dummyText = " "
   const collectionDefault = "Collection1"
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
-  const [docSelected, setDocSelected] = React.useState("document1")
+  
   const [collectionSelection, setCollectionSelection] = React.useState(collectionDefault)
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [unauthorizedData, setUnauthorizedData] = React.useState([])
   const [validCollectionIsSelected, setValidCollectionIsSelected] = React.useState(false)
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
+
+  const [docSelected, setDocSelected] = React.useState("document1")
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
 
+
+
+  const createDefaultDocuments = () => {
+    // const checkUser = doc(db, `${auth.currentUser.uid}`, "document1")
+    // console.log("no user exists, creating collection for them")
+    setDoc(doc(db, `${auth.currentUser.uid}`, "document1"), {
+      name: "Los Angeles",
+      state: "CA",
+      country: "USA",
+      planet: "earth"
+    });
+
+  }
+
+  const refreshPage = () => {
+    window.location.pathname = '/'
+  }
+
   const signInWithGoogle = () => {
+
+    
     signInWithPopup(auth, provider).then((result) => {
       setIsAuthorized(true)
-      console.log(auth.currentUser.email)
+      // console.log(auth.currentUser.email)
+      createDefaultDocuments()
       setCollectionSelection(auth.currentUser.uid)
+
+      // i think this works to automatically refresh the page - if i do it without creating and calling a function it does it before the rest of the sign happens
+      refreshPage()
+      
     })
+    
   }
+
+  
 
   const signUserOut = () => {
     signOut(auth).then(() => {
       setIsAuthorized(false)
       setCollectionSelection(collectionDefault)
+      refreshPage()
     })
   }
 
@@ -147,11 +185,18 @@ const IndexPage = () => {
   }
 
   const getSnapshot = async () => {
+
+
+    //if signed in, replace doc default with null?
     const docSnap = await getDoc(docDefault)
     const dataTemp = docSnap.data()
+    
     if (dataTemp) {
       setInput(dataTemp.entry)
       setValidCollectionIsSelected(true)
+      // if (!isAuthorized) {
+
+      // }
     } else {
       setValidCollectionIsSelected(false)
       // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected. Looks a bit funny, better to do this elsewhere.
@@ -181,15 +226,23 @@ const IndexPage = () => {
   // LOAD DATA from firebase
   React.useEffect(() => {
     const getPosts = async () => {
+      // checks whether the user was logged in before the page reloaded/refreshed and sets state accordingly
       await updateNav()
       await getSnapshot()
-      // checks whether the user was logged in before the page reloaded/refreshed and sets state accordingly
+
       if (auth.currentUser) {
         setIsAuthorized(true)
         setCollectionSelection(auth.currentUser.uid)
-        console.log(JSON.stringify(auth, null, 2))
-      }
+        // console.log(JSON.stringify(auth, null, 2))
 
+
+
+        // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
+        // signUserOut()
+
+
+      }
+      
       };
       getPosts();
     }, [])
@@ -210,13 +263,16 @@ const IndexPage = () => {
     
     // UPDATE FIREBASE or UPDATE UNAUTHORIZED DATA
   React.useEffect(() => {
+    
     const updatePost = async () => {
       if (docDefault && collectionSelection && validCollectionIsSelected) {
         const document1Reference = doc(db, collectionSelection, docSelected)
         if (input && isAuthorized) {
+          
           await updateDoc(document1Reference, {
             entry: input
           })
+          
         } else  {
           setUnauthorizedDataAccordingToInput()
         }
@@ -235,7 +291,8 @@ const IndexPage = () => {
       getPosts();
     }
   // }, [input, docSelected, collectionSelection])
-  }, [input, collectionSelection])
+  // }, [input, collectionSelection, auth])
+  }, [input])
 
   return (
     <main className="app">
