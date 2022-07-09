@@ -16,6 +16,14 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs } from "firebase/firestore";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
+
+
+import {getAuth, signInWithPopup, GoogleAuthProvider, signOut} from 'firebase/auth'
+
+
+
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyDe3yv_VmOb8FonSbYQCYkdeVvhdcKTeic",
   authDomain: "markdowneditor-a40c5.firebaseapp.com",
@@ -30,6 +38,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig); // this has to go before the database is referenced below
 const database = getDatabase(app); // this has to go after the app is initialized
 const db = getFirestore(app);
+const auth = getAuth(app)
+const provider = new GoogleAuthProvider()
 
 const CameraController = () => {
   const { camera, gl } = useThree();
@@ -106,6 +116,31 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
+
+  const signInWithGoogle = () => {
+    signInWithPopup(auth, provider).then((result) => {
+      // localStorage.setItem("isAuth", true)
+      // localStorage.setItem("authorName", auth.currentUser.displayName)
+      // localStorage.setItem("authorUid", auth.currentUser.uid)
+      // localStorage.setItem("loggedInAt", Date())
+      setIsAuthorized(true)
+      // navigate("/") //redirects user to the home page after a succesful login
+      
+      console.log('sign in called')
+      console.log(JSON.stringify(auth, null, 2))
+    })
+  }
+
+  const signUserOut = () => {
+    signOut(auth).then(() => {
+      // localStorage.clear()
+      setIsAuthorized(false) // updates state to reflect that the user has signed out
+      // window.location.pathname = '/login' // redirects user to the login page after signing out
+    })
+  }
+
+  
+
   const getIndex = () => {
     const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
       return x.id === docSelected
@@ -165,6 +200,13 @@ const IndexPage = () => {
   // LOAD DATA from firebase
   React.useEffect(() => {
     const getPosts = async () => {
+
+
+      
+      console.log(JSON.stringify(auth, null, 2))
+
+      
+
       await updateNav()
       await getSnapshot()
       };
@@ -227,6 +269,9 @@ const IndexPage = () => {
       >
         {`is authorized: ${isAuthorized}`}
       </button>
+
+      <button onClick={signInWithGoogle}>Sign In with Google</button>
+      <button onClick={signUserOut}>Sign Out</button>
      
     {/* <div className="canvasContainer">
         
