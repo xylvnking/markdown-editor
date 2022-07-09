@@ -106,10 +106,11 @@ const IndexPage = () => {
   */
 
   const dummyText = " "
+  const collectionDefault = "Collection1"
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
   const [docSelected, setDocSelected] = React.useState("document1")
-  const [collectionSelection, setCollectionSelection] = React.useState("Collection1")
+  const [collectionSelection, setCollectionSelection] = React.useState(collectionDefault)
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [unauthorizedData, setUnauthorizedData] = React.useState([])
   const [validCollectionIsSelected, setValidCollectionIsSelected] = React.useState(false)
@@ -119,27 +120,18 @@ const IndexPage = () => {
 
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider).then((result) => {
-      // localStorage.setItem("isAuth", true)
-      // localStorage.setItem("authorName", auth.currentUser.displayName)
-      // localStorage.setItem("authorUid", auth.currentUser.uid)
-      // localStorage.setItem("loggedInAt", Date())
       setIsAuthorized(true)
-      // navigate("/") //redirects user to the home page after a succesful login
-      
-      console.log('sign in called')
-      console.log(JSON.stringify(auth, null, 2))
+      console.log(auth.currentUser.email)
+      setCollectionSelection(auth.currentUser.uid)
     })
   }
 
   const signUserOut = () => {
     signOut(auth).then(() => {
-      // localStorage.clear()
-      setIsAuthorized(false) // updates state to reflect that the user has signed out
-      // window.location.pathname = '/login' // redirects user to the login page after signing out
+      setIsAuthorized(false)
+      setCollectionSelection(collectionDefault)
     })
   }
-
-  
 
   const getIndex = () => {
     const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
@@ -172,23 +164,12 @@ const IndexPage = () => {
     return item
   }
 
-  
-
   const setUnauthorizedDataAccordingToInput = () => {
-    // let items = [...unauthorizedData]
-    // let item = {...items[getIndex()]}
-    // item.entry = input
-    // items[getIndex()] = item
-    // setUnauthorizedData(items)
-
-    // this works but i don't really know if there's a point
     let items = [...unauthorizedData]
-    let item = getUnauthorizedDataAtIndexOfCurrentlySelectedDocument()
+    let item = {...items[getIndex()]}
     item.entry = input
     items[getIndex()] = item
     setUnauthorizedData(items)
-
-
   }
 
   const setInputAccordingToUnauthorizedData = () => { 
@@ -200,15 +181,15 @@ const IndexPage = () => {
   // LOAD DATA from firebase
   React.useEffect(() => {
     const getPosts = async () => {
-
-
-      
-      console.log(JSON.stringify(auth, null, 2))
-
-      
-
       await updateNav()
       await getSnapshot()
+      // checks whether the user was logged in before the page reloaded/refreshed and sets state accordingly
+      if (auth.currentUser) {
+        setIsAuthorized(true)
+        setCollectionSelection(auth.currentUser.uid)
+        console.log(JSON.stringify(auth, null, 2))
+      }
+
       };
       getPosts();
     }, [])
@@ -264,15 +245,11 @@ const IndexPage = () => {
         value={collectionSelection}
         onChange={(e) => setCollectionSelection(e.target.value)}
       ></input>
-      <button
-        onClick={() => setIsAuthorized(!isAuthorized)}
-      >
-        {`is authorized: ${isAuthorized}`}
-      </button>
 
-      <button onClick={signInWithGoogle}>Sign In with Google</button>
-      <button onClick={signUserOut}>Sign Out</button>
-     
+      {`is authorized: ${(isAuthorized ? `signed in` : `logged out`)}`}
+
+      { isAuthorized ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
+
     {/* <div className="canvasContainer">
         
       <Canvas>

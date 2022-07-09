@@ -120,3 +120,7 @@ const docDefault = doc(db, "Collection1", "document1")
     setDocIndexEditing(documentIndexBeingEdited) 
   },[input, collectionSelection, unauthorizedData])
 ```
+
+# firebase security rules
+
+[good article with some example rules - needed tweaking to get working but overall helpful](https://medium.com/@juliomacr/10-firebase-realtime-database-rule-templates-d4894a118a98)
