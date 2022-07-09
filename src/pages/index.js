@@ -126,6 +126,16 @@ const IndexPage = () => {
  so i think if you want to do that you'd need to get docs and map the current values in 
  or check to see if the user has signed in before and if they have then don't set those, probably smarter and reduces calls
 
+
+
+
+I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND REMOVE THE FACT THAT IT MUST EXIST!!!!!
+
+
+
+
+
+
 */
 
   
@@ -160,10 +170,10 @@ const IndexPage = () => {
     
 
     setDoc(doc(db, auth.currentUser.uid, "document1"), {
-      name: "Los Angeles",
-      state: "CA",
-      country: "USA",
-      planet: "mars"
+      // name: "Los Angeles",
+      // state: "CA",
+      // country: "USA",
+      // planet: "mars"
     });
     // could actually be useful to maintain metadata about past edits, oddly enough i guess
     // compute field value by edit number and value by server timestamp? or maybe just logins. whatever. know 
@@ -221,10 +231,22 @@ const IndexPage = () => {
   }
 
   const getIndex = () => {
-    const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
-      return x.id === docSelected
-    })
-    return documentIndexBeingEdited
+    // i think here we need to also get the index of whatever document from firebase is being edited
+
+    if (isAuthorized) {
+
+      const documentIndexBeingEdited = postLists.findIndex(x => {
+        return x.id === docSelected
+      })
+      return documentIndexBeingEdited
+
+    } else {
+
+      const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
+        return x.id === docSelected
+      })
+      return documentIndexBeingEdited
+    }
   }
 
   const updateNav = async () => {
@@ -320,10 +342,10 @@ const IndexPage = () => {
 
       console.log(postLists)
       if ( input && isAuthorized ) {
-        await updateDoc(doc(db, collectionSelection, docSelected), {
+        // await updateDoc(doc(db, collectionSelection, docSelected), {
           // you need to make it so that when you go to update this entry, it's for the document that's selected from the collection/user loaded in
           // right now it is always editing the "default" one
-          // await updateDoc(doc(db, collectionSelection, postLists[documentIndexBeingEdited].id), { // i think you need this to work
+          await updateDoc(doc(db, collectionSelection, postLists[getIndex()].id), { // i think you need this to work
           entry: input
         })
       } else {
