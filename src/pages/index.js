@@ -122,6 +122,10 @@ const IndexPage = () => {
  when the page is loaded AND the user is signed in, we need to get all the users docs and assign docSelected to the first one from that list
  then also make sure the update doc method only requires that ANY document is selected, (so that is doesn't try to write to a firebase path which doesn't exist)
 
+ also the "default documents" being defined on signin will overwrite themselves every time, 
+ so i think if you want to do that you'd need to get docs and map the current values in 
+ or check to see if the user has signed in before and if they have then don't set those, probably smarter and reduces calls
+
 */
 
   
@@ -152,17 +156,27 @@ const IndexPage = () => {
     // console.log("no user exists, creating collection for them")
     const userIdRef = auth.currentUser.uid
 
+    // 
+    
+
     setDoc(doc(db, auth.currentUser.uid, "document1"), {
       name: "Los Angeles",
       state: "CA",
       country: "USA",
       planet: "mars"
     });
+    // could actually be useful to maintain metadata about past edits, oddly enough i guess
+    // compute field value by edit number and value by server timestamp? or maybe just logins. whatever. know 
 
-    setDoc(doc(db, auth.currentUser.uid, "document10"), {
-      entry: "this is a value in a field",
-      // field2: 420
-    });
+
+    // // if this is left here, then deleted after a sign up, it works.
+    //   setDoc(doc(db, auth.currentUser.uid, "document10"), {
+    //     // if you want this to work you'd need to getDoc ...spread it blah blah map =>
+    //     entry: "this can't be edited yet",
+    //     field2: 420
+    //     // 
+    //   });
+    
     console.log("being called")
 
   }
@@ -179,6 +193,12 @@ const IndexPage = () => {
       // console.log(auth.currentUser.email)
       setCollectionSelection(auth.currentUser.uid)
       createDefaultDocuments()
+      // console.log(postLists[0].id)
+
+      
+      updateNav()
+      setDocSelected(postLists[0].id)
+
 
       // if i hadd this then i get no document to update, i think it refreshes before the rest of the function can finish.
       // const refreshPage = () => {
@@ -298,9 +318,12 @@ const IndexPage = () => {
     
     const updatePost = async () => {
 
-
+      console.log(postLists)
       if ( input && isAuthorized ) {
         await updateDoc(doc(db, collectionSelection, docSelected), {
+          // you need to make it so that when you go to update this entry, it's for the document that's selected from the collection/user loaded in
+          // right now it is always editing the "default" one
+          // await updateDoc(doc(db, collectionSelection, postLists[documentIndexBeingEdited].id), { // i think you need this to work
           entry: input
         })
       } else {
@@ -308,7 +331,7 @@ const IndexPage = () => {
       }
 
 
-      // // thought we needed all of this but it turns out we do not, which is reliving and obvious in hindsight
+      // // thought we needed all of this but it turns out we do not, which is reliving and obvious in hindsight.
       // if (docDefault && collectionSelection && validCollectionIsSelected) {
       //   const document1Reference = doc(db, collectionSelection, docSelected)
       //   if (input && isAuthorized) {
