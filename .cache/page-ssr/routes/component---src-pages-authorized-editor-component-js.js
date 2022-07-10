@@ -151,18 +151,20 @@ __webpack_require__.r(__webpack_exports__);
 
 function AuthorizedEditorComponent(props) {
   // const [userData, setUserData] = React.useState(props.userData)
-  console.log(props.userInfo);
+  // console.log(props.userInfo)
   console.log(props.userData);
+  console.log(props.entry);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "layout"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, props.entry))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("textarea", {
-    className: "textarea" // value={"replace this with the current thing being edited"}
+    className: "textarea" // value={props.entry}
+    //   onChange={(e) => setInput(e.target.value)} 
     //   onChange={(e) => setInput(e.target.value)} 
 
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_2__.ReactMarkdown, {
-    children: "replace this with the current thing being edited",
+    children: props.entry,
     className: "markdown"
   }))));
 }

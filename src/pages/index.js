@@ -29,37 +29,32 @@ const provider = new GoogleAuthProvider()
 
 const IndexPage = () => {
   
-  // const [isAuthorized, setIsAuthorized] = React.useState()
   const [userInfo, setUserInfo] = React.useState()
-  // const [users, setUsers] = React.useState()
   const [userData, setUserData] = React.useState()
-  
   const [userDataKeys, setUserDataKeys] = React.useState()
-
   const [entries, setEntries] = React.useState([])
-
-  // const
   
+  const signInWithGoogle = async () => {
+    await signInWithPopup(auth, provider).then((result) => {
+      console.log("signing in")
+    }) 
+  }
   
+  const signUserOut = async () => {
+    await signOut(auth).then(() => {
+      console.log("signing out")
+    })
+  }
   
   // once the user is logged in, get their data
   React.useEffect(() => {
     const getDocumentData = async () => {
-      
       if (userInfo) {
         const docRef = doc(db, "users", userInfo.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          // const datatemp = docSnap.data()
-          console.log("Document data:", docSnap.data());
           setUserData(docSnap.data())
-          // const temp = Object.keys(docSnap.data())
           setUserDataKeys(Object.keys(docSnap.data()))
-          
-          
-          // setUserData("yeah")
-          
-          
         } else {
           console.log("How are you even seeing this?");
         }
@@ -77,36 +72,11 @@ const IndexPage = () => {
     }
   })
   
-  const signInWithGoogle = async () => {
-    await signInWithPopup(auth, provider).then((result) => {
-      console.log("signing in")
-    }) 
-  }
   
-  const signUserOut = async () => {
-    await signOut(auth).then(() => {
-      console.log("signing out")
-    })
-  }
-
-
-//  React.useEffect(() => {
-//   for (const key in userDataKeys) {
-//       console.log(`${key}: ${userDataKeys[key]}`)
-//     //   console.log(typeof userDataKeys[key])
-//     //   // console.log("yes")
-//     entries.push(userDataKeys[key])
-//     console.log(entries)
-//   }
-//  }, [userData])
 
  const returnStuff = () => {
   for (const key in userDataKeys) {
-    // console.log(`${key}: ${userDataKeys[key]}`)
-  //   console.log(typeof userDataKeys[key])
-  //   // console.log("yes")
   entries.push(userDataKeys[key])
-  // console.log(entries)
 }
   return (
 
@@ -122,39 +92,6 @@ const IndexPage = () => {
     })
   )
  }
-
-  // const getItems = () => {
-  //   if (userInfo && userData) {
-
-  //     // for (const key in userDataKeys) {
-  //     //   // console.log(`${key}: ${userDataKeys[key]}`)
-  //     //   console.log(typeof userDataKeys[key])
-  //     //   // console.log("yes")
-  //     //   return (
-          
-  //     //     <AuthorizedEditorComponent 
-  //     //       userInfo={userInfo} 
-  //     //       userData={userData}
-  //     //       entry={userDataKeys[key]}
-  //     //     />
-  //     //   )
-  //     // }
-
-  //     Object.values(userDataKeys).forEach(val => {
-  //       // console.log("yeah")
-  //       return (
-  //         <AuthorizedEditorComponent 
-  //           userInfo={userInfo} 
-  //           userData={userData}
-  //           entry={val}
-  //         />
-          
-  //       )
-  //     } )
-
-
-  //   }
-  // }
   
   return (
     <main className="app">
@@ -165,17 +102,6 @@ const IndexPage = () => {
       {
         returnStuff()
       }
-      
-      {/* {(userInfo && userData) ? <AuthorizedEditorComponent 
-      userInfo={userInfo} 
-      userData={userData}
-      entry={"entry01"}
-      
-      /> : ""} */}
-    {
-      // `${userData}`
-      // JSON.stringify(userData, null, 2)
-    }
 
     </main>
     )
