@@ -124,3 +124,16 @@ const docDefault = doc(db, "Collection1", "document1")
 # firebase security rules
 
 [good article with some example rules - needed tweaking to get working but overall helpful](https://medium.com/@juliomacr/10-firebase-realtime-database-rule-templates-d4894a118a98)
+
+
+# learned
+
+most if not all firebase functions have to be done async
+
+```js
+const signUserOut = async () => {
+    await signOut(auth).then(() => { // this would fail to sign the user out unless await is specified
+      setIsAuthorized(false)
+    })
+  }
+```
