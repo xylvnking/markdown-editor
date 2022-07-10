@@ -21,7 +21,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app)
 const provider = new GoogleAuthProvider()
-const users = collection(db, "users")
+// const users = collection(db, "users")
 
 // i think i can use this to create data for the user so they have some entries by default
 // functions.auth.user().onCreate((user) => {
@@ -30,39 +30,61 @@ const users = collection(db, "users")
 const IndexPage = () => {
   
   // const [isAuthorized, setIsAuthorized] = React.useState()
-  const [userData, setUserData] = React.useState()
+  const [userInfo, setUserInfo] = React.useState()
   // const [users, setUsers] = React.useState()
+  const [userData, setUserData] = React.useState()
   
-  const getDocumentData = async () => {
-    // if the user is signed in
-    if (userData) {
-      // console.log(`users isfsdfsdf: ` + JSON.stringify(userData.uid, null, 2))
-      // get a reference to their document which is named after their UID
-      const docRef = doc(db, "users", userData.uid);
-      // make sure that reference has been set
-      const docSnap = await getDoc(docRef);
-      // if the reference is set properly
-      if (docSnap.exists()) {
-        // log all of their data to the console
-        console.log("Document data:", docSnap.data());
-      } else {
-        console.log("No such document!");
+  
+  
+  // once the user is logged in, get their data
+  React.useEffect(() => {
+    const getDocumentData = async () => {
+      
+      if (userInfo) {
+        const docRef = doc(db, "users", userInfo.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          // const datatemp = docSnap.data()
+          // console.log("Document data:", docSnap.data());
+          setUserData(docSnap.data())
+          // setUserData("yeah")
+          
+          
+        } else {
+          console.log("How are you even seeing this?");
+        }
       }
     }
-  }
+    getDocumentData()
+
+  }, [userInfo])
+
+
+
+// this is wrong approach.
+  // React.useEffect(() => {
+  //   if (userData) {
+
+  //     // const entries = Object.entries(userData)
+  //     // console.log(entries)
+  //     Object.values(userData).forEach(val => {
+  //       return (
+  //           console.log(val)
+
+  //       )
+  //   })
+  //   }
+  // }, [userData])
+
+
+
+
 
   onAuthStateChanged(auth, (user) => {
-    // if the user is signed in, 
-    // set user data stores information about the user in state
-    // get document data gets all of their stored data 
-        //which are field:values held in one document named according their uid
     if (user) {
-      setUserData(user)
-      getDocumentData()
-    // otherwise if the user is not signed in, set user data to none
-    // and probably set document data to the "unauthorized data" like before
+      setUserInfo(user)
     } else {
-      setUserData()
+      setUserInfo()
     }
   })
   
@@ -77,12 +99,16 @@ const IndexPage = () => {
       console.log("signing out")
     })
   }
+
+  
   
   return (
     <main className="app">
       {/* {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`} */}
-      {userData ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
-      {userData ? <AuthorizedEditorComponent userData={userData}/> : ""}
+      {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
+      {/* {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""} */}
+      {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""}
+
     </main>
     )
 }
