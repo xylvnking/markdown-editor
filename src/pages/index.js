@@ -119,7 +119,7 @@ const IndexPage = () => {
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
-  
+  console.log(`input::::: ${input}`)
 
   const createDefaultDocuments = () => {
     setDoc(doc(db, auth.currentUser.uid, "document1"), {
@@ -128,15 +128,23 @@ const IndexPage = () => {
   }
 
   const signInWithGoogle = () => {
-    signInWithPopup(auth, provider).then((result) => {
-      setIsAuthorized(true)
-      setCollectionSelection(auth.currentUser.uid)
+    const signInFunction = async () => {
+
+      await signInWithPopup(auth, provider).then((result) => {
+      // setIsAuthorized(true)
+      // console.log(isAuthorized)
+      // setCollectionSelection(auth.currentUser.uid)
+      // console.log(collectionSelection)
       createDefaultDocuments()
-      setInput(postLists[0].entry)
+      // setInput(postLists[0].entry)
       // updateNav()
-      
-      setDocSelected(postLists[0].id)
-    }) 
+      // console.log()
+      setDocSelected(postLists[1].id)
+      // console.log(docSelected)
+      }) 
+    }
+    signInFunction()
+    
   }
 
   const signUserOut = () => {
@@ -179,8 +187,6 @@ const IndexPage = () => {
     }
   } 
 
-  
-
   const getUnauthorizedDataAtIndexOfCurrentlySelectedDocument = () => {
     let items = [...unauthorizedData]
     let item = {...items[getIndex()]}
@@ -189,6 +195,7 @@ const IndexPage = () => {
   }
 
   const setUnauthorizedDataAccordingToInput = () => {
+    
     let items = [...unauthorizedData]
     let item = {...items[getIndex()]}
     item.entry = input
@@ -207,6 +214,7 @@ const IndexPage = () => {
     if (auth.currentUser) {
       setIsAuthorized(true)
       setCollectionSelection(auth.currentUser.uid)
+      // console.log("this shoudl fire")
       // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
       // signUserOut()
     } else {
@@ -237,7 +245,7 @@ const IndexPage = () => {
     const waitForDoc = async () => {
       if (isAuthorized) {
         setDocSelected(postId)
-        setInput(postLists[getIndex()].entry)
+        // setInput(postLists[getIndex()].entry)
       } else {
         setDocSelected(postId)
         setInputAccordingToUnauthorizedData()
