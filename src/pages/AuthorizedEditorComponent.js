@@ -5,8 +5,9 @@ import '../style.css'
 export default function AuthorizedEditorComponent(props) {
 
 // const [userData, setUserData] = React.useState(props.userData)
-console.log(props.userInfo)
+// console.log(props.userInfo)
 console.log(props.userData)
+console.log(props.entry)
 
 
 
@@ -28,7 +29,7 @@ console.log(props.userData)
                     {props.userData ? props.userData.entry : "this is where the list items will go"}
                 </li> */}
                 <li>
-                    {/* props.val */}
+                    {props.entry}
                 </li>
 
                 {/* {
@@ -67,11 +68,12 @@ console.log(props.userData)
             <div className="markdownEditorContainer">
                 <textarea
                 className="textarea"
-                // value={"replace this with the current thing being edited"}
+                // value={props.entry}
+                //   onChange={(e) => setInput(e.target.value)} 
                 //   onChange={(e) => setInput(e.target.value)} 
                 />
                 <ReactMarkdown 
-                children={"replace this with the current thing being edited"}
+                children={props.entry}
                 className="markdown"
                 />
             </div>

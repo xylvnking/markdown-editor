@@ -35,6 +35,10 @@ const IndexPage = () => {
   const [userData, setUserData] = React.useState()
   
   const [userDataKeys, setUserDataKeys] = React.useState()
+
+  const [entries, setEntries] = React.useState([])
+
+  // const
   
   
   
@@ -47,8 +51,9 @@ const IndexPage = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           // const datatemp = docSnap.data()
-          // console.log("Document data:", docSnap.data());
+          console.log("Document data:", docSnap.data());
           setUserData(docSnap.data())
+          // const temp = Object.keys(docSnap.data())
           setUserDataKeys(Object.keys(docSnap.data()))
           
           
@@ -63,28 +68,6 @@ const IndexPage = () => {
     getDocumentData()
 
   }, [userInfo])
-
-
-
-// this is wrong approach.
-  React.useEffect(() => {
-    if (userData) {
-      // setUserDataKeys(Object.keys(userData))
-      console.log(userDataKeys)
-      console.log(typeof userDataKeys)
-      // const entries = Object.entries(userData)
-      // console.log(entries)
-    //   Object.values(userData).forEach(val => {
-    //     return (
-    //         console.log(val)
-
-    //     )
-    // })
-
-      
-
-    }
-  }, [userData])
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -107,27 +90,92 @@ const IndexPage = () => {
   }
 
 
-  
-  
+//  React.useEffect(() => {
+//   for (const key in userDataKeys) {
+//       console.log(`${key}: ${userDataKeys[key]}`)
+//     //   console.log(typeof userDataKeys[key])
+//     //   // console.log("yes")
+//     entries.push(userDataKeys[key])
+//     console.log(entries)
+//   }
+//  }, [userData])
+
+ const returnStuff = () => {
+  for (const key in userDataKeys) {
+    // console.log(`${key}: ${userDataKeys[key]}`)
+  //   console.log(typeof userDataKeys[key])
+  //   // console.log("yes")
+  entries.push(userDataKeys[key])
+  // console.log(entries)
+}
+  return (
+
+    entries.map((post) => {
+      return (
+        <li
+          className="navItem"
+          key={post}
+        >
+          {post}
+        </li>
+      )
+    })
+  )
+ }
+
+  // const getItems = () => {
+  //   if (userInfo && userData) {
+
+  //     // for (const key in userDataKeys) {
+  //     //   // console.log(`${key}: ${userDataKeys[key]}`)
+  //     //   console.log(typeof userDataKeys[key])
+  //     //   // console.log("yes")
+  //     //   return (
+          
+  //     //     <AuthorizedEditorComponent 
+  //     //       userInfo={userInfo} 
+  //     //       userData={userData}
+  //     //       entry={userDataKeys[key]}
+  //     //     />
+  //     //   )
+  //     // }
+
+  //     Object.values(userDataKeys).forEach(val => {
+  //       // console.log("yeah")
+  //       return (
+  //         <AuthorizedEditorComponent 
+  //           userInfo={userInfo} 
+  //           userData={userData}
+  //           entry={val}
+  //         />
+          
+  //       )
+  //     } )
+
+
+  //   }
+  // }
   
   return (
     <main className="app">
       {/* {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`} */}
-
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
       {/* {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""} */}
-
+      
+      {
+        returnStuff()
+      }
+      
+      {/* {(userInfo && userData) ? <AuthorizedEditorComponent 
+      userInfo={userInfo} 
+      userData={userData}
+      entry={"entry01"}
+      
+      /> : ""} */}
     {
       // `${userData}`
-      JSON.stringify(userData, null, 2)
+      // JSON.stringify(userData, null, 2)
     }
-
-    {
-      // const keys = Object.keys(userData)
-
-    }
-
-
 
     </main>
     )
