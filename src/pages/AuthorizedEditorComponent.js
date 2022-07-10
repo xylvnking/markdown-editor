@@ -5,6 +5,7 @@ import '../style.css'
 export default function AuthorizedEditorComponent(props) {
 
 // const [userData, setUserData] = React.useState(props.userData)
+// console.log(props.userData)
 
     return (
 

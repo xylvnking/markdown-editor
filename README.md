@@ -131,9 +131,23 @@ const docDefault = doc(db, "Collection1", "document1")
 most if not all firebase functions have to be done async
 
 ```js
-const signUserOut = async () => {
-    await signOut(auth).then(() => { // this would fail to sign the user out unless await is specified
-      setIsAuthorized(false)
-    })
-  }
+  const signUserOut = async () => {
+      await signOut(auth).then(() => { // this would fail to sign the user out unless await is specified
+        setIsAuthorized(false)
+      })
+    }
 ```
+keeping user signed in on refresh
+```js
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      // User is signed in.
+    } else {
+      // No user is signed in.
+    }
+});
+```
+
+you cannot .listCollections() client side with firebase. this is inconvenient.
+i'd have to do server side programming which is beyond the scope of this project.
+[Get Firstore documents in nested collections](https://cloud.google.com/firestore/docs/samples/firestore-data-get-sub-collections)
