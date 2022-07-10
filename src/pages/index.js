@@ -34,6 +34,8 @@ const IndexPage = () => {
   // const [users, setUsers] = React.useState()
   const [userData, setUserData] = React.useState()
   
+  const [userDataKeys, setUserDataKeys] = React.useState()
+  
   
   
   // once the user is logged in, get their data
@@ -47,6 +49,9 @@ const IndexPage = () => {
           // const datatemp = docSnap.data()
           // console.log("Document data:", docSnap.data());
           setUserData(docSnap.data())
+          setUserDataKeys(Object.keys(docSnap.data()))
+          
+          
           // setUserData("yeah")
           
           
@@ -62,23 +67,24 @@ const IndexPage = () => {
 
 
 // this is wrong approach.
-  // React.useEffect(() => {
-  //   if (userData) {
+  React.useEffect(() => {
+    if (userData) {
+      // setUserDataKeys(Object.keys(userData))
+      console.log(userDataKeys)
+      console.log(typeof userDataKeys)
+      // const entries = Object.entries(userData)
+      // console.log(entries)
+    //   Object.values(userData).forEach(val => {
+    //     return (
+    //         console.log(val)
 
-  //     // const entries = Object.entries(userData)
-  //     // console.log(entries)
-  //     Object.values(userData).forEach(val => {
-  //       return (
-  //           console.log(val)
+    //     )
+    // })
 
-  //       )
-  //   })
-  //   }
-  // }, [userData])
+      
 
-
-
-
+    }
+  }, [userData])
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -100,14 +106,28 @@ const IndexPage = () => {
     })
   }
 
+
+  
   
   
   return (
     <main className="app">
       {/* {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`} */}
+
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
       {/* {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""} */}
-      {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""}
+
+    {
+      // `${userData}`
+      JSON.stringify(userData, null, 2)
+    }
+
+    {
+      // const keys = Object.keys(userData)
+
+    }
+
+
 
     </main>
     )
