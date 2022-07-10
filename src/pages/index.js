@@ -29,11 +29,13 @@ const provider = new GoogleAuthProvider()
 
 const IndexPage = () => {
   
+  const unauthorizedData = "this would be an object of unauthorized data"
   const [userInfo, setUserInfo] = React.useState()
   const [userData, setUserData] = React.useState()
   const [userDataKeys, setUserDataKeys] = React.useState()
   const [entries, setEntries] = React.useState([])
   
+
   const signInWithGoogle = async () => {
     await signInWithPopup(auth, provider).then((result) => {
       console.log("signing in")
@@ -45,24 +47,6 @@ const IndexPage = () => {
       console.log("signing out")
     })
   }
-  
-  // once the user is logged in, get their data
-  React.useEffect(() => {
-    const getDocumentData = async () => {
-      if (userInfo) {
-        const docRef = doc(db, "users", userInfo.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setUserData(docSnap.data())
-          setUserDataKeys(Object.keys(docSnap.data()))
-        } else {
-          console.log("How are you even seeing this?");
-        }
-      }
-    }
-    getDocumentData()
-
-  }, [userInfo])
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -72,26 +56,59 @@ const IndexPage = () => {
     }
   })
   
+  // once the user is logged in, get their data
+  React.useEffect(() => {
+    const getDocumentData = async () => {
+      if (userInfo) {
+        const currentCollection = collection(db, userInfo.uid)
+        const data = await getDocs(currentCollection);
+        setUserData(data.docs.map((doc) => ({
+          ...doc.data(), id: doc.id 
+        })))
+        console.log(userData)
+        // setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+
+
+
+
+
+
+        // const docRef = doc(db, "users", userInfo.uid);
+        // const docSnap = await getDoc(docRef);
+        // if (docSnap.exists()) {
+        //   setUserData(docSnap.data())
+        //   setUserDataKeys(Object.keys(docSnap.data()))
+        // } else {
+        //   console.log("How are you even seeing this?");
+        // }
+      }
+    }
+    getDocumentData()
+
+  }, [userInfo])
+
+  
+  
   
 
- const returnStuff = () => {
-  for (const key in userDataKeys) {
-  entries.push(userDataKeys[key])
-}
-  return (
+//  const returnStuff = () => {
+//   for (const key in userDataKeys) {
+//   entries.push(userDataKeys[key])
+// }
+//   return (
 
-    entries.map((post) => {
-      return (
-        <li
-          className="navItem"
-          key={post}
-        >
-          {post}
-        </li>
-      )
-    })
-  )
- }
+//     entries.map((post) => {
+//       return (
+//         <li
+//           className="navItem"
+//           key={post}
+//         >
+//           {post}
+//         </li>
+//       )
+//     })
+//   )
+//  }
   
   return (
     <main className="app">
@@ -100,7 +117,22 @@ const IndexPage = () => {
       {/* {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""} */}
       
       {
-        returnStuff()
+        // returnStuff()
+      }
+
+      {userData ?
+        userData.map((post) => {
+          return (
+            <li 
+              className={"navItem"}
+              key={post.id}
+              // onClick={() => setDocSelected(post.id)}
+              // onClick={() => switchDocumentSelected(post.id)}
+              >
+              {post.entry ? post.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
+            </li>
+          )
+        }) : unauthorizedData
       }
 
     </main>
