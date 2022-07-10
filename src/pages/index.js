@@ -105,42 +105,26 @@ const IndexPage = () => {
     - export richtext
   */
 
-  
-
-  const dummyText = " "
   const collectionDefault = "Collection1"
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
-  
   const [docSelected, setDocSelected] = React.useState("document1")
   const [collectionSelection, setCollectionSelection] = React.useState(collectionDefault)
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [unauthorizedData, setUnauthorizedData] = React.useState([])
-  const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
-  const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
 
   console.log(`input::::: ${input}`)
 
   const createDefaultDocuments = () => {
     setDoc(doc(db, auth.currentUser.uid, "document1"), {
-
     });
   }
 
   const signInWithGoogle = () => {
     const signInFunction = async () => {
-
       await signInWithPopup(auth, provider).then((result) => {
-      // setIsAuthorized(true)
-      // console.log(isAuthorized)
-      // setCollectionSelection(auth.currentUser.uid)
-      // console.log(collectionSelection)
       createDefaultDocuments()
-      // setInput(postLists[0].entry)
-      // updateNav()
-      // console.log()
       setDocSelected(postLists[1].id)
-      // console.log(docSelected)
       }) 
     }
     signInFunction()
@@ -204,9 +188,6 @@ const IndexPage = () => {
   }
 
   const setInputAccordingToUnauthorizedData = () => { 
-    
-    // let items = [...unauthorizedData]
-    // let item = {...items[getIndex()]}
     setInput(getUnauthorizedDataAtIndexOfCurrentlySelectedDocument().entry) // loading the entry from unauthorizedData into the editor (input)
   }
 
@@ -214,7 +195,6 @@ const IndexPage = () => {
     if (auth.currentUser) {
       setIsAuthorized(true)
       setCollectionSelection(auth.currentUser.uid)
-      // console.log("this shoudl fire")
       // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
       // signUserOut()
     } else {
@@ -228,15 +208,6 @@ const IndexPage = () => {
       await updateNav()
       await getSnapshot()
       initialLoad()
-      // if (auth.currentUser) {
-      //   setIsAuthorized(true)
-      //   setCollectionSelection(auth.currentUser.uid)
-      //   // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
-      //   // signUserOut()
-      // } else {
-      //   setCollectionSelection(collectionDefault)
-      // }
-      
       };
       getPosts();
     }, [])
@@ -272,25 +243,15 @@ const IndexPage = () => {
 
   return (
     <main className="app">
-
-      {/* <input 
-        type="text"
-        value={collectionSelection}
-        onChange={(e) => setCollectionSelection(e.target.value)}
-      ></input> */}
-
       {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`}
-
       { isAuthorized ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
 
-    {/* <div className="canvasContainer">
-        
+    {/* <div className="canvasContainer"> 
       <Canvas>
       <Stars radius={200} depth={25} count={15000} factor={4} saturation={10} fade speed={2} />
       <Sparkles count={50} size={6} scale={5} color="white" noise={1}/>
     </Canvas>
     </div> */}
-    
     
     <div>
       {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
@@ -301,19 +262,14 @@ const IndexPage = () => {
           {(isAuthorized ? postLists : unauthorizedData).map((post) => { // using a ternary to choose whether to map through data sourced from firebase or the "unauthorizedData" which is set on load and never written to firebase again
             return (
               <li 
-              className={(post.id == docSelected) ? "selected" : "navItem"}
-              key={post.id}
-              // onClick={() => setDocSelected(post.id)}
-              onClick={() => switchDocumentSelected(post.id)}
-              
-              >
-
-
+                className={(post.id == docSelected) ? "selected" : "navItem"}
+                key={post.id}
+                // onClick={() => setDocSelected(post.id)}
+                onClick={() => switchDocumentSelected(post.id)}>
                 {post.entry} 
               </li>
             )
           })}
-
           </ul>
         </nav>
           <div className="markdownEditorContainer">
