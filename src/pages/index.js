@@ -105,150 +105,56 @@ const IndexPage = () => {
     - export richtext
   */
 
-
-/*
- the problem i'm having is that the default values / whatever the current entry of doc 1 in unauthorized data is -- is writing itself to a 'document1' whenever a new user is created
- and the program REQUIRES that this document exists in order to run because it's hard coded to be required elsewhere. 
-
- set doc selected to the first available document in the users collection if they are signed in ON LOAD
-
- the function to update  a doc should not require document 1 to exist?
-
- i think you need to get all the users docs, then assign 'doc selected' according to one of those, probably the one more recently edited if fancy
- right now the problem is that our UPDATE function requires "doc selected" to exist, so when a user signs up that document is required to be created, and it is created
- using the current value of input (unauthorized data doc 1 entry).
-
- to fix this, 
- when the page is loaded AND the user is signed in, we need to get all the users docs and assign docSelected to the first one from that list
- then also make sure the update doc method only requires that ANY document is selected, (so that is doesn't try to write to a firebase path which doesn't exist)
-
- also the "default documents" being defined on signin will overwrite themselves every time, 
- so i think if you want to do that you'd need to get docs and map the current values in 
- or check to see if the user has signed in before and if they have then don't set those, probably smarter and reduces calls
-
-
-
-
-I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND REMOVE THE FACT THAT IT MUST EXIST!!!!!
-
-
-
-
-
-
-*/
-
   
 
   const dummyText = " "
   const collectionDefault = "Collection1"
   const [postLists, setPostList] = React.useState([]);
   const [input, setInput] = React.useState();
+  
   const [docSelected, setDocSelected] = React.useState("document1")
   const [collectionSelection, setCollectionSelection] = React.useState(collectionDefault)
   const [isAuthorized, setIsAuthorized] = React.useState(false)
   const [unauthorizedData, setUnauthorizedData] = React.useState([])
-  const [validCollectionIsSelected, setValidCollectionIsSelected] = React.useState(false)
   const postsCollectionRef = collection(db, (collectionSelection ? collectionSelection : dummyText))
-
-
   const docDefault = doc(db, (collectionSelection ? collectionSelection : dummyText), docSelected)
-
-
 
   
 
-  // when signing a new user in, document1 cannot be found user
-
-
   const createDefaultDocuments = () => {
-    // const checkUser = doc(db, `${auth.currentUser.uid}`, "document1")
-    // console.log("no user exists, creating collection for them")
-    const userIdRef = auth.currentUser.uid
-
-    // 
-    
-
     setDoc(doc(db, auth.currentUser.uid, "document1"), {
-      // name: "Los Angeles",
-      // state: "CA",
-      // country: "USA",
-      // planet: "mars"
+
     });
-    // could actually be useful to maintain metadata about past edits, oddly enough i guess
-    // compute field value by edit number and value by server timestamp? or maybe just logins. whatever. know 
-
-
-    // // if this is left here, then deleted after a sign up, it works.
-      setDoc(doc(db, auth.currentUser.uid, "document10"), {
-        // if you want this to work you'd need to getDoc ...spread it blah blah map =>
-        entry: "this can't be edited yet",
-        field2: 420
-        // 
-      });
-    
-    console.log("being called")
-
-  }
-
-  const refreshPage = () => {
-    window.location.pathname = '/'
   }
 
   const signInWithGoogle = () => {
-
-    
     signInWithPopup(auth, provider).then((result) => {
       setIsAuthorized(true)
-      // console.log(auth.currentUser.email)
       setCollectionSelection(auth.currentUser.uid)
       createDefaultDocuments()
-      // console.log(postLists[0].id)
-
-
-
       setInput(postLists[0].entry)
-      // setInput("so close")
-
-
-
-
-      updateNav()
-      setDocSelected(postLists[0].id)
-
-
-      // if i hadd this then i get no document to update, i think it refreshes before the rest of the function can finish.
-      // const refreshPage = () => {
-      //   window.location.pathname = '/'
-      // }
-      // refreshPage() //
+      // updateNav()
       
-    })
-    
+      setDocSelected(postLists[0].id)
+    }) 
   }
-
-  
 
   const signUserOut = () => {
     signOut(auth).then(() => {
       setIsAuthorized(false)
       setCollectionSelection(collectionDefault)
-      refreshPage()
+      window.location.pathname = '/'
     })
   }
 
+  // returns index of currently selected document
   const getIndex = () => {
-    // i think here we need to also get the index of whatever document from firebase is being edited
-
     if (isAuthorized) {
-
       const documentIndexBeingEdited = postLists.findIndex(x => {
         return x.id === docSelected
       })
       return documentIndexBeingEdited
-
     } else {
-
       const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
         return x.id === docSelected
       })
@@ -257,33 +163,28 @@ I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND 
   }
 
   const updateNav = async () => {
-    const data = await getDocs(postsCollectionRef);
+    const curCollection = collection(db, (isAuthorized ? auth.currentUser.uid : collectionDefault)) // added this but it didn't seem to have any effect, i think it was done elsewhere already and so putting it here makes sense but is technically redundant
+    const data = await getDocs(curCollection);
     setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     setUnauthorizedData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
   }
 
   const getSnapshot = async () => {
-
-
-    //if signed in, replace doc default with null?
-    const docSnap = await getDoc(docDefault)
+    const docSnap = await getDoc(doc(db, (isAuthorized ? collectionSelection : collectionDefault), (isAuthorized ? postLists[getIndex()].id : docSelected)))
+    // const docSnap = await getDoc(docDefault) // oh this is 100% is
     const dataTemp = docSnap.data()
-    
     if (dataTemp) {
       setInput(dataTemp.entry)
-      setValidCollectionIsSelected(true)
-      // if (!isAuthorized) {
-
-      // }
-    } else {
-      setValidCollectionIsSelected(false)
-      // setInput("") // this makes it so that nothing can be typed in editor if no valid collection is selected. Looks a bit funny, better to do this elsewhere.
+      
     }
   } 
+
+  
 
   const getUnauthorizedDataAtIndexOfCurrentlySelectedDocument = () => {
     let items = [...unauthorizedData]
     let item = {...items[getIndex()]}
+    // console.log("docu want switchy")
     return item
   }
 
@@ -296,113 +197,81 @@ I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND 
   }
 
   const setInputAccordingToUnauthorizedData = () => { 
+    
     // let items = [...unauthorizedData]
     // let item = {...items[getIndex()]}
     setInput(getUnauthorizedDataAtIndexOfCurrentlySelectedDocument().entry) // loading the entry from unauthorizedData into the editor (input)
+  }
+
+  const initialLoad = () => {
+    if (auth.currentUser) {
+      setIsAuthorized(true)
+      setCollectionSelection(auth.currentUser.uid)
+      // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
+      // signUserOut()
+    } else {
+      setCollectionSelection(collectionDefault)
+    }
   }
   
   // LOAD DATA from firebase
   React.useEffect(() => {
     const getPosts = async () => {
-      // checks whether the user was logged in before the page reloaded/refreshed and sets state accordingly
-
-      // set doc selected to the first available document in the users collection if they are signed in
-
       await updateNav()
       await getSnapshot()
-
-      if (auth.currentUser) {
-        setIsAuthorized(true)
-        setCollectionSelection(auth.currentUser.uid)
-        // console.log(JSON.stringify(auth, null, 2))
-
-
-
-        // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
-        // signUserOut()
-
-
-      }
+      initialLoad()
+      // if (auth.currentUser) {
+      //   setIsAuthorized(true)
+      //   setCollectionSelection(auth.currentUser.uid)
+      //   // uncomment to get out of error state: Uncaught (in promise) FirebaseError: No document to update:
+      //   // signUserOut()
+      // } else {
+      //   setCollectionSelection(collectionDefault)
+      // }
       
       };
       getPosts();
     }, [])
 
-  // SWITCH DOCUMENT
-  React.useEffect(() => {
-    if (collectionSelection) {
-      const waitForDoc = async () => {
-        if (isAuthorized && validCollectionIsSelected) {
-          getSnapshot()
-        } else {
-          setInputAccordingToUnauthorizedData()
-        }
+  const switchDocumentSelected = (postId) => {
+    const waitForDoc = async () => {
+      if (isAuthorized) {
+        setDocSelected(postId)
+        setInput(postLists[getIndex()].entry)
+      } else {
+        setDocSelected(postId)
+        setInputAccordingToUnauthorizedData()
       }
-      waitForDoc()
-    }
-  }, [docSelected]) 
-    
-    // UPDATE FIREBASE or UPDATE UNAUTHORIZED DATA
-  React.useEffect(() => {
-    
-    const updatePost = async () => {
+      console.log(`The document selected is: ${docSelected}`)
+    } 
+    waitForDoc()
+  }
 
-      console.log(postLists)
+  React.useEffect(() => {
+    const updatePost = async () => {
       if ( input && isAuthorized ) {
-        // await updateDoc(doc(db, collectionSelection, docSelected), {
-          // you need to make it so that when you go to update this entry, it's for the document that's selected from the collection/user loaded in
-          // right now it is always editing the "default" one
-          
-          await updateDoc(doc(db, collectionSelection, postLists[getIndex()].id), { // i think you need this to work
+          updateNav()
+          getSnapshot()
+          await updateDoc(doc(db, collectionSelection, postLists[getIndex()].id), {
           entry: input
         })
       } else {
         setUnauthorizedDataAccordingToInput()
       }
-
-
-      // // thought we needed all of this but it turns out we do not, which is reliving and obvious in hindsight.
-      // if (docDefault && collectionSelection && validCollectionIsSelected) {
-      //   const document1Reference = doc(db, collectionSelection, docSelected)
-      //   if (input && isAuthorized) {
-          
-      //     await updateDoc(document1Reference, {
-      //       entry: input
-      //     })
-          
-      //   } else  {
-      //     setUnauthorizedDataAccordingToInput()
-      //   }
-      // }
-
-
     }
       updatePost()
-  }, [input])
-
-  // update nav previews in realtime - if authorized
-  React.useEffect(() => {
-    if (isAuthorized) {
-      const getPosts = async () => {
-        updateNav()
-        getSnapshot()
-      };
-      getPosts();
-    }
-  // }, [input, docSelected, collectionSelection])
-  // }, [input, collectionSelection, auth])
   }, [input])
 
   return (
     <main className="app">
 
-      <input 
+      {/* <input 
         type="text"
         value={collectionSelection}
         onChange={(e) => setCollectionSelection(e.target.value)}
-      ></input>
+      ></input> */}
 
-      {`is authorized: ${(isAuthorized ? `signed in` : `logged out`)}`}
+      {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`}
 
       { isAuthorized ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
 
@@ -421,103 +290,37 @@ I JUST NEED TO GET RID OF THIS GHOST POST WHY AND WHERE IS IT BEING CREATED AND 
   
         <nav>
           <ul>
-
-
-
-          {/* need to make it so that if they are authorized, it sources the database for this always
-          and if they are not, it only sources the database on load and then afterwards uses unauthorizedData */}
-
-
-
-
-            {/* this would be for "online mode" if the data on the page is to be constantly sourced from firestore */}
-
-
-          
           {(isAuthorized ? postLists : unauthorizedData).map((post) => { // using a ternary to choose whether to map through data sourced from firebase or the "unauthorizedData" which is set on load and never written to firebase again
             return (
               <li 
-              // className="navItem" 
               className={(post.id == docSelected) ? "selected" : "navItem"}
               key={post.id}
-              // if it is selected set class to li selected
-              onClick={() => setDocSelected(post.id)} 
+              // onClick={() => setDocSelected(post.id)}
+              onClick={() => switchDocumentSelected(post.id)}
+              
               >
 
-                {/* {post.entry} */}
-                {(post.id == docSelected) ? input : post.entry} 
 
-
-                {/* {input} */}
-                {/* {post.entry} */}
-                {/* ^^^ONLINE MODE^^^ */}
-                {/* if li being created's post.id equals the document selected then put the input here, otherwise put the post.entry? */}
+                {post.entry} 
               </li>
             )
           })}
 
-
-
-
-            {/* this would be for "offline mode" where the initial page load gets data from firestore but doesn't write it to the database again (unless authorized) */}
-          {/* {postLists.map((post) => {
-            return (
-              <li 
-              // className="navItem" 
-              className={(post.id == docSelected) ? "selected" : "navItem"}
-              key={post.id}
-              // if it is selected set class to li selected
-              onClick={() => setDocSelected(post.id)} 
-              >
-                {(post.id == docSelected) ? input : post.entry} 
-                
-              </li>
-            )
-          })} */}
-
-
-
-
-
-
           </ul>
         </nav>
-        
           <div className="markdownEditorContainer">
-
-
-
-          <textarea
-            className="textarea"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <ReactMarkdown 
-            children={input}
-            className="markdown"
-          />
-
-
-
-
-          {/* <textarea
-            className="textarea"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <ReactMarkdown 
-            children={input}
-            className="markdown"
-          /> */}
-
+            <textarea
+              className="textarea"
+              value={isAuthorized ? postLists[getIndex()].entry : input }
+              onChange={(e) => setInput(e.target.value)} 
+            />
+            <ReactMarkdown 
+              children={input}
+              className="markdown"
+            />
           </div>
-        
       </div>
     </div>
-    
-
-      
-
     </main>
   )
 }
