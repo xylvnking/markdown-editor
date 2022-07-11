@@ -35,6 +35,7 @@ const IndexPage = () => {
   const [userDataKeys, setUserDataKeys] = React.useState()
   const [entries, setEntries] = React.useState([])
   // const [docSelected, setDocSelected] = React.useState()
+  const [autoSave, setAutoSave] = React.useState(true)
   
   
   
@@ -82,12 +83,14 @@ const IndexPage = () => {
   
   return (
     <div>
+      {/* <button onClick={() => setAutoSave(!autoSave)}> {`autosave is set to ${autoSave}`}</button> */}
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
       <AuthorizedEditorComponent 
         userData={userData}
         reloadData={reloadData}
         db={db}
         userInfo={userInfo}
+        autoSave={autoSave}
   
       />
     </div>

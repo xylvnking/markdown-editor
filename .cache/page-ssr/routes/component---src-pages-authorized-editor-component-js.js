@@ -12554,48 +12554,57 @@ function AuthorizedEditorComponent(props) {
   // we dont actually have to read it since our offline clone will be kept up to date with what it "would" be
   // this allows full offline mode if i also employ local storage?
   // also means that i'll drastically reduce my reads from firebase
+  // maybe save to local storage and a YOU HAVE UNSAVED CHANGES message would suffice
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
-  const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData); // console.log(`offline data is: ${offlineData}`)
-
-  console.log(offlineData);
+  const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
 
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
-  };
+  }; // get index within states array of object currently being edited ::
+  // const objIndex = offlineData.findIndex((document => document.id == documentId));
+  // when the entire app reloads, set offlineData according to userData from firestore
+
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
     setOfflineData(props.userData);
-  }, [props.userData]);
+  }, [props.userData]); // update only specific document/entry being edited so that changes are held offline and not lost on document switch
+  // like they were when values were being driven by the current input/editor text like they used to be
 
-  const updateObjectInArray = (documentId, currentEditorText) => {
+  const updateObjectInArray = (documentId, eventValue) => {
     setOfflineData(current => current.map(obj => {
       if (obj.id === documentId) {
         return { ...obj,
-          entry: currentEditorText
+          entry: eventValue
         };
       }
 
       return obj;
     }));
-  };
+  }; // update single document on firebase
+
 
   const updateDocumentOnFirebase = async documentId => {
     if (documentIdSelected == documentId) {
       // update document selected
       await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
         entry: currentEditorText
-      }); // const objIndex = offlineData.findIndex((document => document.id == documentId));
-
-      updateObjectInArray(documentId, currentEditorText);
+      });
       setCurrentEditorText(currentEditorText); // puts the documents entry into currenteditortext
     }
-  }; // const updateOfflineDataWithoutSaving = (value) => {
-  //     updateObjectInArray(documentIdSelected, currentEditorText)
-  // }
+  }; // every keystroke the offline data is updated
+  // this allows the user to switch documents without changes being lost
+  // need to decide on how i want to handle refreshing the page - keep info?
+  // ability to toggle this off and update firebase with every keystroke or close to it like google docs?
+  // you'd need to save a past version of the document, consider whether autosave is best. maybe an option to toggle on
 
+
+  const updateOfflineDataWithoutSaving = eventValue => {
+    updateObjectInArray(documentIdSelected, eventValue);
+    setCurrentEditorText(eventValue);
+  };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"
@@ -12614,7 +12623,7 @@ function AuthorizedEditorComponent(props) {
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",
     value: currentEditorText,
-    onChange: e => setCurrentEditorText(e.target.value) //   onChange={(e) => setInput(e.target.value)} 
+    onChange: e => updateOfflineDataWithoutSaving(e.target.value) //   onChange={(e) => setInput(e.target.value)} 
 
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_3__.ReactMarkdown, {
     children: currentEditorText,
