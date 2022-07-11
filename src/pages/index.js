@@ -49,6 +49,7 @@ const IndexPage = () => {
   const signUserOut = async () => {
     await signOut(auth).then(() => {
       console.log("signing out")
+      setUserData("") // removes nav previews if not signed in
     })
   }
 
@@ -74,12 +75,17 @@ const IndexPage = () => {
     getDocumentData()
 
   }, [userInfo])
+
+  const reloadData = (editedDataFromEditorSubcomponent) => {
+    setUserData(editedDataFromEditorSubcomponent)
+  }
   
   return (
     <div>
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
       <AuthorizedEditorComponent 
         userData={userData}
+        reloadData={reloadData}
         db={db}
         userInfo={userInfo}
   
