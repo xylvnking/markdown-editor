@@ -151,3 +151,19 @@ keeping user signed in on refresh
 you cannot .listCollections() client side with firebase. this is inconvenient.
 i'd have to do server side programming which is beyond the scope of this project.
 [Get Firstore documents in nested collections](https://cloud.google.com/firestore/docs/samples/firestore-data-get-sub-collections)
+
+
+# [updating an array of objects held in state](https://bobbyhadz.com/blog/react-update-state-array-of-objects)
+```js
+  const updateObjectInArray = (documentId, currentEditorText, eventValue) => {
+      setOfflineData(current =>
+        current.map(obj => {
+          if (obj.id === documentId) {
+            return {...obj, entry: eventValue};
+          }
+
+          return obj;
+        }),
+      );
+    };
+```

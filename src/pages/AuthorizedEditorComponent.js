@@ -18,33 +18,36 @@ export default function AuthorizedEditorComponent(props) {
 const unauthorizedData = "this would be an object of unauthorized data"
 const [documentIdSelected, setDocumentIdSelected] = React.useState()
 const [currentEditorText, setCurrentEditorText] = React.useState()
-
-
 const [offlineData, setOfflineData] = React.useState(props.userData)
-// console.log(`offline data is: ${offlineData}`)
-console.log(offlineData)
+
 
 const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId)
     setCurrentEditorText(postEntry)
 }
 
+// get index within states array of object currently being edited ::
+// const objIndex = offlineData.findIndex((document => document.id == documentId));
+
+// when the entire app reloads, set offlineData according to userData from firestore
 React.useEffect(() => {
     setOfflineData(props.userData)
 }, [props.userData])
 
-const updateObjectInArray = (documentId, currentEditorText) => {
+// update only specific document/entry being edited so that changes are held offline and not lost on document switch
+// like they were when values were being driven by the current input/editor text like they used to be
+const updateObjectInArray = (documentId, eventValue) => {
     setOfflineData(current =>
       current.map(obj => {
         if (obj.id === documentId) {
-          return {...obj, entry: currentEditorText};
+          return {...obj, entry: eventValue}
         }
-
-        return obj;
+        return obj
       }),
-    );
-  };
+    )
+  }
 
+// update single document on firebase
 
 const updateDocumentOnFirebase = async (documentId) => {
     if(documentIdSelected == documentId) {
@@ -52,15 +55,21 @@ const updateDocumentOnFirebase = async (documentId) => {
         await updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
             entry: currentEditorText
         })
-        // const objIndex = offlineData.findIndex((document => document.id == documentId));
-        updateObjectInArray(documentId, currentEditorText)
+        
         setCurrentEditorText(currentEditorText) // puts the documents entry into currenteditortext
     }
 }
 
-// const updateOfflineDataWithoutSaving = (value) => {
-//     updateObjectInArray(documentIdSelected, currentEditorText)
-// }
+// every keystroke the offline data is updated
+// this allows the user to switch documents without changes being lost
+// need to decide on how i want to handle refreshing the page - keep info?
+// ability to toggle this off and update firebase with every keystroke or close to it like google docs?
+// you'd need to save a past version of the document, consider whether autosave is best. maybe an option to toggle on
+
+const updateOfflineDataWithoutSaving = (eventValue) => {
+    updateObjectInArray(documentIdSelected, eventValue)
+    setCurrentEditorText(eventValue)
+}
 
     return (
         <main className="app">
@@ -103,7 +112,7 @@ const updateDocumentOnFirebase = async (documentId) => {
                     <textarea
                     className="textarea"
                     value={currentEditorText}
-                      onChange={(e) => setCurrentEditorText(e.target.value)} 
+                      onChange={(e) => updateOfflineDataWithoutSaving(e.target.value)} 
                     //   onChange={(e) => setInput(e.target.value)} 
                     />
                     <ReactMarkdown 
