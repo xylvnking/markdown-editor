@@ -34,6 +34,10 @@ const IndexPage = () => {
   const [userData, setUserData] = React.useState()
   const [userDataKeys, setUserDataKeys] = React.useState()
   const [entries, setEntries] = React.useState([])
+  // const [docSelected, setDocSelected] = React.useState()
+  const [documentIdSelected, setDocumentIdSelected] = React.useState("document1")
+  
+  
   
 
   const signInWithGoogle = async () => {
@@ -65,7 +69,7 @@ const IndexPage = () => {
         setUserData(data.docs.map((doc) => ({
           ...doc.data(), id: doc.id 
         })))
-        console.log(userData)
+        // console.log(userData)
         // setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
 
 
@@ -109,6 +113,12 @@ const IndexPage = () => {
 //     })
 //   )
 //  }
+
+  const switchDocumentSelected = (postId) => {
+    console.log(postId)
+    setDocumentIdSelected(postId)
+
+  }
   
   return (
     <main className="app">
@@ -119,6 +129,8 @@ const IndexPage = () => {
       {
         // returnStuff()
       }
+      <nav>
+        <ul>
 
       {userData ?
         userData.map((post) => {
@@ -126,14 +138,21 @@ const IndexPage = () => {
             <li 
               className={"navItem"}
               key={post.id}
-              // onClick={() => setDocSelected(post.id)}
+  
               // onClick={() => switchDocumentSelected(post.id)}
+              onClick={() => console.log(post.id)}
+
+              // onClick={() => setDocumentIdSelected(post.id)} // i want this but it's creating an infinite loop
+              
               >
+              
               {post.entry ? post.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
             </li>
           )
         }) : unauthorizedData
       }
+        </ul>
+      </nav>
 
     </main>
     )
