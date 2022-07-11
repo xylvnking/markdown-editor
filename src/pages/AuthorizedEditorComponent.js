@@ -5,18 +5,32 @@ import '../style.css'
 
 export default function AuthorizedEditorComponent(props) {
 
+    // when you switch to a different document, your changes shouldn't be lost
+    // when you hit save, you should only update the document which is currently selected
+
+
 const unauthorizedData = "this would be an object of unauthorized data"
 const [documentIdSelected, setDocumentIdSelected] = React.useState()
 const [currentEditorText, setCurrentEditorText] = React.useState()
+
+console.log(props.userData)
 
 const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId)
     setCurrentEditorText(postEntry)
 }
 
-const updateDocumentOnFirebase = async () => {
-    if(documentIdSelected) {
-        // update document
+// if i dont reload the data on save but instead only write it
+// and use a clone of user data "offline" which is updated when firebase is
+// but since the data will only be changing from this program
+// we dont actually have to read it since our offline clone will be kept up to date with what it "would" be
+// this allows full offline mode if i also employ local storage?
+// also means that i'll drastically reduce my reads from firebase
+
+
+const updateDocumentOnFirebase = async (documentId) => {
+    if(documentIdSelected == documentId) {
+        // update document selected
         await updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
             entry: currentEditorText
         })
@@ -26,36 +40,9 @@ const updateDocumentOnFirebase = async () => {
         props.reloadData(data.docs.map((doc) => ({
           ...doc.data(), id: doc.id 
         })))
+        setCurrentEditorText(currentEditorText) // puts the documents entry into currenteditortext
     }
 }
-
-
-
-/*
-
-
-it might be possible to take the useEffect from index which sets the data initially and put it here.
-within that a function could be taken out which reloads the data, which it would call as would the update function
-just have to remove props from some places, make sure everything loads in properly initially
-
-otherwise,
-
-- we need to decide upon and implement a way for individual documents to be in saved/unsaved state
-- right now if you're editing one document then go to another, your edits are lost, which obviously isn't good
-- creating state containing all the userData, then driving changes to those pieces of state with textarea onchange
-    and then having a dedicated save button for each document which passes a "documentIdSelected " esque value
-        into the updateDoc function would work. currently i think it would also reload all of the data so it might
-            overwrite the other unsaved documents? unsure. problem for another day. almost 40 hours of work in 3 days lol
-                we out here
-
-                - but yeah holding everything in an "offline" state would allow the nav to be updated without making calls also
-                - figure it out xox
-
-*/
-
-
-
-
 
     return (
         <main className="app">
@@ -68,22 +55,29 @@ otherwise,
                 <ul>
 
             {props.userData ?
-                props.userData.map((post) => {
+                props.userData.map((document) => {
                 return (
-                    <li 
-                    className={"navItem"}
-                    key={post.id}
-                    onClick={() => selectDocumentAndSetCurrentEditorText(post.id, post.entry)}
-                    >
-                    {post.entry ? post.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
-                    </li>
+                    
+                        <li 
+                            className={"navItem"}
+                            key={document.id}
+                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
+                        {document.entry ? document.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
+
+                        <button 
+                            onClick={() => updateDocumentOnFirebase(document.id)}>
+                            save
+                        </button>
+
+                        </li>
+                    
                 )
                 }) : unauthorizedData
             }
                 </ul>
-                <button onClick={() => updateDocumentOnFirebase()}>
+                {/* <button onClick={() => updateDocumentOnFirebase()}>
                     save
-                </button>
+                </button> */}
             </nav>
 
             

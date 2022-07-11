@@ -12546,10 +12546,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function AuthorizedEditorComponent(props) {
-  // const [userData, setUserData] = React.useState(props.userData)
-  // console.log(props.userInfo)
-  // console.log(props.userData)
-  // console.log(props.entry)
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
@@ -12559,13 +12555,42 @@ function AuthorizedEditorComponent(props) {
     setCurrentEditorText(postEntry);
   };
 
-  const updateDocumentOnFirebase = () => {
+  const updateDocumentOnFirebase = async () => {
     if (documentIdSelected) {
-      (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
+      // update document
+      await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
         entry: currentEditorText
-      });
+      }); // reload data to update nav
+
+      const currentCollection = (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, props.userInfo.uid);
+      const data = await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.getDocs)(currentCollection);
+      props.reloadData(data.docs.map(doc => ({ ...doc.data(),
+        id: doc.id
+      })));
     }
   };
+  /*
+  
+  
+  it might be possible to take the useEffect from index which sets the data initially and put it here.
+  within that a function could be taken out which reloads the data, which it would call as would the update function
+  just have to remove props from some places, make sure everything loads in properly initially
+  
+  otherwise,
+  
+  - we need to decide upon and implement a way for individual documents to be in saved/unsaved state
+  - right now if you're editing one document then go to another, your edits are lost, which obviously isn't good
+  - creating state containing all the userData, then driving changes to those pieces of state with textarea onchange
+      and then having a dedicated save button for each document which passes a "documentIdSelected " esque value
+          into the updateDoc function would work. currently i think it would also reload all of the data so it might
+              overwrite the other unsaved documents? unsure. problem for another day. almost 40 hours of work in 3 days lol
+                  we out here
+  
+                  - but yeah holding everything in an "offline" state would allow the nav to be updated without making calls also
+                  - figure it out xox
+  
+  */
+
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"
