@@ -1,3 +1,4 @@
+import { doc, updateDoc } from 'firebase/firestore'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
@@ -6,79 +7,81 @@ export default function AuthorizedEditorComponent(props) {
 
 // const [userData, setUserData] = React.useState(props.userData)
 // console.log(props.userInfo)
-console.log(props.userData)
-console.log(props.entry)
+// console.log(props.userData)
+// console.log(props.entry)
+const unauthorizedData = "this would be an object of unauthorized data"
+const [documentIdSelected, setDocumentIdSelected] = React.useState()
+const [currentEditorText, setCurrentEditorText] = React.useState()
+
+const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
+    setDocumentIdSelected(postId)
+    setCurrentEditorText(postEntry)
+}
 
 
+const updateDocumentOnFirebase = () => {
+    if(documentIdSelected) {
+        updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
+            entry: currentEditorText
+        })
+    }
+}
 
 
 
     return (
-
-        
-        <div>
-        {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
-        <div className="layout">
-
+        <main className="app">
+            {/* {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`} */}
+            {/* {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>} */}
+            {/* {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""} */}
+            
+            {
+                // returnStuff()
+            }
+            <div>
+            <div className="layout">
             <nav>
-            <ul>
+                <ul>
 
-                {/* {props.userData.entry} */}
-                {/* <li>
-                    
-                    {props.userData ? props.userData.entry : "this is where the list items will go"}
-                </li> */}
-                <li>
-                    {props.entry}
-                </li>
-
-                {/* {
-                    Object.values(props.userData).forEach(val => {
-                        return (
-                            <li
-                                className="navItem"
-                                key={val.id}
-                            >
-                                {val}
-                            
-                            </li>
-                        )
-                    })
-                } */}
-                
-
-
-            {/* {(props.userData).map((document) => { // using a ternary to choose whether to map through data sourced from firebase or the "unauthorizedData" which is set on load and never written to firebase again
+            {props.userData ?
+                props.userData.map((post) => {
                 return (
-                <li 
-                    // className={(post.id == docSelected) ? "selected" : "navItem"}
-                    className="navItem"
-                    key={document.id}
-                    // onClick={() => setDocSelected(post.id)}
-                    // onClick={() => switchDocumentSelected(post.id)}
+                    <li 
+                    className={"navItem"}
+                    key={post.id}
+                    onClick={() => selectDocumentAndSetCurrentEditorText(post.id, post.entry)}
                     >
-                    
-                </li>
+                    {post.entry ? post.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
+                    </li>
                 )
-            })} */}
+                }) : unauthorizedData
+            }
+                </ul>
+                <button onClick={() => updateDocumentOnFirebase()}>
+                    save
+                </button>
+            </nav>
 
             
-            </ul>
-            </nav>
-            <div className="markdownEditorContainer">
-                <textarea
-                className="textarea"
-                // value={props.entry}
-                //   onChange={(e) => setInput(e.target.value)} 
-                //   onChange={(e) => setInput(e.target.value)} 
-                />
-                <ReactMarkdown 
-                children={props.entry}
-                className="markdown"
-                />
+                <div className="markdownEditorContainer">
+                    <textarea
+                    className="textarea"
+                    value={currentEditorText}
+                      onChange={(e) => setCurrentEditorText(e.target.value)} 
+                    //   onChange={(e) => setInput(e.target.value)} 
+                    />
+                    <ReactMarkdown 
+                    children={currentEditorText}
+                    className="markdown"
+                    />
+                </div>
             </div>
-        </div>
-        </div>
+            {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
+            </div>
+
+            </main>
+        
+        
     
   )
 }

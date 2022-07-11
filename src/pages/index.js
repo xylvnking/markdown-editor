@@ -29,13 +29,13 @@ const provider = new GoogleAuthProvider()
 
 const IndexPage = () => {
   
-  const unauthorizedData = "this would be an object of unauthorized data"
+  
   const [userInfo, setUserInfo] = React.useState()
   const [userData, setUserData] = React.useState()
   const [userDataKeys, setUserDataKeys] = React.useState()
   const [entries, setEntries] = React.useState([])
   // const [docSelected, setDocSelected] = React.useState()
-  const [documentIdSelected, setDocumentIdSelected] = React.useState("document1")
+  
   
   
   
@@ -69,92 +69,22 @@ const IndexPage = () => {
         setUserData(data.docs.map((doc) => ({
           ...doc.data(), id: doc.id 
         })))
-        // console.log(userData)
-        // setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
-
-
-
-
-
-        // const docRef = doc(db, "users", userInfo.uid);
-        // const docSnap = await getDoc(docRef);
-        // if (docSnap.exists()) {
-        //   setUserData(docSnap.data())
-        //   setUserDataKeys(Object.keys(docSnap.data()))
-        // } else {
-        //   console.log("How are you even seeing this?");
-        // }
       }
     }
     getDocumentData()
 
   }, [userInfo])
-
-  
-  
-  
-
-//  const returnStuff = () => {
-//   for (const key in userDataKeys) {
-//   entries.push(userDataKeys[key])
-// }
-//   return (
-
-//     entries.map((post) => {
-//       return (
-//         <li
-//           className="navItem"
-//           key={post}
-//         >
-//           {post}
-//         </li>
-//       )
-//     })
-//   )
-//  }
-
-  const switchDocumentSelected = (postId) => {
-    console.log(postId)
-    setDocumentIdSelected(postId)
-
-  }
   
   return (
-    <main className="app">
-      {/* {`authorization status: ${(isAuthorized ? `signed in` : `logged out`)}`} */}
+    <div>
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
-      {/* {(userInfo && userData) ? <AuthorizedEditorComponent userInfo={userInfo} userData={userData}/> : ""} */}
-      
-      {
-        // returnStuff()
-      }
-      <nav>
-        <ul>
-
-      {userData ?
-        userData.map((post) => {
-          return (
-            <li 
-              className={"navItem"}
-              key={post.id}
+      <AuthorizedEditorComponent 
+        userData={userData}
+        db={db}
+        userInfo={userInfo}
   
-              // onClick={() => switchDocumentSelected(post.id)}
-              onClick={() => console.log(post.id)}
-
-              // onClick={() => setDocumentIdSelected(post.id)} // i want this but it's creating an infinite loop
-              
-              >
-              
-              {post.entry ? post.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
-            </li>
-          )
-        }) : unauthorizedData
-      }
-        </ul>
-      </nav>
-
-    </main>
+      />
+    </div>
     )
 }
 

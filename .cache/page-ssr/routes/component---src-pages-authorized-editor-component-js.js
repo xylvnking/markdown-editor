@@ -154,9 +154,19 @@ function AuthorizedEditorComponent(props) {
   // console.log(props.userInfo)
   console.log(props.userData);
   console.log(props.entry);
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("main", {
+    className: "app"
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, props.userData ? props.userData.map(post => {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", {
+      className: "navItem",
+      key: post.id // onClick={() => switchDocumentSelected(post.id)}
+      ,
+      onClick: () => console.log(post.id) // onClick={() => setDocumentIdSelected(post.id)} // i want this but it's creating an infinite loop
+
+    }, post.entry ? post.entry : "THIS DOC IS MISSING ENTRY FIELD");
+  }) : unauthorizedData)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "layout"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("ul", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("li", null, props.entry))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("textarea", {
     className: "textarea" // value={props.entry}
@@ -166,7 +176,7 @@ function AuthorizedEditorComponent(props) {
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_2__.ReactMarkdown, {
     children: props.entry,
     className: "markdown"
-  }))));
+  })))));
 }
 
 /***/ }),
