@@ -172,3 +172,13 @@ i'd have to do server side programming which is beyond the scope of this project
 // get index within states array of object currently being edited ::
 const objIndex = offlineData.findIndex((document => document.id == documentId));
 ```
+
+```js
+  // using (e) => somefunction(e.target.value) 
+  // allows us to get the current value of the textarea
+  // and not just the last character typed, which I found interesting at the time
+  <textarea
+    value={currentEditorText}
+    onChange={(e) => setCurrentEditorText(e.target.value)} 
+  />
+```

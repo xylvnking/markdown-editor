@@ -93,6 +93,13 @@ li:hover {
     cursor: pointer;
 }
 
+li p {
+    font-size: .75rem;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: end;
+    color: rgba(255, 255, 255, 0.439);
+}
+
 .canvasContainer {
     width: 250px;
     height: 100vh;

@@ -12546,30 +12546,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function AuthorizedEditorComponent(props) {
-  // when you switch to a different document, your changes shouldn't be lost
-  // when you hit save, you should only update the document which is currently selected
-  // "got autosave functionality but need to store it with the user info on firebase in 
-  // some sort of settings thing and also debounce the save so it's not calling right away after every character"
-  // 
+  // debounce hook to stop autosave from updating after every single keystroke
+  // create an update function for the user settings (source it initially and keep online and offline updated like userData?)
   // maybe save to local storage and a YOU HAVE UNSAVED CHANGES message would suffice
-  console.log(userData);
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
   const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true);
-  console.log(autoSave);
 
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
-  }; // get index within states array of object currently being edited ::
-  // const objIndex = offlineData.findIndex((document => document.id == documentId));
-  // when the entire app reloads, set offlineData according to userData from firestore
+  }; // when the entire app reloads, set offlineData and userSettings according to userData from firestore
 
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    setOfflineData(props.userData);
+    setOfflineData(props.userData); // console.log(props.userData)
+    // getting autosave
+
+    if (props.userData) {
+      const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
+      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
+    }
   }, [props.userData]); // update only specific document/entry being edited so that changes are held offline and not lost on document switch
   // like they were when values were being driven by the current input/editor text like they used to be
 
@@ -12603,6 +12602,15 @@ function AuthorizedEditorComponent(props) {
   const delayTest = async () => {
     // console.log('before')
     await delay(1000); // console.log('after')
+  }; // update savedata setting thing
+
+
+  const updateSettingsDocumentOnFirebase = async () => {
+    setAutoSave(!autoSave);
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, "userSettings"), {
+      autoSave: !autoSave,
+      autoSaveString: "this was saved from the program"
+    });
   }; // every keystroke the offline data is updated
   // this allows the user to switch documents without changes being lost
   // need to decide on how i want to handle refreshing the page - keep info?
@@ -12638,7 +12646,7 @@ function AuthorizedEditorComponent(props) {
   }) : unauthorizedData), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => delayTest()
   }, "save"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
-    onClick: () => setAutoSave(!autoSave)
+    onClick: () => updateSettingsDocumentOnFirebase()
   }, " ", `autosave is set to ${autoSave}`)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
