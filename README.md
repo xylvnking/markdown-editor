@@ -182,3 +182,25 @@ const objIndex = offlineData.findIndex((document => document.id == documentId));
     onChange={(e) => setCurrentEditorText(e.target.value)} 
   />
 ```
+
+```js
+// to use timeout it has to contain a promise. it wouldn't work if the function within it was console.log() instead of updateDoc, which is async and returns a promise.
+// the 'filterTimeout' also has to be defined outside of the "main" function or else it gets reset every rerender and causes the timeout to just not work, meaning the api call is made on every key stroke instead of after the stated delay
+let filterTimeout
+export default function AuthorizedEditorComponent(props) {
+  const updateDocumentOnFirebase = async (documentId, eventValue) => {
+      if(documentIdSelected === documentId) {
+          clearTimeout(filterTimeout)
+          filterTimeout = setTimeout(() => {
+              updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
+                  entry: eventValue
+              })
+          }, 1000)
+             
+      }
+  }
+  return(
+    //etc
+  )
+}
+```

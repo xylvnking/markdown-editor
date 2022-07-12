@@ -12887,20 +12887,15 @@ function AuthorizedEditorComponent(props) {
     // console.log(eventValue)
     if (documentIdSelected === documentId) {
       // update document selected
-      await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
+      (0,awesome_debounce_promise__WEBPACK_IMPORTED_MODULE_3__["default"])(await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
         // entry: currentEditorText // this didn't work because currentEditorText is also being set by eventValue, meaning it's a character behind 
         entry: eventValue
-      });
+      }), 1000);
       setCurrentEditorText(autoSave ? eventValue : currentEditorText);
     }
   };
 
-  const logValue = eventValue => {
-    (0,awesome_debounce_promise__WEBPACK_IMPORTED_MODULE_3__["default"])(console.log(eventValue), 500); // console.log(eventValue)
-  };
-
   const handleTyping = eventValue => {
-    logValue(eventValue);
     setCurrentEditorText(eventValue);
     updateSingleObjectInOfflineData(documentIdSelected, eventValue); // i think if i want to use the debounce or throttle technique that i'll have to use a different value as opposed to event value
     // if offlineData is updated in time, i can access the entry held there and then drive the value change on firebase from that so that

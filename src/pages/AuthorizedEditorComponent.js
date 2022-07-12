@@ -2,7 +2,10 @@ import { doc, updateDoc, collection, getDocs, documentId } from 'firebase/firest
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
+import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
+
+let filterTimeout
 export default function AuthorizedEditorComponent(props) {
 
 
@@ -20,9 +23,6 @@ const [currentEditorText, setCurrentEditorText] = React.useState()
 const [offlineData, setOfflineData] = React.useState(props.userData)
 const [autoSave, setAutoSave] = React.useState()
 
-
-
-// update savedata setting on firebase (eventually this should be user for all user settings)
 const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave)
     await updateDoc(doc(props.db, props.userInfo.uid, "userSettings"), {
@@ -36,18 +36,14 @@ const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setCurrentEditorText(postEntry)
 }
 
-// RELOAD:, set offlineData and userSettings according to userData from firestore
 React.useEffect(() => {
     setOfflineData(props.userData)
-    // getting autoSave boolean value from firestore on load
     if (props.userData) {
         const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
         setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
     }
 }, [props.userData])
 
-// update only specific document/entry being edited so that changes are held offline and not lost on document switch
-// like they were when values were being driven by the current input/editor text like they used to be
 const updateSingleObjectInOfflineData = (documentId, eventValue) => {
     setOfflineData(current =>
       current.map(obj => {
@@ -61,39 +57,25 @@ const updateSingleObjectInOfflineData = (documentId, eventValue) => {
 
 // update single document on firebase
 const updateDocumentOnFirebase = async (documentId, eventValue) => {
-
-    // console.log(eventValue)
-
     if(documentIdSelected === documentId) {
-        // update document selected
-        await updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
-            // entry: currentEditorText // this didn't work because currentEditorText is also being set by eventValue, meaning it's a character behind 
-            entry: eventValue
-        })
+        clearTimeout(filterTimeout)
+        filterTimeout = setTimeout(() => {
+            console.log('logloglog')
+            updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
+                entry: eventValue
+            })
+        }, 1000)
         setCurrentEditorText(autoSave ? eventValue : currentEditorText )      
     }
 }
 
-
 const handleTyping = (eventValue) => {
     setCurrentEditorText(eventValue)
     updateSingleObjectInOfflineData(documentIdSelected, eventValue)
-    
-    // i think if i want to use the debounce or throttle technique that i'll have to use a different value as opposed to event value
-    // if offlineData is updated in time, i can access the entry held there and then drive the value change on firebase from that so that
-        // everything happens in series instad of event value driving them in parallel
-
     if (autoSave) {
         updateDocumentOnFirebase(documentIdSelected, eventValue)
     } 
 }
-
-
-
-// const updateOfflineDataWithoutSaving = (eventValue) => {
-//     updateObjectInArray(documentIdSelected, eventValue)
-//     setCurrentEditorText(eventValue)
-// }
 
     return (
         <main className="app">
