@@ -74,7 +74,15 @@ const updateDocumentOnFirebase = async (documentId, eventValue) => {
     }
 }
 
+
+const logValue = (eventValue) => {
+    
+    console.log(eventValue)
+}
+
+
 const handleTyping = (eventValue) => {
+    logValue(eventValue)
     setCurrentEditorText(eventValue)
     updateSingleObjectInOfflineData(documentIdSelected, eventValue)
     
@@ -86,6 +94,8 @@ const handleTyping = (eventValue) => {
         updateDocumentOnFirebase(documentIdSelected, eventValue)
     } 
 }
+
+
 
 // const updateOfflineDataWithoutSaving = (eventValue) => {
 //     updateObjectInArray(documentIdSelected, eventValue)
