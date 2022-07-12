@@ -167,3 +167,8 @@ i'd have to do server side programming which is beyond the scope of this project
       );
     };
 ```
+
+```js
+// get index within states array of object currently being edited ::
+const objIndex = offlineData.findIndex((document => document.id == documentId));
+```

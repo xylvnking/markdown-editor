@@ -12548,17 +12548,17 @@ __webpack_require__.r(__webpack_exports__);
 function AuthorizedEditorComponent(props) {
   // when you switch to a different document, your changes shouldn't be lost
   // when you hit save, you should only update the document which is currently selected
-  // if i dont reload the data on save but instead only write it
-  // and use a clone of user data "offline" which is updated when firebase is
-  // but since the data will only be changing from this program
-  // we dont actually have to read it since our offline clone will be kept up to date with what it "would" be
-  // this allows full offline mode if i also employ local storage?
-  // also means that i'll drastically reduce my reads from firebase
+  // "got autosave functionality but need to store it with the user info on firebase in 
+  // some sort of settings thing and also debounce the save so it's not calling right away after every character"
+  // 
   // maybe save to local storage and a YOU HAVE UNSAVED CHANGES message would suffice
+  console.log(userData);
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true);
+  console.log(autoSave);
 
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
@@ -12586,14 +12586,23 @@ function AuthorizedEditorComponent(props) {
   }; // update single document on firebase
 
 
-  const updateDocumentOnFirebase = async documentId => {
-    if (documentIdSelected == documentId) {
+  const updateDocumentOnFirebase = async (documentId, eventValue) => {
+    if (documentIdSelected === documentId) {
       // update document selected
       await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
         entry: currentEditorText
-      });
-      setCurrentEditorText(currentEditorText); // puts the documents entry into currenteditortext
+      }); // offline mode
+
+      setCurrentEditorText(autoSave ? eventValue : currentEditorText); // online mode
+      // setCurrentEditorText(eventValue)
     }
+  };
+
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  const delayTest = async () => {
+    // console.log('before')
+    await delay(1000); // console.log('after')
   }; // every keystroke the offline data is updated
   // this allows the user to switch documents without changes being lost
   // need to decide on how i want to handle refreshing the page - keep info?
@@ -12601,10 +12610,18 @@ function AuthorizedEditorComponent(props) {
   // you'd need to save a past version of the document, consider whether autosave is best. maybe an option to toggle on
 
 
-  const updateOfflineDataWithoutSaving = eventValue => {
-    updateObjectInArray(documentIdSelected, eventValue);
+  const handleTyping = eventValue => {
     setCurrentEditorText(eventValue);
-  };
+    updateObjectInArray(documentIdSelected, eventValue);
+
+    if (autoSave) {
+      updateDocumentOnFirebase(documentIdSelected, eventValue);
+    }
+  }; // const updateOfflineDataWithoutSaving = (eventValue) => {
+  //     updateObjectInArray(documentIdSelected, eventValue)
+  //     setCurrentEditorText(eventValue)
+  // }
+
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"
@@ -12618,13 +12635,17 @@ function AuthorizedEditorComponent(props) {
     }, document.entry ? document.entry : "THIS DOC IS MISSING ENTRY FIELD", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
       onClick: () => updateDocumentOnFirebase(document.id)
     }, "save"));
-  }) : unauthorizedData)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }) : unauthorizedData), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => delayTest()
+  }, "save"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => setAutoSave(!autoSave)
+  }, " ", `autosave is set to ${autoSave}`)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",
-    value: currentEditorText,
-    onChange: e => updateOfflineDataWithoutSaving(e.target.value) //   onChange={(e) => setInput(e.target.value)} 
-
+    value: currentEditorText //   onChange={(e) => updateOfflineDataWithoutSaving(e.target.value)} 
+    ,
+    onChange: e => handleTyping(e.target.value)
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_3__.ReactMarkdown, {
     children: currentEditorText,
     className: "markdown"

@@ -8,39 +8,35 @@ export default function AuthorizedEditorComponent(props) {
     // when you switch to a different document, your changes shouldn't be lost
     // when you hit save, you should only update the document which is currently selected
 
-    // if i dont reload the data on save but instead only write it
-    // and use a clone of user data "offline" which is updated when firebase is
-    // but since the data will only be changing from this program
-    // we dont actually have to read it since our offline clone will be kept up to date with what it "would" be
-    // this allows full offline mode if i also employ local storage?
-    // also means that i'll drastically reduce my reads from firebase
+    // debounce hook to stop autosave from updating after every single keystroke
+    // create an update function for the user settings (source it initially and keep online and offline updated like userData?)
 
 
     // maybe save to local storage and a YOU HAVE UNSAVED CHANGES message would suffice
+
 
 
 const unauthorizedData = "this would be an object of unauthorized data"
 const [documentIdSelected, setDocumentIdSelected] = React.useState()
 const [currentEditorText, setCurrentEditorText] = React.useState()
 const [offlineData, setOfflineData] = React.useState(props.userData)
-
-
 const [autoSave, setAutoSave] = React.useState(true)
-
-console.log(autoSave)
-
 
 const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId)
     setCurrentEditorText(postEntry)
 }
 
-// get index within states array of object currently being edited ::
-// const objIndex = offlineData.findIndex((document => document.id == documentId));
-
-// when the entire app reloads, set offlineData according to userData from firestore
+// when the entire app reloads, set offlineData and userSettings according to userData from firestore
 React.useEffect(() => {
     setOfflineData(props.userData)
+    // console.log(props.userData)
+
+    // getting autosave
+    if (props.userData) {
+        const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
+        setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
+    }
 }, [props.userData])
 
 // update only specific document/entry being edited so that changes are held offline and not lost on document switch
