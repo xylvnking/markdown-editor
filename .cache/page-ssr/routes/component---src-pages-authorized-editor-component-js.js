@@ -12396,6 +12396,295 @@ utf8.write = function utf8_write(string, buffer, offset) {
 
 /***/ }),
 
+/***/ "./node_modules/awesome-debounce-promise/dist/index.es.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/awesome-debounce-promise/dist/index.es.js ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var debounce_promise__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! debounce-promise */ "./node_modules/debounce-promise/dist/index.js");
+/* harmony import */ var debounce_promise__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(debounce_promise__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var awesome_only_resolves_last_promise__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! awesome-only-resolves-last-promise */ "./node_modules/awesome-only-resolves-last-promise/dist/index.es.js");
+
+
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
+var DefaultOptions = {
+    // One distinct debounced function is created per key and added to an internal cache
+    // By default, the key is null, which means that all the calls
+    // will share the same debounced function
+    key: function () {
+        var _args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            _args[_i] = arguments[_i];
+        }
+        return null;
+    },
+    // By default, a debounced function will only resolve
+    // the last promise it returned
+    // Former calls will stay unresolved, so that you don't have
+    // to handle concurrency issues in your code
+    // Setting this to false means all returned promises will resolve to the last result
+    onlyResolvesLast: true,
+};
+// We create a debouncing function cache, because when wrapping the original function,
+// we may actually want to route the function call to different debounced functions depending function paameters
+var DebounceCache = /** @class */ (function () {
+    function DebounceCache(config) {
+        this.config = config;
+        this.debounceSingleton = null;
+        this.debounceCache = {}; // when key feature is used
+    }
+    DebounceCache.prototype._createDebouncedFunction = function () {
+        var debouncedFunc = debounce_promise__WEBPACK_IMPORTED_MODULE_0___default()(this.config.func, this.config.wait, this.config.options); // TODO TS
+        if (this.config.options.onlyResolvesLast) {
+            debouncedFunc = (0,awesome_only_resolves_last_promise__WEBPACK_IMPORTED_MODULE_1__.onlyResolvesLast)(debouncedFunc);
+        }
+        return {
+            func: debouncedFunc,
+        };
+    };
+    DebounceCache.prototype.getDebouncedFunction = function (args) {
+        var _a;
+        var key = (_a = this.config.options).key.apply(_a, args);
+        if (key === null || typeof key === 'undefined') {
+            if (!this.debounceSingleton) {
+                this.debounceSingleton = this._createDebouncedFunction();
+            }
+            return this.debounceSingleton;
+        }
+        else {
+            if (!this.debounceCache[key]) {
+                this.debounceCache[key] = this._createDebouncedFunction();
+            }
+            return this.debounceCache[key];
+        }
+    };
+    return DebounceCache;
+}());
+function AwesomeDebouncePromise(func, wait, options) {
+    var finalOptions = __assign({}, DefaultOptions, options);
+    var debounceCache = new DebounceCache({
+        func: func,
+        wait: wait,
+        options: finalOptions,
+    });
+    var AwesomeDebouncePromiseWrapper = (function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        var debouncedFn = debounceCache.getDebouncedFunction(args).func;
+        return debouncedFn.apply(void 0, args);
+    }); // TODO fix TS
+    /*
+    AwesomeDebouncePromiseWrapper.cancel = (key?: string) => {
+  
+    };
+    */
+    return AwesomeDebouncePromiseWrapper;
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (AwesomeDebouncePromise);
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/awesome-imperative-promise/dist/index.es.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/awesome-imperative-promise/dist/index.es.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "createImperativePromise": () => (/* binding */ createImperativePromise)
+/* harmony export */ });
+function createImperativePromise(promiseArg) {
+    var resolve = null;
+    var reject = null;
+    var wrappedPromise = new Promise(function (_resolve, _reject) {
+        resolve = _resolve;
+        reject = _reject;
+    });
+    promiseArg && promiseArg.then(function (val) {
+        resolve && resolve(val);
+    }, function (error) {
+        reject && reject(error);
+    });
+    return {
+        promise: wrappedPromise,
+        resolve: function (value) {
+            resolve && resolve(value);
+        },
+        reject: function (reason) {
+            reject && reject(reason);
+        },
+        cancel: function () {
+            resolve = null;
+            reject = null;
+        }
+    };
+}
+
+
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/awesome-only-resolves-last-promise/dist/index.es.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/awesome-only-resolves-last-promise/dist/index.es.js ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "onlyResolvesLast": () => (/* binding */ onlyResolvesLast)
+/* harmony export */ });
+/* harmony import */ var awesome_imperative_promise__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! awesome-imperative-promise */ "./node_modules/awesome-imperative-promise/dist/index.es.js");
+
+
+// see https://stackoverflow.com/a/54825370/82609
+function onlyResolvesLast(asyncFunction) {
+    var cancelPrevious = null;
+    var wrappedFunction = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        cancelPrevious && cancelPrevious();
+        var initialPromise = asyncFunction.apply(void 0, args);
+        var _a = (0,awesome_imperative_promise__WEBPACK_IMPORTED_MODULE_0__.createImperativePromise)(initialPromise), promise = _a.promise, cancel = _a.cancel;
+        cancelPrevious = cancel;
+        return promise;
+    };
+    return wrappedFunction; // TODO fix TS
+}
+
+
+//# sourceMappingURL=index.es.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/debounce-promise/dist/index.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/debounce-promise/dist/index.js ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/* global setTimeout, clearTimeout */
+
+module.exports = function debounce(fn) {
+  var wait = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var lastCallAt = void 0;
+  var deferred = void 0;
+  var timer = void 0;
+  var pendingArgs = [];
+  return function debounced() {
+    var currentWait = getWait(wait);
+    var currentTime = new Date().getTime();
+
+    var isCold = !lastCallAt || currentTime - lastCallAt > currentWait;
+
+    lastCallAt = currentTime;
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    if (isCold && options.leading) {
+      return options.accumulate ? Promise.resolve(fn.call(this, [args])).then(function (result) {
+        return result[0];
+      }) : Promise.resolve(fn.call.apply(fn, [this].concat(args)));
+    }
+
+    if (deferred) {
+      clearTimeout(timer);
+    } else {
+      deferred = defer();
+    }
+
+    pendingArgs.push(args);
+    timer = setTimeout(flush.bind(this), currentWait);
+
+    if (options.accumulate) {
+      var argsIndex = pendingArgs.length - 1;
+      return deferred.promise.then(function (results) {
+        return results[argsIndex];
+      });
+    }
+
+    return deferred.promise;
+  };
+
+  function flush() {
+    var thisDeferred = deferred;
+    clearTimeout(timer);
+
+    Promise.resolve(options.accumulate ? fn.call(this, pendingArgs) : fn.apply(this, pendingArgs[pendingArgs.length - 1])).then(thisDeferred.resolve, thisDeferred.reject);
+
+    pendingArgs = [];
+    deferred = null;
+  }
+};
+
+function getWait(wait) {
+  return typeof wait === 'function' ? wait() : wait;
+}
+
+function defer() {
+  var deferred = {};
+  deferred.promise = new Promise(function (resolve, reject) {
+    deferred.resolve = resolve;
+    deferred.reject = reject;
+  });
+  return deferred;
+}
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
 /***/ "./node_modules/extend/index.js":
 /*!**************************************!*\
   !*** ./node_modules/extend/index.js ***!
@@ -12538,9 +12827,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var firebase_firestore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! firebase/firestore */ "./node_modules/firebase/firestore/dist/index.mjs");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var react_markdown__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-markdown */ "./node_modules/react-markdown/lib/react-markdown.js");
+/* harmony import */ var react_markdown__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-markdown */ "./node_modules/react-markdown/lib/react-markdown.js");
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../style.css */ "./src/style.css");
 /* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_style_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var awesome_debounce_promise__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! awesome-debounce-promise */ "./node_modules/awesome-debounce-promise/dist/index.es.js");
+
 
 
 
@@ -12604,7 +12895,12 @@ function AuthorizedEditorComponent(props) {
     }
   };
 
+  const logValue = eventValue => {
+    (0,awesome_debounce_promise__WEBPACK_IMPORTED_MODULE_3__["default"])(console.log(eventValue), 500); // console.log(eventValue)
+  };
+
   const handleTyping = eventValue => {
+    logValue(eventValue);
     setCurrentEditorText(eventValue);
     updateSingleObjectInOfflineData(documentIdSelected, eventValue); // i think if i want to use the debounce or throttle technique that i'll have to use a different value as opposed to event value
     // if offlineData is updated in time, i can access the entry held there and then drive the value change on firebase from that so that
@@ -12638,7 +12934,7 @@ function AuthorizedEditorComponent(props) {
     value: currentEditorText //   onChange={(e) => updateOfflineDataWithoutSaving(e.target.value)} 
     ,
     onChange: e => handleTyping(e.target.value)
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_3__.ReactMarkdown, {
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, {
     children: currentEditorText,
     className: "markdown"
   })))));
