@@ -36,6 +36,7 @@ const IndexPage = () => {
   const [entries, setEntries] = React.useState([])
   // const [docSelected, setDocSelected] = React.useState()
 
+  // using this as a trigger for a useeffect
   const [reloadData, setReloadData] = React.useState()
   
   
@@ -56,6 +57,10 @@ const IndexPage = () => {
     })
   }
 
+  const reloadAllData = () => {
+    setReloadData(!reloadData)
+  }
+
 
   
   const addDefaultDocuments = async (user) => {
@@ -67,7 +72,8 @@ const IndexPage = () => {
       entry: "thank you for being here I love you",
     });
     // reloads data after new user signs in
-    setReloadData(!reloadData)
+    // setReloadData(!reloadData)
+    reloadAllData()
 
   }
 
@@ -124,10 +130,11 @@ const IndexPage = () => {
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
       <AuthorizedEditorComponent 
         userData={userData}
-        reloadData={reloadData}
-        setReloadData={setReloadData}
+        // reloadData={reloadData}
+        // setReloadData={setReloadData}
         db={db}
         userInfo={userInfo}
+        reloadAllData={() => reloadAllData()}
         
         
   

@@ -12846,6 +12846,16 @@ function AuthorizedEditorComponent(props) {
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
   const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
+  console.log('Offline data is' + JSON.stringify(offlineData, null, 2));
+  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
+    setOfflineData(props.userData);
+
+    if (props.userData && autoSave) {
+      const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
+      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
+    } // props.setReloadData(!props.reloadData)
+
+  }, [props.userData]);
 
   const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave);
@@ -12859,15 +12869,6 @@ function AuthorizedEditorComponent(props) {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
   };
-
-  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    setOfflineData(props.userData);
-
-    if (props.userData && autoSave) {
-      const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
-      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
-    }
-  }, [props.userData]);
 
   const updateSingleObjectInOfflineData = (documentId, eventValue) => {
     setOfflineData(current => current.map(obj => {
@@ -12890,7 +12891,7 @@ function AuthorizedEditorComponent(props) {
         (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
           entry: eventValue
         });
-      }, 1000);
+      }, 500);
       setCurrentEditorText(autoSave ? eventValue : currentEditorText);
     }
   };
@@ -12904,19 +12905,35 @@ function AuthorizedEditorComponent(props) {
     }
   };
 
+  const addNewDocumentOnFirebase = async () => {
+    const newDocument = {
+      entry: "ok bet!"
+    };
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument); // setOfflineData.push(newDocument)
+    // setOfflineData(current => [current, newDocument])
+
+    props.setReloadData(!props.reloadData);
+  };
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "layout"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? offlineData.map(document => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("li", {
-      className: "navItem",
+      // user settings get mapped over but the classname ternary hides them
+      // maybe consider handling the data differently, but I don't see an issue with this
+      // the scope of this project is very likely to increase, so on the off chance it does this can be reworked
+      className: document.id === 'userSettings' ? "hidden" : "navItem" // className={"hidden"}
+      ,
       key: document.id,
       onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry)
-    }, document.entry ? document.entry : "THIS DOC IS MISSING ENTRY FIELD", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.id));
+    }, document.entry ? document.entry : "okayyy", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.id));
   }) : unauthorizedData), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => updateSettingsDocumentOnFirebase()
-  }, " ", `autosave is set to ${autoSave}`)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }, " ", `autosave is set to ${autoSave}`), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => addNewDocumentOnFirebase()
+  }, "Add new document")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",

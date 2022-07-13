@@ -31,7 +31,7 @@ React.useEffect(() => {
         const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
         setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
     }
-    // props.setReloadData(!props.reloadData)
+    
 
 }, [props.userData])
 
@@ -91,7 +91,8 @@ const addNewDocumentOnFirebase = async () => {
     await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
     // setOfflineData.push(newDocument)
     // setOfflineData(current => [current, newDocument])
-    props.setReloadData(!props.reloadData)
+    // props.setReloadData(!props.reloadData)
+    props.reloadAllData()
     
 }
 
