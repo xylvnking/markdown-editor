@@ -12838,7 +12838,9 @@ __webpack_require__.r(__webpack_exports__);
 
 let filterTimeout;
 function AuthorizedEditorComponent(props) {
-  // CHECK TO SEE IF OFFLINEDATA EXISTS BEFORE SORTING IT WITH AN IF STATEMENT?
+  // when a new document is created set the text editor to that
+  // and also reload the data/make sure it's at the top after sort
+  // text area should not accept typing if no document is selected
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
@@ -12848,6 +12850,7 @@ function AuthorizedEditorComponent(props) {
   // order posts by most recently edited
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
+    // sorting an array of objects coming from firebase and going into state within a subcomponent
     let x = [];
     x = props.userData;
 
