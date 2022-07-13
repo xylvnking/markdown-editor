@@ -206,3 +206,27 @@ export default function AuthorizedEditorComponent(props) {
 ```
 
 hi again again
+
+```js
+// sorting an array of objects coming from firebase and going into state within a subcomponent
+// sorting mutates the original array so in order to sort the document from firebase according to their data I had
+// to make a copy of the data i got from firebase temporarily, sort that, and then assign that sorted data to the 'offlineData'
+// array which is then used throughout the component
+
+// index.js
+const currentCollection = collection(db, userInfo.uid)
+        const data = await getDocs(currentCollection);
+        setUserData(data.docs.map((doc) => ({
+          ...doc.data(), id: doc.id 
+        })))
+
+// AuthorizedEditorComponent.js
+React.useEffect(() => {
+    let x = []
+    x = props.userData
+    if (x) {
+        x.sort((a, b) => b.lastEdited - a.lastEdited)
+    }
+    setOfflineData(x)
+}, [props.userData])
+```
