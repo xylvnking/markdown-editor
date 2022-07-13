@@ -12840,16 +12840,19 @@ let filterTimeout;
 function AuthorizedEditorComponent(props) {
   // order posts by most recently edited
   // button to delete post
+  // const thingggggggg = () => {
+  //     offlineData.sort((a, b) => b - a)
+  // }
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
-  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
-  console.log('Offline data is' + JSON.stringify(offlineData, null, 2));
-  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    setOfflineData(props.userData);
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
 
-    if (props.userData && autoSave) {
+  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
+    setOfflineData(props.userData); // console.log("yes")
+
+    if (props.userData) {
       const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
       setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
     }
@@ -12905,12 +12908,20 @@ function AuthorizedEditorComponent(props) {
 
   const addNewDocumentOnFirebase = async () => {
     const newDocument = {
-      entry: "ok bet!"
+      entry: "ok bet!",
+      lastEdited: Date.now()
     };
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument); // setOfflineData.push(newDocument)
     // setOfflineData(current => [current, newDocument])
     // props.setReloadData(!props.reloadData)
 
+    props.reloadAllData();
+  };
+
+  const deleteDocument = async documentId => {
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`)); // console.log(documentId)
+
+    setCurrentEditorText("");
     props.reloadAllData();
   };
 
@@ -12927,12 +12938,14 @@ function AuthorizedEditorComponent(props) {
       ,
       key: document.id,
       onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry)
-    }, document.entry ? document.entry : "okayyy", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.id));
+    }, document.entry ? document.entry : "okayyy", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+      onClick: () => deleteDocument(document.id)
+    }, "X"));
   }) : unauthorizedData), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => updateSettingsDocumentOnFirebase()
-  }, " ", `autosave is set to ${autoSave}`), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+  }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => addNewDocumentOnFirebase()
-  }, "Add new document")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }, "Add new document"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",

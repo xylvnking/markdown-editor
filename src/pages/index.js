@@ -115,6 +115,7 @@ const IndexPage = () => {
         setUserData(data.docs.map((doc) => ({
           ...doc.data(), id: doc.id 
         })))
+        
       }
     }
     getDocumentData()
@@ -124,12 +125,14 @@ const IndexPage = () => {
   // const reloadData = (editedDataFromEditorSubcomponent) => {
   //   setUserData(editedDataFromEditorSubcomponent)
   // }
+
   
   return (
     <div>
       
       {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
       <AuthorizedEditorComponent 
+        // userData={userData}
         userData={userData}
         // reloadData={reloadData}
         // setReloadData={setReloadData}
