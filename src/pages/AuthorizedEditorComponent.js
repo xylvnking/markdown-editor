@@ -12,7 +12,9 @@ export default function AuthorizedEditorComponent(props) {
 
 
 
-    // CHECK TO SEE IF OFFLINEDATA EXISTS BEFORE SORTING IT WITH AN IF STATEMENT?
+    // when a new document is created set the text editor to that
+    // and also reload the data/make sure it's at the top after sort
+    // text area should not accept typing if no document is selected
 
 
 
@@ -32,14 +34,14 @@ export default function AuthorizedEditorComponent(props) {
     React.useEffect(() => {
         
 
-
+        // sorting an array of objects coming from firebase and going into state within a subcomponent
         let x = []
         x = props.userData
         if (x) {
             x.sort((a, b) => b.lastEdited - a.lastEdited)
         }
 
-        
+
 
         console.log('x' + JSON.stringify(x, null, 2))
         

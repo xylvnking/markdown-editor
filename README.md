@@ -227,6 +227,6 @@ React.useEffect(() => {
     if (x) {
         x.sort((a, b) => b.lastEdited - a.lastEdited)
     }
-    setOfflineData(x)
+    setOfflineData(x) // OfflineData written to whenever firestore is so that we don't need an api call to get any new data
 }, [props.userData])
 ```

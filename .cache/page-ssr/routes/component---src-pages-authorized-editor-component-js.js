@@ -12843,12 +12843,20 @@ function AuthorizedEditorComponent(props) {
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
-  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
-  const [readyforsort, setReadyForSort] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // const [readyforsort, setReadyForSort] = React.useState()
+  // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
   // order posts by most recently edited
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    // let x = []
+    let x = [];
+    x = props.userData;
+
+    if (x) {
+      x.sort((a, b) => b.lastEdited - a.lastEdited);
+    }
+
+    console.log('x' + JSON.stringify(x, null, 2));
+
     if (props.userData) {
       // x = props.userData.sort((a, b) => {
       //     console.log(a.lastEdited)
@@ -12862,9 +12870,8 @@ function AuthorizedEditorComponent(props) {
     // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
 
 
-    setOfflineData(props.userData); // moved this to after if statement to get sorting working
-
-    setReadyForSort(true);
+    setOfflineData(x); // moved this to after if statement to get sorting working
+    // setReadyForSort(true)
   }, [props.userData]); // const sortTest = () => {
   //     let x = []
   //     console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
