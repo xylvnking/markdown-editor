@@ -23,15 +23,25 @@ export default function AuthorizedEditorComponent(props) {
     const [offlineData, setOfflineData] = React.useState(props.userData)
     const [autoSave, setAutoSave] = React.useState()
 
-    const [readyforsort, setReadyForSort] = React.useState()
+    // const [readyforsort, setReadyForSort] = React.useState()
     
     // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
 
     // order posts by most recently edited
     
     React.useEffect(() => {
+        
 
-        // let x = []
+
+        let x = []
+        x = props.userData
+        if (x) {
+            x.sort((a, b) => b.lastEdited - a.lastEdited)
+        }
+
+        
+
+        console.log('x' + JSON.stringify(x, null, 2))
         
         if (props.userData) {
             // x = props.userData.sort((a, b) => {
@@ -49,8 +59,8 @@ export default function AuthorizedEditorComponent(props) {
 
         // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
         
-        setOfflineData(props.userData) // moved this to after if statement to get sorting working
-        setReadyForSort(true)
+        setOfflineData(x) // moved this to after if statement to get sorting working
+        // setReadyForSort(true)
         
     }, [props.userData])
     // const sortTest = () => {

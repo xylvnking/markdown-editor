@@ -12838,6 +12838,7 @@ __webpack_require__.r(__webpack_exports__);
 
 let filterTimeout;
 function AuthorizedEditorComponent(props) {
+  // CHECK TO SEE IF OFFLINEDATA EXISTS BEFORE SORTING IT WITH AN IF STATEMENT?
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
