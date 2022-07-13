@@ -166,4 +166,8 @@ li p {
 
 
 
-
+.hidden {
+    display: none;
+    /* visibility: hidden; */
+    /* background-color: brown; */
+}

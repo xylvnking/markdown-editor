@@ -12836,6 +12836,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+let filterTimeout;
 function AuthorizedEditorComponent(props) {
   // debounce hook to stop autosave from updating after every single keystroke
   // create an update function for the user settings (source it initially and keep online and offline updated like userData?)
@@ -12844,7 +12845,7 @@ function AuthorizedEditorComponent(props) {
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
-  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // update savedata setting on firebase (eventually this should be user for all user settings)
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
 
   const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave);
@@ -12857,18 +12858,16 @@ function AuthorizedEditorComponent(props) {
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
-  }; // RELOAD:, set offlineData and userSettings according to userData from firestore
-
+  };
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    setOfflineData(props.userData); // getting autoSave boolean value from firestore on load
+    setOfflineData(props.userData);
 
-    if (props.userData) {
+    if (props.userData && autoSave) {
       const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
       setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
     }
-  }, [props.userData]); // update only specific document/entry being edited so that changes are held offline and not lost on document switch
-  // like they were when values were being driven by the current input/editor text like they used to be
+  }, [props.userData]);
 
   const updateSingleObjectInOfflineData = (documentId, eventValue) => {
     setOfflineData(current => current.map(obj => {
@@ -12884,31 +12883,26 @@ function AuthorizedEditorComponent(props) {
 
 
   const updateDocumentOnFirebase = async (documentId, eventValue) => {
-    // console.log(eventValue)
     if (documentIdSelected === documentId) {
-      // update document selected
-      (0,awesome_debounce_promise__WEBPACK_IMPORTED_MODULE_3__["default"])(await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
-        // entry: currentEditorText // this didn't work because currentEditorText is also being set by eventValue, meaning it's a character behind 
-        entry: eventValue
-      }), 1000);
+      clearTimeout(filterTimeout);
+      filterTimeout = setTimeout(() => {
+        console.log('logloglog');
+        (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
+          entry: eventValue
+        });
+      }, 1000);
       setCurrentEditorText(autoSave ? eventValue : currentEditorText);
     }
   };
 
   const handleTyping = eventValue => {
     setCurrentEditorText(eventValue);
-    updateSingleObjectInOfflineData(documentIdSelected, eventValue); // i think if i want to use the debounce or throttle technique that i'll have to use a different value as opposed to event value
-    // if offlineData is updated in time, i can access the entry held there and then drive the value change on firebase from that so that
-    // everything happens in series instad of event value driving them in parallel
+    updateSingleObjectInOfflineData(documentIdSelected, eventValue);
 
     if (autoSave) {
       updateDocumentOnFirebase(documentIdSelected, eventValue);
     }
-  }; // const updateOfflineDataWithoutSaving = (eventValue) => {
-  //     updateObjectInArray(documentIdSelected, eventValue)
-  //     setCurrentEditorText(eventValue)
-  // }
-
+  };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"

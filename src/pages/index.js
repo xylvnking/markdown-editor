@@ -1,7 +1,7 @@
 import React from 'react'
 import '../style.css'
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs, setDoc, collectionGroup} from "firebase/firestore";
+import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs, setDoc, collectionGroup, enableIndexedDbPersistence} from "firebase/firestore";
 import { getDatabase, ref, set, onValue, update } from "firebase/database";
 import AuthorizedEditorComponent from './AuthorizedEditorComponent';
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth'
@@ -35,6 +35,8 @@ const IndexPage = () => {
   const [userDataKeys, setUserDataKeys] = React.useState()
   const [entries, setEntries] = React.useState([])
   // const [docSelected, setDocSelected] = React.useState()
+
+  const [reloadData, setReloadData] = React.useState()
   
   
   
@@ -54,9 +56,44 @@ const IndexPage = () => {
     })
   }
 
+
+  
+  const addDefaultDocuments = async (user) => {
+    await setDoc(doc(db, `${user.uid}`, "userSettings"), {
+      autoSave: true,
+      autoSaveString: "this is a string"
+    });
+    await setDoc(doc(db, `${user.uid}`, "Default Document"), {
+      entry: "thank you for being here I love you",
+    });
+    // reloads data after new user signs in
+    setReloadData(!reloadData)
+
+  }
+
+  const checkIfNewUser = async (user) => {
+    // check to see if settings document exists to determine whether user exists
+    // console.log(user.uid)
+    const docRef = doc(db, `${user.uid}`, 'userSettings')
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      console.log('user exists, dont do anything')
+      
+    } else {
+      console.log('user doesnt exist, create the default documents')
+
+      addDefaultDocuments(user)
+      
+      
+    }
+
+  }
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setUserInfo(user)
+      checkIfNewUser(user)
+      
     } else {
       setUserInfo()
     }
@@ -75,11 +112,11 @@ const IndexPage = () => {
     }
     getDocumentData()
 
-  }, [userInfo])
+  }, [userInfo, reloadData])
 
-  const reloadData = (editedDataFromEditorSubcomponent) => {
-    setUserData(editedDataFromEditorSubcomponent)
-  }
+  // const reloadData = (editedDataFromEditorSubcomponent) => {
+  //   setUserData(editedDataFromEditorSubcomponent)
+  // }
   
   return (
     <div>
@@ -88,6 +125,7 @@ const IndexPage = () => {
       <AuthorizedEditorComponent 
         userData={userData}
         reloadData={reloadData}
+        setReloadData={setReloadData}
         db={db}
         userInfo={userInfo}
         

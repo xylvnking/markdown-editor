@@ -1,4 +1,4 @@
-import { doc, updateDoc, collection, getDocs, documentId } from 'firebase/firestore'
+import { doc, updateDoc, collection, getDocs, documentId, setDoc, addDoc } from 'firebase/firestore'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
@@ -23,6 +23,18 @@ const [currentEditorText, setCurrentEditorText] = React.useState()
 const [offlineData, setOfflineData] = React.useState(props.userData)
 const [autoSave, setAutoSave] = React.useState()
 
+console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+
+React.useEffect(() => {
+    setOfflineData(props.userData)
+    if (props.userData && autoSave) {
+        const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
+        setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
+    }
+    // props.setReloadData(!props.reloadData)
+
+}, [props.userData])
+
 const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave)
     await updateDoc(doc(props.db, props.userInfo.uid, "userSettings"), {
@@ -36,13 +48,6 @@ const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setCurrentEditorText(postEntry)
 }
 
-React.useEffect(() => {
-    setOfflineData(props.userData)
-    if (props.userData) {
-        const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
-        setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
-    }
-}, [props.userData])
 
 const updateSingleObjectInOfflineData = (documentId, eventValue) => {
     setOfflineData(current =>
@@ -64,7 +69,7 @@ const updateDocumentOnFirebase = async (documentId, eventValue) => {
             updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
                 entry: eventValue
             })
-        }, 1000)
+        }, 500)
         setCurrentEditorText(autoSave ? eventValue : currentEditorText )      
     }
 }
@@ -75,6 +80,19 @@ const handleTyping = (eventValue) => {
     if (autoSave) {
         updateDocumentOnFirebase(documentIdSelected, eventValue)
     } 
+}
+
+const addNewDocumentOnFirebase = async () => {
+
+    const newDocument = {
+        entry: "ok bet!"
+    }
+
+    await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
+    // setOfflineData.push(newDocument)
+    // setOfflineData(current => [current, newDocument])
+    props.setReloadData(!props.reloadData)
+    
 }
 
     return (
@@ -92,18 +110,19 @@ const handleTyping = (eventValue) => {
                 return (
                     
                         <li 
-                            className={"navItem"}
+                            // user settings get mapped over but the classname ternary hides them
+                            // maybe consider handling the data differently, but I don't see an issue with this
+                            // the scope of this project is very likely to increase, so on the off chance it does this can be reworked
+                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
+                            // className={"hidden"}
                             key={document.id}
                             onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
-                        {document.entry ? document.entry : "THIS DOC IS MISSING ENTRY FIELD"} 
+                                
+                        {document.entry ? document.entry : "okayyy"} 
+                        {/* {document.entry}  */}
                         <p>
                             {document.id}
                         </p>
-
-                        {/* <button 
-                            onClick={() => updateDocumentOnFirebase(document.id)}>
-                            save
-                        </button> */}
 
                         </li>
                     
@@ -112,6 +131,7 @@ const handleTyping = (eventValue) => {
             }
                 </ul>
                 <button onClick={() => updateSettingsDocumentOnFirebase()}> {`autosave is set to ${autoSave}`}</button>
+                <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
                 {/* <button onClick={() => updateDocumentOnFirebase()}>
                     save
                 </button> */}
