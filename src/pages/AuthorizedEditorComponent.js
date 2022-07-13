@@ -1,4 +1,4 @@
-import { doc, updateDoc, collection, getDocs, documentId, setDoc, addDoc } from 'firebase/firestore'
+import { doc, updateDoc, collection, getDocs, documentId, setDoc, addDoc, deleteDoc } from 'firebase/firestore'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
@@ -9,13 +9,12 @@ let filterTimeout
 export default function AuthorizedEditorComponent(props) {
 
 
-    // debounce hook to stop autosave from updating after every single keystroke
-    // create an update function for the user settings (source it initially and keep online and offline updated like userData?)
+// order posts by most recently edited
+// button to delete post
+// const thingggggggg = () => {
 
-
-    // maybe save to local storage and a YOU HAVE UNSAVED CHANGES message would suffice
-
-
+//     offlineData.sort((a, b) => b - a)
+// }
 
 const unauthorizedData = "this would be an object of unauthorized data"
 const [documentIdSelected, setDocumentIdSelected] = React.useState()
@@ -23,11 +22,12 @@ const [currentEditorText, setCurrentEditorText] = React.useState()
 const [offlineData, setOfflineData] = React.useState(props.userData)
 const [autoSave, setAutoSave] = React.useState()
 
-console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+// console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
 
 React.useEffect(() => {
     setOfflineData(props.userData)
-    if (props.userData && autoSave) {
+    // console.log("yes")
+    if (props.userData) {
         const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
         setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
     }
@@ -83,9 +83,11 @@ const handleTyping = (eventValue) => {
 }
 
 const addNewDocumentOnFirebase = async () => {
+    
 
     const newDocument = {
-        entry: "ok bet!"
+        entry: "ok bet!",
+        lastEdited: Date.now()
     }
 
     await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
@@ -94,6 +96,13 @@ const addNewDocumentOnFirebase = async () => {
     // props.setReloadData(!props.reloadData)
     props.reloadAllData()
     
+}
+
+const deleteDocument = async (documentId) => {
+    await deleteDoc(doc(props.db, `${props.userInfo.uid}`, `${documentId}`));
+    // console.log(documentId)
+    setCurrentEditorText("")
+    props.reloadAllData()
 }
 
     return (
@@ -105,25 +114,35 @@ const addNewDocumentOnFirebase = async () => {
             <div className="layout">
             <nav>
                 <ul>
-
+                
             {offlineData ?
                 offlineData.map((document) => {
-                return (
-                    
+                    return (
+                        
                         <li 
-                            // user settings get mapped over but the classname ternary hides them
-                            // maybe consider handling the data differently, but I don't see an issue with this
-                            // the scope of this project is very likely to increase, so on the off chance it does this can be reworked
-                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
-                            // className={"hidden"}
-                            key={document.id}
-                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
+                        // user settings get mapped over but the classname ternary hides them
+                        // maybe consider handling the data differently, but I don't see an issue with this
+                        // the scope of this project is very likely to increase, so on the off chance it does this can be reworked
+                        className={(document.id === 'userSettings') ? "hidden" : "navItem"}
+                        // className={"hidden"}
+                        key={document.id}
+                        onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
                                 
                         {document.entry ? document.entry : "okayyy"} 
-                        {/* {document.entry}  */}
                         <p>
-                            {document.id}
+
+                        {document.lastEdited ? document.lastEdited : "no edit"} 
                         </p>
+                        {/* {document.entry}  */}
+                        
+                        {/* <p>
+                            {document.id}
+                        
+                        </p> */}
+                        <button 
+                        onClick={() => deleteDocument(document.id)}>
+                            X
+                        </button>
 
                         </li>
                     
@@ -131,8 +150,17 @@ const addNewDocumentOnFirebase = async () => {
                 }) : unauthorizedData
             }
                 </ul>
-                <button onClick={() => updateSettingsDocumentOnFirebase()}> {`autosave is set to ${autoSave}`}</button>
+                {/* <button onClick={() => updateSettingsDocumentOnFirebase()}> {`autosave is set to ${autoSave}`}</button> */}
+                <button onClick={() => updateSettingsDocumentOnFirebase()}> 
+                
+                {/* {`autosave is set to ${autoSave}`} */}
+                {autoSave ? "Autosave: ON" : "Autosave: OFF"}
+                </button>
                 <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
+                <div>
+
+                   
+                </div>
                 {/* <button onClick={() => updateDocumentOnFirebase()}>
                     save
                 </button> */}

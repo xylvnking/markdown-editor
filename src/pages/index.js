@@ -57,10 +57,10 @@ const IndexPage = () => {
     })
   }
 
+  
   const reloadAllData = () => {
     setReloadData(!reloadData)
   }
-
 
   
   const addDefaultDocuments = async (user) => {
@@ -70,6 +70,7 @@ const IndexPage = () => {
     });
     await setDoc(doc(db, `${user.uid}`, "Default Document"), {
       entry: "thank you for being here I love you",
+      lastEdited: Date.now()
     });
     // reloads data after new user signs in
     // setReloadData(!reloadData)
@@ -83,10 +84,10 @@ const IndexPage = () => {
     const docRef = doc(db, `${user.uid}`, 'userSettings')
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      console.log('user exists, dont do anything')
+      // console.log('user exists, dont do anything')
       
     } else {
-      console.log('user doesnt exist, create the default documents')
+      // console.log('user doesnt exist, create the default documents')
 
       addDefaultDocuments(user)
       
