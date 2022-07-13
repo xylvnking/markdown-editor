@@ -9,6 +9,13 @@ let filterTimeout
 export default function AuthorizedEditorComponent(props) {
 
 
+
+
+
+    // CHECK TO SEE IF OFFLINEDATA EXISTS BEFORE SORTING IT WITH AN IF STATEMENT?
+
+
+
     
     const unauthorizedData = "this would be an object of unauthorized data"
     const [documentIdSelected, setDocumentIdSelected] = React.useState()

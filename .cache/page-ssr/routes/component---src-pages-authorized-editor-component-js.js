@@ -12838,25 +12838,39 @@ __webpack_require__.r(__webpack_exports__);
 
 let filterTimeout;
 function AuthorizedEditorComponent(props) {
-  // order posts by most recently edited
-  // button to delete post
-  // const thingggggggg = () => {
-  //     offlineData.sort((a, b) => b - a)
-  // }
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
-  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
+  const [readyforsort, setReadyForSort] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+  // order posts by most recently edited
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    setOfflineData(props.userData); // console.log("yes")
-
+    // let x = []
     if (props.userData) {
+      // x = props.userData.sort((a, b) => {
+      //     console.log(a.lastEdited)
+      //     return a.lastEdited = b.lastEdited
+      // })
       const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
-      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
-    }
-  }, [props.userData]);
+      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave); // console.log('yet')
+      // console.log(typeof props.userData)
+    } // console.log(x)
+    // console.log([9, 80, 10, 20, 5, 70].sort((a, b) => b - a))
+    // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
+
+
+    setOfflineData(props.userData); // moved this to after if statement to get sorting working
+
+    setReadyForSort(true);
+  }, [props.userData]); // const sortTest = () => {
+  //     let x = []
+  //     console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+  //     x = offlineData.sort((a, b) => b.lastEdited - a.lastEdited)
+  //     console.log('sorted:' + JSON.stringify(x, null, 2))
+  //     // props.reloadAllData()
+  // }
 
   const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave);
@@ -12890,7 +12904,9 @@ function AuthorizedEditorComponent(props) {
       filterTimeout = setTimeout(() => {
         console.log('logloglog');
         (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
-          entry: eventValue
+          entry: eventValue,
+          lastEdited: Date.now() // lastEdited: Date()
+
         });
       }, 500);
       setCurrentEditorText(autoSave ? eventValue : currentEditorText);
@@ -12925,11 +12941,19 @@ function AuthorizedEditorComponent(props) {
     props.reloadAllData();
   };
 
+  const sortTest = () => {
+    // console.log([9, 80, 10, 20, 5, 70].sort((a, b) => b - a))
+    // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
+    setOfflineData(offlineData.sort((a, b) => b.lastEdited - a.lastEdited));
+    console.log('Offline data is' + JSON.stringify(offlineData, null, 2)); // props.reloadAllData()
+  };
+
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "layout"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? offlineData.map(document => {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? // offlineData.sort((a, b) => b.lastEdited + a.lastEdited).map((document) => {
+  offlineData.map(document => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("li", {
       // user settings get mapped over but the classname ternary hides them
       // maybe consider handling the data differently, but I don't see an issue with this
@@ -12941,11 +12965,13 @@ function AuthorizedEditorComponent(props) {
     }, document.entry ? document.entry : "okayyy", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
       onClick: () => deleteDocument(document.id)
     }, "X"));
-  }) : unauthorizedData), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+  }) : "unauthorizedData"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => updateSettingsDocumentOnFirebase()
   }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => addNewDocumentOnFirebase()
-  }, "Add new document"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }, "Add new document"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => sortTest()
+  }, "sort test"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",
