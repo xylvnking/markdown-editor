@@ -21,29 +21,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app)
 const provider = new GoogleAuthProvider()
-// const users = collection(db, "users")
-
-// i think i can use this to create data for the user so they have some entries by default
-// functions.auth.user().onCreate((user) => {
-// })
 
 const IndexPage = () => {
-  
-  
+
   const [userInfo, setUserInfo] = React.useState()
   const [userData, setUserData] = React.useState()
-  const [userDataKeys, setUserDataKeys] = React.useState()
-  const [entries, setEntries] = React.useState([])
-  // const [docSelected, setDocSelected] = React.useState()
 
   // using this as a trigger for a useeffect
   const [reloadData, setReloadData] = React.useState()
   
-  
-  
-  
-  
-
   const signInWithGoogle = async () => {
     await signInWithPopup(auth, provider).then((result) => {
       console.log("signing in")
@@ -57,12 +43,10 @@ const IndexPage = () => {
     })
   }
 
-  
   const reloadAllData = () => {
     setReloadData(!reloadData)
   }
 
-  
   const addDefaultDocuments = async (user) => {
     await setDoc(doc(db, `${user.uid}`, "userSettings"), {
       autoSave: true,
@@ -75,32 +59,23 @@ const IndexPage = () => {
     // reloads data after new user signs in
     // setReloadData(!reloadData)
     reloadAllData()
-
   }
 
   const checkIfNewUser = async (user) => {
     // check to see if settings document exists to determine whether user exists
-    // console.log(user.uid)
     const docRef = doc(db, `${user.uid}`, 'userSettings')
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       // console.log('user exists, dont do anything')
-      
     } else {
-      // console.log('user doesnt exist, create the default documents')
-
       addDefaultDocuments(user)
-      
-      
     }
-
   }
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setUserInfo(user)
       checkIfNewUser(user)
-      
     } else {
       setUserInfo()
     }
@@ -115,34 +90,29 @@ const IndexPage = () => {
         setUserData(data.docs.map((doc) => ({
           ...doc.data(), id: doc.id 
         })))
-        
       }
     }
     getDocumentData()
 
   }, [userInfo, reloadData])
-
-  // const reloadData = (editedDataFromEditorSubcomponent) => {
-  //   setUserData(editedDataFromEditorSubcomponent)
-  // }
-
   
   return (
     <div>
-      
-      {userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>}
-      <AuthorizedEditorComponent 
-        // userData={userData}
-        userData={userData}
-        // reloadData={reloadData}
-        // setReloadData={setReloadData}
-        db={db}
-        userInfo={userInfo}
-        reloadAllData={() => reloadAllData()}
-        
-        
-  
-      />
+      {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
+      {
+        userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>
+      }
+      {
+        userInfo ?
+        <AuthorizedEditorComponent 
+          userData={userData}
+          db={db}
+          userInfo={userInfo}
+          reloadAllData={() => reloadAllData()}
+        />
+        :
+        ""
+      }
     </div>
     )
 }

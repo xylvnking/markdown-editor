@@ -12837,16 +12837,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let filterTimeout;
+let reloadTimer;
 function AuthorizedEditorComponent(props) {
   // when a new document is created set the text editor to that
   // and also reload the data/make sure it's at the top after sort
   // text area should not accept typing if no document is selected
   // order posts by most recently edited
+  // i need a way to trigger a reload of offline data, without calling to firebase.
+  // the sorting is happening only when firebase is called though
+  // so i might need to use a similar approach with an intermediary array to make offline data reload 
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
-  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
+  const [reloadTrigger, setReloadTrigger] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
     // sorting an array of objects coming from firebase and going into state within a subcomponent
@@ -12873,21 +12878,24 @@ function AuthorizedEditorComponent(props) {
     });
   };
 
-  const reload = () => {
-    props.reloadAllData();
-  };
-
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
-  };
+  }; // this works but it causes 4 extra reads from firebase
 
-  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    reload();
-  }, [documentIdSelected]); // }, [offlineData])
+
+  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {// props.reloadAllData()
+  }, [documentIdSelected, reloadTrigger]);
 
   const updateSingleObjectInOfflineData = (documentId, eventValue) => {
-    setOfflineData(current => current.map(obj => {
+    let x = [];
+    x = offlineData;
+
+    if (x) {
+      x.sort((a, b) => b.lastEdited - a.lastEdited);
+    }
+
+    setOfflineData(x.map(obj => {
       if (obj.id === documentId) {
         return { ...obj,
           entry: eventValue
@@ -12895,7 +12903,14 @@ function AuthorizedEditorComponent(props) {
       }
 
       return obj;
-    }));
+    })); // setOfflineData(current =>
+    //   current.map(obj => {
+    //     if (obj.id === documentId) {
+    //       return {...obj, entry: eventValue}
+    //     }
+    //     return obj
+    //   }),
+    // )
   }; // update single document on firebase
 
 
@@ -12909,6 +12924,7 @@ function AuthorizedEditorComponent(props) {
           lastEdited: Date.now() // lastEdited: Date()
 
         });
+        setReloadTrigger(!reloadTrigger); // props.reloadAllData()
       }, 500);
       setCurrentEditorText(autoSave ? eventValue : currentEditorText);
     }
@@ -12930,14 +12946,14 @@ function AuthorizedEditorComponent(props) {
     };
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument); // props.reloadAllData()
 
-    reload();
+    props.reloadAllData();
   };
 
   const deleteDocument = async documentId => {
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`)); // console.log(documentId)
 
     setCurrentEditorText("");
-    reload();
+    props.reloadAllData();
   };
 
   const sortTest = () => {};

@@ -230,3 +230,31 @@ React.useEffect(() => {
     setOfflineData(x) // OfflineData written to whenever firestore is so that we don't need an api call to get any new data
 }, [props.userData])
 ```
+
+```js
+// how to update an object within an state array then sort
+const updateAndSortOfflineData = (documentId, eventValue) => {
+    // create a new empty array
+    let x = []
+    // copy offlineData to the new array
+    x = offlineData
+    // update the new array according to current editor text
+    x = x.map(obj => {
+        if (obj.id === documentId) {
+          return {...obj, entry: eventValue, lastEdited: Date.now()}
+        }
+        return obj
+      })
+    // sort the new array so that the documents are ordered by recent edit date/time
+    x.sort((a, b) => b.lastEdited - a.lastEdited)
+    setOfflineData(x)
+    // setOfflineData(current =>
+    //   current.map(obj => {
+    //     if (obj.id === documentId) {
+    //       return {...obj, entry: eventValue}
+    //     }
+    //     return obj
+    //   }),
+    // )
+}
+```
