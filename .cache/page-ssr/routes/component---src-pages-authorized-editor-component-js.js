@@ -12841,13 +12841,12 @@ function AuthorizedEditorComponent(props) {
   // when a new document is created set the text editor to that
   // and also reload the data/make sure it's at the top after sort
   // text area should not accept typing if no document is selected
+  // order posts by most recently edited
   const unauthorizedData = "this would be an object of unauthorized data";
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
-  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // const [readyforsort, setReadyForSort] = React.useState()
-  // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
-  // order posts by most recently edited
+  const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
     // sorting an array of objects coming from firebase and going into state within a subcomponent
@@ -12858,30 +12857,13 @@ function AuthorizedEditorComponent(props) {
       x.sort((a, b) => b.lastEdited - a.lastEdited);
     }
 
-    console.log('x' + JSON.stringify(x, null, 2));
-
     if (props.userData) {
-      // x = props.userData.sort((a, b) => {
-      //     console.log(a.lastEdited)
-      //     return a.lastEdited = b.lastEdited
-      // })
       const indexOfSettingsDocumentFromFirebase = props.userData.findIndex(document => document.id == "userSettings");
-      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave); // console.log('yet')
-      // console.log(typeof props.userData)
-    } // console.log(x)
-    // console.log([9, 80, 10, 20, 5, 70].sort((a, b) => b - a))
-    // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
+      setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave);
+    }
 
-
-    setOfflineData(x); // moved this to after if statement to get sorting working
-    // setReadyForSort(true)
-  }, [props.userData]); // const sortTest = () => {
-  //     let x = []
-  //     console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
-  //     x = offlineData.sort((a, b) => b.lastEdited - a.lastEdited)
-  //     console.log('sorted:' + JSON.stringify(x, null, 2))
-  //     // props.reloadAllData()
-  // }
+    setOfflineData(x);
+  }, [props.userData]);
 
   const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave);
@@ -12891,10 +12873,18 @@ function AuthorizedEditorComponent(props) {
     });
   };
 
+  const reload = () => {
+    props.reloadAllData();
+  };
+
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
   };
+
+  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
+    reload();
+  }, [documentIdSelected]); // }, [offlineData])
 
   const updateSingleObjectInOfflineData = (documentId, eventValue) => {
     setOfflineData(current => current.map(obj => {
@@ -12913,7 +12903,7 @@ function AuthorizedEditorComponent(props) {
     if (documentIdSelected === documentId) {
       clearTimeout(filterTimeout);
       filterTimeout = setTimeout(() => {
-        console.log('logloglog');
+        console.log('writing to firebase...');
         (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
           entry: eventValue,
           lastEdited: Date.now() // lastEdited: Date()
@@ -12938,26 +12928,19 @@ function AuthorizedEditorComponent(props) {
       entry: "ok bet!",
       lastEdited: Date.now()
     };
-    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument); // setOfflineData.push(newDocument)
-    // setOfflineData(current => [current, newDocument])
-    // props.setReloadData(!props.reloadData)
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument); // props.reloadAllData()
 
-    props.reloadAllData();
+    reload();
   };
 
   const deleteDocument = async documentId => {
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`)); // console.log(documentId)
 
     setCurrentEditorText("");
-    props.reloadAllData();
+    reload();
   };
 
-  const sortTest = () => {
-    // console.log([9, 80, 10, 20, 5, 70].sort((a, b) => b - a))
-    // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
-    setOfflineData(offlineData.sort((a, b) => b.lastEdited - a.lastEdited));
-    console.log('Offline data is' + JSON.stringify(offlineData, null, 2)); // props.reloadAllData()
-  };
+  const sortTest = () => {};
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"

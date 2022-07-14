@@ -6,6 +6,7 @@ import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 
 let filterTimeout
+let reloadTimer
 export default function AuthorizedEditorComponent(props) {
 
 
@@ -17,6 +18,12 @@ export default function AuthorizedEditorComponent(props) {
     // text area should not accept typing if no document is selected
 
 
+    // order posts by most recently edited
+
+
+    // i need a way to trigger a reload of offline data, without calling to firebase.
+    // the sorting is happening only when firebase is called though
+    // so i might need to use a similar approach with an intermediary array to make offline data reload 
 
     
     const unauthorizedData = "this would be an object of unauthorized data"
@@ -25,53 +32,24 @@ export default function AuthorizedEditorComponent(props) {
     const [offlineData, setOfflineData] = React.useState(props.userData)
     const [autoSave, setAutoSave] = React.useState()
 
-    // const [readyforsort, setReadyForSort] = React.useState()
+    const [reloadTrigger, setReloadTrigger] = React.useState(true)
     
     // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
 
-    // order posts by most recently edited
     
     React.useEffect(() => {
-        
-
         // sorting an array of objects coming from firebase and going into state within a subcomponent
         let x = []
         x = props.userData
         if (x) {
             x.sort((a, b) => b.lastEdited - a.lastEdited)
         }
-
-
-
-        console.log('x' + JSON.stringify(x, null, 2))
-        
-        if (props.userData) {
-            // x = props.userData.sort((a, b) => {
-            //     console.log(a.lastEdited)
-            //     return a.lastEdited = b.lastEdited
-            // })
-            
+        if (props.userData) {        
             const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
             setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
-            // console.log('yet')
-            // console.log(typeof props.userData)
         }
-        // console.log(x)
-            // console.log([9, 80, 10, 20, 5, 70].sort((a, b) => b - a))
-
-        // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
-        
-        setOfflineData(x) // moved this to after if statement to get sorting working
-        // setReadyForSort(true)
-        
+        setOfflineData(x)
     }, [props.userData])
-    // const sortTest = () => {
-    //     let x = []
-    //     console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
-    //     x = offlineData.sort((a, b) => b.lastEdited - a.lastEdited)
-    //     console.log('sorted:' + JSON.stringify(x, null, 2))
-    //     // props.reloadAllData()
-    // }
 
 const updateSettingsDocumentOnFirebase = async () => {
     setAutoSave(!autoSave)
@@ -86,6 +64,10 @@ const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setCurrentEditorText(postEntry)
 }
 
+// this works but it causes 4 extra reads from firebase
+React.useEffect(()=> {
+    // props.reloadAllData()
+}, [documentIdSelected, reloadTrigger])
 
 const updateSingleObjectInOfflineData = (documentId, eventValue) => {
     setOfflineData(current =>
@@ -103,12 +85,14 @@ const updateDocumentOnFirebase = async (documentId, eventValue) => {
     if(documentIdSelected === documentId) {
         clearTimeout(filterTimeout)
         filterTimeout = setTimeout(() => {
-            console.log('logloglog')
+            console.log('writing to firebase...')
             updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
                 entry: eventValue,
                 lastEdited: Date.now()
                 // lastEdited: Date()
             })
+            setReloadTrigger(!reloadTrigger)
+            // props.reloadAllData()
         }, 500)
         setCurrentEditorText(autoSave ? eventValue : currentEditorText )      
     }
@@ -123,19 +107,13 @@ const handleTyping = (eventValue) => {
 }
 
 const addNewDocumentOnFirebase = async () => {
-    
-
     const newDocument = {
         entry: "ok bet!",
         lastEdited: Date.now()
     }
-
     await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
-    // setOfflineData.push(newDocument)
-    // setOfflineData(current => [current, newDocument])
-    // props.setReloadData(!props.reloadData)
+    // props.reloadAllData()
     props.reloadAllData()
-    
 }
 
 const deleteDocument = async (documentId) => {
@@ -146,11 +124,6 @@ const deleteDocument = async (documentId) => {
 }
 
 const sortTest = () => {
-    // console.log([9, 80, 10, 20, 5, 70].sort((a, b) => b - a))
-    // console.log(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
-    setOfflineData(offlineData.sort((a, b) => b.lastEdited - a.lastEdited))
-        console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
-    // props.reloadAllData()
 }
 
     return (
