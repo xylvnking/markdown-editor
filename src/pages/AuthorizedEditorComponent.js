@@ -2,8 +2,11 @@ import { doc, updateDoc, collection, getDocs, documentId, setDoc, addDoc, delete
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
+import { HexColorPicker } from "react-colorful";
+
 
 let filterTimeout
+let colorSelectionTimeout
 export default function AuthorizedEditorComponent(props) {
 
 
@@ -23,6 +26,11 @@ export default function AuthorizedEditorComponent(props) {
     const [offlineData, setOfflineData] = React.useState(props.userData)
     const [autoSave, setAutoSave] = React.useState()
     const [reloadTrigger, setReloadTrigger] = React.useState(true) 
+
+    const [tempColor, setTempColor] = React.useState("")
+
+
+    
 
     React.useEffect(() => {
         // sorting an array of objects coming from firebase and going into state within a subcomponent
@@ -49,6 +57,7 @@ export default function AuthorizedEditorComponent(props) {
     const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
         setDocumentIdSelected(postId)
         setCurrentEditorText(postEntry)
+        
     }
 
     // don't think i need this, delete if it isn't used tomorrow 
@@ -61,7 +70,7 @@ export default function AuthorizedEditorComponent(props) {
         x = offlineData
         x = x.map(obj => {
             if (obj.id === documentId) {
-            return {...obj, entry: eventValue, lastEdited: Date.now()}
+            return {...obj, entry: eventValue, lastEdited: Date.now(), backgroundColor: tempColor}
             }
             return obj
         })
@@ -77,8 +86,10 @@ export default function AuthorizedEditorComponent(props) {
                 console.log('writing to firebase...')
                 updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
                     entry: eventValue,
-                    lastEdited: Date.now()
+                    lastEdited: Date.now(),
                     // lastEdited: Date()
+                    backgroundColor: tempColor
+
                 })
                 setReloadTrigger(!reloadTrigger)
             }, 500)
@@ -86,18 +97,58 @@ export default function AuthorizedEditorComponent(props) {
         }
     }
 
+
+
+
+    React.useEffect(() => {
+        if (documentIdSelected) {
+            const handleColorChange = async () => {
+                clearTimeout(colorSelectionTimeout)
+                colorSelectionTimeout = setTimeout(() => {
+                    
+                    updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
+                        backgroundColor:tempColor
+                    })
+                }, 500)
+                
+                
+                const addColorToOfflineData = async (colorPicked) => {
+                    let x = []
+                    x = offlineData
+                    // console.log(colorPicked)
+                    x = x.map(obj => {
+                        if (obj.id === documentIdSelected) {
+                            console.log('doin thing')
+                        return {...obj, backgroundColor: colorPicked}
+                        }
+                    })
+                    // x.sort((a, b) => b.lastEdited - a.lastEdited)
+                    // setOfflineData(x)
+                    
+                }
+                addColorToOfflineData(tempColor)
+            }
+            handleColorChange()
+        }
+    }, [tempColor])
+
+
+
     const handleTyping = (eventValue) => {
-        setCurrentEditorText(eventValue)
+        // setCurrentEditorText(eventValue) // this is also being done in updateDocumentOnFirebase()
         updateAndSortOfflineData(documentIdSelected, eventValue)
         if (autoSave) {
             updateDocumentOnFirebase(documentIdSelected, eventValue)
         } 
     }
 
+
+
     const addNewDocumentOnFirebase = async () => {
         const newDocument = {
             entry: "here is a new document, create something",
-            lastEdited: Date.now()
+            lastEdited: Date.now(),
+            backgroundColor: '#000000'
         }
         await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
         setCurrentEditorText(newDocument.entry)
@@ -120,14 +171,25 @@ export default function AuthorizedEditorComponent(props) {
             {offlineData ?
                 offlineData.map((document) => {
                     return (
-                        <li 
-                        className={(document.id === 'userSettings') ? "hidden" : "navItem"}
-                        key={document.id}
-                        onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
-                        {document.entry ? document.entry : ""} 
-                        <p>{document.lastEdited ? document.lastEdited : "no edit"} </p>
-                        <button onClick={() => deleteDocument(document.id)}> X </button>
-                        </li>
+                        <div>
+
+                            <li 
+                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
+                            key={document.id}
+                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}
+                            style={{backgroundColor: document.backgroundColor}}>
+                            {document.entry ? document.entry : ""} 
+                            <p>{document.lastEdited ? document.lastEdited : "no edit"} </p>
+                            <button onClick={() => deleteDocument(document.id)}> X </button>
+                            <HexColorPicker 
+                                key={document.id}
+                                color={document.backgroundColor}
+                                onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
+                                
+                                // onChange={(e) => console.log(color)}
+                            />
+                            </li>
+                        </div>
                     )
                 }) : "unauthorizedData"
             }

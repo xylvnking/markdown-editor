@@ -62,7 +62,8 @@ ul {
 
 li {
     /* height: 50px; */
-    height: 75px;
+    /* height: 75px; */
+    /* height: 75px; */
     /* border-top-style: solid;
     border-right-style: solid; */
     border-bottom-style: solid;
@@ -78,7 +79,8 @@ li {
 }
 
 .selected {
-    height: 50px;
+    /* height: 50px; */
+    /* height: 150px; */
     border-top-style: solid;
     border-right-style: none;
     border-width: 2px;

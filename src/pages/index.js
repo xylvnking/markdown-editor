@@ -9,27 +9,6 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChang
 
 import { db, auth, provider } from '../firebase-config';
 
-
-// const firebaseConfig = {
-//     apiKey: "AIzaSyDe3yv_VmOb8FonSbYQCYkdeVvhdcKTeic",
-//     authDomain: "markdowneditor-a40c5.firebaseapp.com",
-//     projectId: "markdowneditor-a40c5",
-//     storageBucket: "markdowneditor-a40c5.appspot.com",
-//     messagingSenderId: "700207360755",
-//     appId: "1:700207360755:web:cfbd96aaf5cd863ebb2586",
-//     databaseURL: "https://markdowneditor-a40c5-default-rtdb.firebaseio.com/",
-//   };
-
-// const app = initializeApp(firebaseConfig);
-// const db = getFirestore(app);
-// const auth = getAuth(app)
-// const provider = new GoogleAuthProvider()
-
-
-
-
-
-
 const IndexPage = () => {
 
   const [userInfo, setUserInfo] = React.useState()
@@ -65,7 +44,8 @@ const IndexPage = () => {
     });
     await setDoc(doc(db, `${user.uid}`, "Default Document"), {
       entry: "thank you for being here I love you",
-      lastEdited: Date.now()
+      lastEdited: Date.now(),
+      backgroundColor: '#000000'
     });
     // reloads data after new user signs in
     // setReloadData(!reloadData)

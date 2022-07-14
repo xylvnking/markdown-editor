@@ -22,6 +22,7 @@
     "firebase": "^9.8.4",
     "gatsby": "^4.17.2",
     "react": "^18.1.0",
+    "react-colorful": "^5.5.1",
     "react-dom": "^18.1.0",
     "react-markdown": "^8.0.3",
     "react-scroll-sync": "^0.11.0",
