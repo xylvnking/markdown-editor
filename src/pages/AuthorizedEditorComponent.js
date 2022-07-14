@@ -9,21 +9,16 @@ let filterTimeout
 let colorSelectionTimeout
 export default function AuthorizedEditorComponent(props) {
 
-    // make unauthorized version
-
-
-
+    // unauthorized mode
+    // security rules
+    // refactor and write notes about what we've learned
 
     const [documentIdSelected, setDocumentIdSelected] = React.useState()
     const [currentEditorText, setCurrentEditorText] = React.useState()
     const [offlineData, setOfflineData] = React.useState(props.userData)
     const [autoSave, setAutoSave] = React.useState()
     const [reloadTrigger, setReloadTrigger] = React.useState(true) 
-
     const [tempColor, setTempColor] = React.useState("")
-
-
-    
 
     React.useEffect(() => {
         // sorting an array of objects coming from firebase and going into state within a subcomponent
