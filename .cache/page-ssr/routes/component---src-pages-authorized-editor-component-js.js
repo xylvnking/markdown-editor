@@ -12837,28 +12837,25 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let filterTimeout;
-let reloadTimer;
 function AuthorizedEditorComponent(props) {
-  // when a new document is created set the text editor to that
-  // and also reload the data/make sure it's at the top after sort
   // text area should not accept typing if no document is selected
-  // order posts by most recently edited
-  // i need a way to trigger a reload of offline data, without calling to firebase.
-  // the sorting is happening only when firebase is called though
-  // so i might need to use a similar approach with an intermediary array to make offline data reload 
-  const unauthorizedData = "this would be an object of unauthorized data";
+  // add ability to change background color of document - store it in firebase
+  // would improve ux imo
+  // maybe dont worry about it until we design though
+  // MAKE FIRESTORE CONFIG FILE - HAVING IT IN THE MAIN FILE IS WHY YOU'RE MAKING SO MANY CALLS CONSTANTLY
+  // make unauthorized version
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
   const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
-  const [reloadTrigger, setReloadTrigger] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true); // console.log('Offline data is' + JSON.stringify(offlineData, null, 2))
-
+  const [reloadTrigger, setReloadTrigger] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true);
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
     // sorting an array of objects coming from firebase and going into state within a subcomponent
     let x = [];
     x = props.userData;
 
     if (x) {
+      // if statement makes sure data loaded in already from firebase before attempting to sort it
       x.sort((a, b) => b.lastEdited - a.lastEdited);
     }
 
@@ -12881,36 +12878,27 @@ function AuthorizedEditorComponent(props) {
   const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
     setDocumentIdSelected(postId);
     setCurrentEditorText(postEntry);
-  }; // this works but it causes 4 extra reads from firebase
+  }; // don't think i need this, delete if it isn't used tomorrow 
 
 
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {// props.reloadAllData()
   }, [documentIdSelected, reloadTrigger]);
 
-  const updateSingleObjectInOfflineData = (documentId, eventValue) => {
+  const updateAndSortOfflineData = (documentId, eventValue) => {
     let x = [];
     x = offlineData;
-
-    if (x) {
-      x.sort((a, b) => b.lastEdited - a.lastEdited);
-    }
-
-    setOfflineData(x.map(obj => {
+    x = x.map(obj => {
       if (obj.id === documentId) {
         return { ...obj,
-          entry: eventValue
+          entry: eventValue,
+          lastEdited: Date.now()
         };
       }
 
       return obj;
-    })); // setOfflineData(current =>
-    //   current.map(obj => {
-    //     if (obj.id === documentId) {
-    //       return {...obj, entry: eventValue}
-    //     }
-    //     return obj
-    //   }),
-    // )
+    });
+    x.sort((a, b) => b.lastEdited - a.lastEdited);
+    setOfflineData(x);
   }; // update single document on firebase
 
 
@@ -12924,7 +12912,7 @@ function AuthorizedEditorComponent(props) {
           lastEdited: Date.now() // lastEdited: Date()
 
         });
-        setReloadTrigger(!reloadTrigger); // props.reloadAllData()
+        setReloadTrigger(!reloadTrigger);
       }, 500);
       setCurrentEditorText(autoSave ? eventValue : currentEditorText);
     }
@@ -12932,7 +12920,7 @@ function AuthorizedEditorComponent(props) {
 
   const handleTyping = eventValue => {
     setCurrentEditorText(eventValue);
-    updateSingleObjectInOfflineData(documentIdSelected, eventValue);
+    updateAndSortOfflineData(documentIdSelected, eventValue);
 
     if (autoSave) {
       updateDocumentOnFirebase(documentIdSelected, eventValue);
@@ -12941,63 +12929,48 @@ function AuthorizedEditorComponent(props) {
 
   const addNewDocumentOnFirebase = async () => {
     const newDocument = {
-      entry: "ok bet!",
+      entry: "here is a new document, create something",
       lastEdited: Date.now()
     };
-    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument); // props.reloadAllData()
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument);
+    setCurrentEditorText(newDocument.entry); // props.reloadAllData()
 
     props.reloadAllData();
   };
 
   const deleteDocument = async documentId => {
-    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`)); // console.log(documentId)
-
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`));
     setCurrentEditorText("");
     props.reloadAllData();
   };
 
-  const sortTest = () => {};
-
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
     className: "app"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "layout"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? // offlineData.sort((a, b) => b.lastEdited + a.lastEdited).map((document) => {
-  offlineData.map(document => {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? offlineData.map(document => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("li", {
-      // user settings get mapped over but the classname ternary hides them
-      // maybe consider handling the data differently, but I don't see an issue with this
-      // the scope of this project is very likely to increase, so on the off chance it does this can be reworked
-      className: document.id === 'userSettings' ? "hidden" : "navItem" // className={"hidden"}
-      ,
+      className: document.id === 'userSettings' ? "hidden" : "navItem",
       key: document.id,
       onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry)
-    }, document.entry ? document.entry : "okayyy", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    }, document.entry ? document.entry : "okayyy", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit", " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
       onClick: () => deleteDocument(document.id)
-    }, "X"));
+    }, " X "));
   }) : "unauthorizedData"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => updateSettingsDocumentOnFirebase()
   }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => addNewDocumentOnFirebase()
-  }, "Add new document"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
-    onClick: () => sortTest()
-  }, "sort test"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }, "Add new document")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",
-    value: currentEditorText //   onChange={(e) => updateOfflineDataWithoutSaving(e.target.value)} 
-    ,
+    value: currentEditorText,
     onChange: e => handleTyping(e.target.value)
   }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_markdown__WEBPACK_IMPORTED_MODULE_4__.ReactMarkdown, {
     children: currentEditorText,
     className: "markdown"
-  })))));
-} // const delay = ms => new Promise(
-//     resolve => setTimeout(resolve, ms)
-//   );
-// const delayTest = async () => {
-//     await delay(1000)
-// }
+  }))));
+}
 
 /***/ }),
 
