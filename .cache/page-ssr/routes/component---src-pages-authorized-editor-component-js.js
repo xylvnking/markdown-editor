@@ -12838,11 +12838,10 @@ __webpack_require__.r(__webpack_exports__);
 
 let filterTimeout;
 function AuthorizedEditorComponent(props) {
-  // text area should not accept typing if no document is selected
   // add ability to change background color of document - store it in firebase
   // would improve ux imo
   // maybe dont worry about it until we design though
-  // MAKE FIRESTORE CONFIG FILE - HAVING IT IN THE MAIN FILE IS WHY YOU'RE MAKING SO MANY CALLS CONSTANTLY
+  // text area should not accept typing if no document is selected
   // make unauthorized version
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();

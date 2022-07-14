@@ -2,7 +2,6 @@ import { doc, updateDoc, collection, getDocs, documentId, setDoc, addDoc, delete
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
-import AwesomeDebouncePromise from 'awesome-debounce-promise';
 
 let filterTimeout
 export default function AuthorizedEditorComponent(props) {
@@ -13,7 +12,7 @@ export default function AuthorizedEditorComponent(props) {
             // maybe dont worry about it until we design though
 
 
-    // text area should not accept typing if no document is selected
+    
     // make unauthorized version
 
 
@@ -125,7 +124,7 @@ export default function AuthorizedEditorComponent(props) {
                         className={(document.id === 'userSettings') ? "hidden" : "navItem"}
                         key={document.id}
                         onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
-                        {document.entry ? document.entry : "okayyy"} 
+                        {document.entry ? document.entry : ""} 
                         <p>{document.lastEdited ? document.lastEdited : "no edit"} </p>
                         <button onClick={() => deleteDocument(document.id)}> X </button>
                         </li>
@@ -139,11 +138,15 @@ export default function AuthorizedEditorComponent(props) {
                 <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
             </nav>
                 <div className="markdownEditorContainer">
+                    {
+                        documentIdSelected ?
                     <textarea
-                    className="textarea"
-                    value={currentEditorText}
-                      onChange={(e) => handleTyping(e.target.value)} 
+                        className="textarea"
+                        value={currentEditorText}
+                        onChange={(e) => handleTyping(e.target.value)} 
                     />
+                        : ""
+                    }
                     <ReactMarkdown 
                     children={currentEditorText}
                     className="markdown"
