@@ -12548,6 +12548,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 let filterTimeout;
+let colorSelectionTimeout;
 function AuthorizedEditorComponent(props) {
   // add ability to change background color of document - store it in firebase
   // would improve ux imo
@@ -12558,6 +12559,7 @@ function AuthorizedEditorComponent(props) {
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
   const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [reloadTrigger, setReloadTrigger] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true);
+  const [tempColor, setTempColor] = react__WEBPACK_IMPORTED_MODULE_1___default().useState("");
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
     // sorting an array of objects coming from firebase and going into state within a subcomponent
     let x = [];
@@ -12600,7 +12602,8 @@ function AuthorizedEditorComponent(props) {
       if (obj.id === documentId) {
         return { ...obj,
           entry: eventValue,
-          lastEdited: Date.now()
+          lastEdited: Date.now(),
+          backgroundColor: tempColor
         };
       }
 
@@ -12618,8 +12621,9 @@ function AuthorizedEditorComponent(props) {
         console.log('writing to firebase...');
         (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
           entry: eventValue,
-          lastEdited: Date.now() // lastEdited: Date()
-
+          lastEdited: Date.now(),
+          // lastEdited: Date()
+          backgroundColor: tempColor
         });
         setReloadTrigger(!reloadTrigger);
       }, 500);
@@ -12627,8 +12631,40 @@ function AuthorizedEditorComponent(props) {
     }
   };
 
+  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
+    if (documentIdSelected) {
+      const handleColorChange = async () => {
+        clearTimeout(colorSelectionTimeout);
+        colorSelectionTimeout = setTimeout(() => {
+          (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
+            backgroundColor: tempColor
+          });
+        }, 500);
+
+        const addColorToOfflineData = async colorPicked => {
+          let x = [];
+          x = offlineData; // console.log(colorPicked)
+
+          x = x.map(obj => {
+            if (obj.id === documentIdSelected) {
+              console.log('doin thing');
+              return { ...obj,
+                backgroundColor: colorPicked
+              };
+            }
+          }); // x.sort((a, b) => b.lastEdited - a.lastEdited)
+          // setOfflineData(x)
+        };
+
+        addColorToOfflineData(tempColor);
+      };
+
+      handleColorChange();
+    }
+  }, [tempColor]);
+
   const handleTyping = eventValue => {
-    setCurrentEditorText(eventValue);
+    // setCurrentEditorText(eventValue) // this is also being done in updateDocumentOnFirebase()
     updateAndSortOfflineData(documentIdSelected, eventValue);
 
     if (autoSave) {
@@ -12639,7 +12675,8 @@ function AuthorizedEditorComponent(props) {
   const addNewDocumentOnFirebase = async () => {
     const newDocument = {
       entry: "here is a new document, create something",
-      lastEdited: Date.now()
+      lastEdited: Date.now(),
+      backgroundColor: '#000000'
     };
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument);
     setCurrentEditorText(newDocument.entry); // props.reloadAllData()
@@ -12661,10 +12698,19 @@ function AuthorizedEditorComponent(props) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("li", {
       className: document.id === 'userSettings' ? "hidden" : "navItem",
       key: document.id,
-      onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry)
+      onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry),
+      style: {
+        backgroundColor: document.backgroundColor
+      }
     }, document.entry ? document.entry : "", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit", " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
       onClick: () => deleteDocument(document.id)
-    }, " X ")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_colorful__WEBPACK_IMPORTED_MODULE_3__.HexColorPicker, null));
+    }, " X "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_colorful__WEBPACK_IMPORTED_MODULE_3__.HexColorPicker, {
+      key: document.id,
+      color: document.backgroundColor,
+      onChange: setTempColor // this syntax sets the value of the color picker to tempColor
+      // onChange={(e) => console.log(color)}
+
+    })));
   }) : "unauthorizedData"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => updateSettingsDocumentOnFirebase()
   }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {

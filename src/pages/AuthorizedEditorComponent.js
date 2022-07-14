@@ -9,13 +9,6 @@ let filterTimeout
 let colorSelectionTimeout
 export default function AuthorizedEditorComponent(props) {
 
-
-    // add ability to change background color of document - store it in firebase
-        // would improve ux imo
-            // maybe dont worry about it until we design though
-
-
-    
     // make unauthorized version
 
 
@@ -54,29 +47,49 @@ export default function AuthorizedEditorComponent(props) {
         })
     }
 
-    const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
-        setDocumentIdSelected(postId)
-        setCurrentEditorText(postEntry)
-        
+    // handle list item clicked
+    const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
+        setDocumentIdSelected(documentId)
+        setCurrentEditorText(documentEntry)
+        // updates the background color on firebase and offlineData
+        if (documentIdSelected) {
+            const handleColorChange = async () => {
+                clearTimeout(colorSelectionTimeout)
+                colorSelectionTimeout = setTimeout(() => {
+                    updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
+                        backgroundColor:tempColor
+                    })
+                }, 500)
+                // maybe just make this update and not sort
+                // so that changing the color doesn't put it to the top of the list
+                // updateAndSortOfflineData(documentId, documentEntry, tempColor)
+                updateOfflineData(documentId, documentEntry, tempColor, false)
+            }
+            handleColorChange()
+        }
     }
 
-    // don't think i need this, delete if it isn't used tomorrow 
-    React.useEffect(()=> {
-        // props.reloadAllData()
-    }, [documentIdSelected, reloadTrigger])
-
-    const updateAndSortOfflineData = (documentId, eventValue) => {
+    // 
+    const updateOfflineData = (documentId, eventValue, colorPicked, shouldSort) => {
+        
         let x = []
         x = offlineData
         x = x.map(obj => {
             if (obj.id === documentId) {
-            return {...obj, entry: eventValue, lastEdited: Date.now(), backgroundColor: tempColor}
+                if (colorPicked) {
+                    return {...obj, entry: eventValue, lastEdited: Date.now(), backgroundColor: colorPicked}
+                } else {
+                    return {...obj, entry: eventValue, lastEdited: Date.now()}
+                }
             }
             return obj
         })
-        x.sort((a, b) => b.lastEdited - a.lastEdited)
+        if (shouldSort) {
+            x.sort((a, b) => b.lastEdited - a.lastEdited)
+        }
         setOfflineData(x)
     }
+
 
     // update single document on firebase
     const updateDocumentOnFirebase = async (documentId, eventValue) => {
@@ -88,7 +101,7 @@ export default function AuthorizedEditorComponent(props) {
                     entry: eventValue,
                     lastEdited: Date.now(),
                     // lastEdited: Date()
-                    backgroundColor: tempColor
+                    // backgroundColor: tempColor
 
                 })
                 setReloadTrigger(!reloadTrigger)
@@ -97,52 +110,13 @@ export default function AuthorizedEditorComponent(props) {
         }
     }
 
-
-
-
-    React.useEffect(() => {
-        if (documentIdSelected) {
-            const handleColorChange = async () => {
-                clearTimeout(colorSelectionTimeout)
-                colorSelectionTimeout = setTimeout(() => {
-                    
-                    updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
-                        backgroundColor:tempColor
-                    })
-                }, 500)
-                
-                
-                const addColorToOfflineData = async (colorPicked) => {
-                    let x = []
-                    x = offlineData
-                    // console.log(colorPicked)
-                    x = x.map(obj => {
-                        if (obj.id === documentIdSelected) {
-                            console.log('doin thing')
-                        return {...obj, backgroundColor: colorPicked}
-                        }
-                    })
-                    // x.sort((a, b) => b.lastEdited - a.lastEdited)
-                    // setOfflineData(x)
-                    
-                }
-                addColorToOfflineData(tempColor)
-            }
-            handleColorChange()
-        }
-    }, [tempColor])
-
-
-
     const handleTyping = (eventValue) => {
         // setCurrentEditorText(eventValue) // this is also being done in updateDocumentOnFirebase()
-        updateAndSortOfflineData(documentIdSelected, eventValue)
+        updateOfflineData(documentIdSelected, eventValue, null, true)
         if (autoSave) {
             updateDocumentOnFirebase(documentIdSelected, eventValue)
         } 
     }
-
-
 
     const addNewDocumentOnFirebase = async () => {
         const newDocument = {
@@ -152,7 +126,6 @@ export default function AuthorizedEditorComponent(props) {
         }
         await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
         setCurrentEditorText(newDocument.entry)
-        // props.reloadAllData()
         props.reloadAllData()
     }
 
@@ -164,7 +137,6 @@ export default function AuthorizedEditorComponent(props) {
 
     return (
         <main className="app">
-            
             <div className="layout">
             <nav>
                 <ul>
@@ -176,7 +148,7 @@ export default function AuthorizedEditorComponent(props) {
                             <li 
                             className={(document.id === 'userSettings') ? "hidden" : "navItem"}
                             key={document.id}
-                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}
+                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
                             style={{backgroundColor: document.backgroundColor}}>
                             {document.entry ? document.entry : ""} 
                             <p>{document.lastEdited ? document.lastEdited : "no edit"} </p>
@@ -185,8 +157,6 @@ export default function AuthorizedEditorComponent(props) {
                                 key={document.id}
                                 color={document.backgroundColor}
                                 onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
-                                
-                                // onChange={(e) => console.log(color)}
                             />
                             </li>
                         </div>
