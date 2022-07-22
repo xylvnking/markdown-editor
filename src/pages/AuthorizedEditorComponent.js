@@ -19,6 +19,7 @@ export default function AuthorizedEditorComponent(props) {
     const [autoSave, setAutoSave] = React.useState()
     const [reloadTrigger, setReloadTrigger] = React.useState(true) 
     const [tempColor, setTempColor] = React.useState("")
+    const [documentSettingsOpen, setDocumentSettingsOpen] = React.useState(false)
 
     React.useEffect(() => {
         // sorting an array of objects coming from firebase and going into state within a subcomponent
@@ -44,6 +45,7 @@ export default function AuthorizedEditorComponent(props) {
 
     // handle list item clicked
     const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
+        console.log("selectDocumentAndSetCurrentEditorText")
         setDocumentIdSelected(documentId)
         setCurrentEditorText(documentEntry)
         // updates the background color on firebase and offlineData
@@ -127,7 +129,13 @@ export default function AuthorizedEditorComponent(props) {
     const deleteDocument = async (documentId) => {
         await deleteDoc(doc(props.db, `${props.userInfo.uid}`, `${documentId}`));
         setCurrentEditorText("")
+        setDocumentIdSelected("")
         props.reloadAllData()
+    }
+
+    const hideDocumentSettingsAndSetTempColorToDefault = () => {
+        setDocumentSettingsOpen(!documentSettingsOpen)
+        setTempColor("")
     }
 
     return (
@@ -147,12 +155,26 @@ export default function AuthorizedEditorComponent(props) {
                             style={{backgroundColor: document.backgroundColor}}>
                             {document.entry ? document.entry : ""} 
                             <p>{document.lastEdited ? document.lastEdited : "no edit"} </p>
-                            <button onClick={() => deleteDocument(document.id)}> X </button>
-                            <HexColorPicker 
-                                key={document.id}
-                                color={document.backgroundColor}
-                                onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
-                            />
+
+                            <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
+                            
+                            {
+                            documentSettingsOpen && (documentIdSelected === document.id)
+                            ? 
+                            <div 
+                            className='documentSettings'
+                            onMouseLeave={() => hideDocumentSettingsAndSetTempColorToDefault()}
+                            >
+                                <button onClick={() => deleteDocument(document.id)}> Delete </button>
+                                <HexColorPicker 
+                                    key={document.id}
+                                    color={document.backgroundColor}
+                                    onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
+                                />
+                            </div>
+                            : 
+                            ""
+                            }
                             </li>
                         </div>
                     )

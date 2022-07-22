@@ -12550,10 +12550,9 @@ __webpack_require__.r(__webpack_exports__);
 let filterTimeout;
 let colorSelectionTimeout;
 function AuthorizedEditorComponent(props) {
-  // add ability to change background color of document - store it in firebase
-  // would improve ux imo
-  // maybe dont worry about it until we design though
-  // make unauthorized version
+  // unauthorized mode
+  // security rules
+  // refactor and write notes about what we've learned
   const [documentIdSelected, setDocumentIdSelected] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [currentEditorText, setCurrentEditorText] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [offlineData, setOfflineData] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(props.userData);
@@ -12584,32 +12583,58 @@ function AuthorizedEditorComponent(props) {
       autoSave: !autoSave,
       autoSaveString: "this was saved from the program"
     });
-  };
-
-  const selectDocumentAndSetCurrentEditorText = (postId, postEntry) => {
-    setDocumentIdSelected(postId);
-    setCurrentEditorText(postEntry);
-  }; // don't think i need this, delete if it isn't used tomorrow 
+  }; // handle list item clicked
 
 
-  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {// props.reloadAllData()
-  }, [documentIdSelected, reloadTrigger]);
+  const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
+    setDocumentIdSelected(documentId);
+    setCurrentEditorText(documentEntry); // updates the background color on firebase and offlineData
 
-  const updateAndSortOfflineData = (documentId, eventValue) => {
+    if (documentIdSelected) {
+      const handleColorChange = async () => {
+        clearTimeout(colorSelectionTimeout);
+        colorSelectionTimeout = setTimeout(() => {
+          (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
+            backgroundColor: tempColor
+          });
+        }, 500); // maybe just make this update and not sort
+        // so that changing the color doesn't put it to the top of the list
+        // updateAndSortOfflineData(documentId, documentEntry, tempColor)
+
+        updateOfflineData(documentId, documentEntry, tempColor, false);
+      };
+
+      handleColorChange();
+    }
+  }; // 
+
+
+  const updateOfflineData = (documentId, eventValue, colorPicked, shouldSort) => {
     let x = [];
     x = offlineData;
     x = x.map(obj => {
       if (obj.id === documentId) {
-        return { ...obj,
-          entry: eventValue,
-          lastEdited: Date.now(),
-          backgroundColor: tempColor
-        };
+        if (colorPicked) {
+          return { ...obj,
+            entry: eventValue,
+            lastEdited: Date.now(),
+            backgroundColor: colorPicked
+          };
+        } else {
+          return { ...obj,
+            entry: eventValue,
+            lastEdited: Date.now()
+          };
+        }
       }
 
       return obj;
     });
-    x.sort((a, b) => b.lastEdited - a.lastEdited);
+
+    if (shouldSort) {
+      x.sort((a, b) => b.lastEdited - a.lastEdited);
+    }
+
     setOfflineData(x);
   }; // update single document on firebase
 
@@ -12621,9 +12646,9 @@ function AuthorizedEditorComponent(props) {
         console.log('writing to firebase...');
         (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
           entry: eventValue,
-          lastEdited: Date.now(),
-          // lastEdited: Date()
-          backgroundColor: tempColor
+          lastEdited: Date.now() // lastEdited: Date()
+          // backgroundColor: tempColor
+
         });
         setReloadTrigger(!reloadTrigger);
       }, 500);
@@ -12631,41 +12656,9 @@ function AuthorizedEditorComponent(props) {
     }
   };
 
-  react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
-    if (documentIdSelected) {
-      const handleColorChange = async () => {
-        clearTimeout(colorSelectionTimeout);
-        colorSelectionTimeout = setTimeout(() => {
-          (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.updateDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, props.userInfo.uid, documentIdSelected), {
-            backgroundColor: tempColor
-          });
-        }, 500);
-
-        const addColorToOfflineData = async colorPicked => {
-          let x = [];
-          x = offlineData; // console.log(colorPicked)
-
-          x = x.map(obj => {
-            if (obj.id === documentIdSelected) {
-              console.log('doin thing');
-              return { ...obj,
-                backgroundColor: colorPicked
-              };
-            }
-          }); // x.sort((a, b) => b.lastEdited - a.lastEdited)
-          // setOfflineData(x)
-        };
-
-        addColorToOfflineData(tempColor);
-      };
-
-      handleColorChange();
-    }
-  }, [tempColor]);
-
   const handleTyping = eventValue => {
     // setCurrentEditorText(eventValue) // this is also being done in updateDocumentOnFirebase()
-    updateAndSortOfflineData(documentIdSelected, eventValue);
+    updateOfflineData(documentIdSelected, eventValue, null, true);
 
     if (autoSave) {
       updateDocumentOnFirebase(documentIdSelected, eventValue);
@@ -12679,8 +12672,7 @@ function AuthorizedEditorComponent(props) {
       backgroundColor: '#000000'
     };
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.addDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.collection)(props.db, `${props.userInfo.uid}`), newDocument);
-    setCurrentEditorText(newDocument.entry); // props.reloadAllData()
-
+    setCurrentEditorText(newDocument.entry);
     props.reloadAllData();
   };
 
@@ -12698,7 +12690,7 @@ function AuthorizedEditorComponent(props) {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("li", {
       className: document.id === 'userSettings' ? "hidden" : "navItem",
       key: document.id,
-      onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry),
+      onClick: () => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor),
       style: {
         backgroundColor: document.backgroundColor
       }
@@ -12708,7 +12700,6 @@ function AuthorizedEditorComponent(props) {
       key: document.id,
       color: document.backgroundColor,
       onChange: setTempColor // this syntax sets the value of the color picker to tempColor
-      // onChange={(e) => console.log(color)}
 
     })));
   }) : "unauthorizedData"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
