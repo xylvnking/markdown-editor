@@ -12559,6 +12559,7 @@ function AuthorizedEditorComponent(props) {
   const [autoSave, setAutoSave] = react__WEBPACK_IMPORTED_MODULE_1___default().useState();
   const [reloadTrigger, setReloadTrigger] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(true);
   const [tempColor, setTempColor] = react__WEBPACK_IMPORTED_MODULE_1___default().useState("");
+  const [documentSettingsOpen, setDocumentSettingsOpen] = react__WEBPACK_IMPORTED_MODULE_1___default().useState(false);
   react__WEBPACK_IMPORTED_MODULE_1___default().useEffect(() => {
     // sorting an array of objects coming from firebase and going into state within a subcomponent
     let x = [];
@@ -12587,6 +12588,7 @@ function AuthorizedEditorComponent(props) {
 
 
   const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
+    console.log("selectDocumentAndSetCurrentEditorText");
     setDocumentIdSelected(documentId);
     setCurrentEditorText(documentEntry); // updates the background color on firebase and offlineData
 
@@ -12679,7 +12681,13 @@ function AuthorizedEditorComponent(props) {
   const deleteDocument = async documentId => {
     await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`));
     setCurrentEditorText("");
+    setDocumentIdSelected("");
     props.reloadAllData();
+  };
+
+  const hideDocumentSettingsAndSetTempColorToDefault = () => {
+    setDocumentSettingsOpen(!documentSettingsOpen);
+    setTempColor("");
   };
 
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("main", {
@@ -12694,14 +12702,19 @@ function AuthorizedEditorComponent(props) {
       style: {
         backgroundColor: document.backgroundColor
       }
-    }, document.entry ? document.entry : "", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit", " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    }, document.entry ? document.entry : "", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("p", null, document.lastEdited ? document.lastEdited : "no edit", " "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("h1", {
+      onClick: () => setDocumentSettingsOpen(!documentSettingsOpen)
+    }, " \u2699\uFE0F "), documentSettingsOpen && documentIdSelected === document.id ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+      className: "documentSettings",
+      onMouseLeave: () => hideDocumentSettingsAndSetTempColorToDefault()
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
       onClick: () => deleteDocument(document.id)
-    }, " X "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_colorful__WEBPACK_IMPORTED_MODULE_3__.HexColorPicker, {
+    }, " Delete "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_colorful__WEBPACK_IMPORTED_MODULE_3__.HexColorPicker, {
       key: document.id,
       color: document.backgroundColor,
       onChange: setTempColor // this syntax sets the value of the color picker to tempColor
 
-    })));
+    })) : ""));
   }) : "unauthorizedData"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
     onClick: () => updateSettingsDocumentOnFirebase()
   }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {

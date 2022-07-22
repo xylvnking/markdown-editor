@@ -21,6 +21,10 @@ export default function AuthorizedEditorComponent(props) {
     const [tempColor, setTempColor] = React.useState("")
     const [documentSettingsOpen, setDocumentSettingsOpen] = React.useState(false)
 
+
+
+    
+
     React.useEffect(() => {
         // sorting an array of objects coming from firebase and going into state within a subcomponent
         let x = []
@@ -46,9 +50,12 @@ export default function AuthorizedEditorComponent(props) {
     // handle list item clicked
     const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
         console.log("selectDocumentAndSetCurrentEditorText")
+        console.log("this should not be called")
         setDocumentIdSelected(documentId)
         setCurrentEditorText(documentEntry)
         // updates the background color on firebase and offlineData
+
+        // updating doc with color change
         if (documentIdSelected) {
             const handleColorChange = async () => {
                 clearTimeout(colorSelectionTimeout)
@@ -88,8 +95,11 @@ export default function AuthorizedEditorComponent(props) {
     }
 
 
-    // update single document on firebase
+    // update single document on firebase when typing
     const updateDocumentOnFirebase = async (documentId, eventValue) => {
+        console.log('why is this being called')
+
+        // updating doc with new entry
         if(documentIdSelected === documentId) {
             clearTimeout(filterTimeout)
             filterTimeout = setTimeout(() => {
@@ -127,9 +137,10 @@ export default function AuthorizedEditorComponent(props) {
     }
 
     const deleteDocument = async (documentId) => {
-        await deleteDoc(doc(props.db, `${props.userInfo.uid}`, `${documentId}`));
-        setCurrentEditorText("")
         setDocumentIdSelected("")
+        setCurrentEditorText("")
+
+        await deleteDoc(doc(props.db, `${props.userInfo.uid}`, `${documentId}`));
         props.reloadAllData()
     }
 
@@ -142,6 +153,16 @@ export default function AuthorizedEditorComponent(props) {
         <main className="app">
             <div className="layout">
             <nav>
+            <button onClick={() => updateSettingsDocumentOnFirebase()}> 
+                {autoSave ? "Autosave: ON" : "Autosave: OFF"}
+                </button>
+                <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
+                {documentIdSelected
+                ?
+                <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button>
+                :
+                ""
+                }
                 <ul>
             {offlineData ?
                 offlineData.map((document) => {
@@ -158,6 +179,7 @@ export default function AuthorizedEditorComponent(props) {
 
                             <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
                             
+                            {/* <button onClick={() => deleteDocument(document.id)}> Delete </button> */}
                             {
                             documentSettingsOpen && (documentIdSelected === document.id)
                             ? 
@@ -165,7 +187,6 @@ export default function AuthorizedEditorComponent(props) {
                             className='documentSettings'
                             onMouseLeave={() => hideDocumentSettingsAndSetTempColorToDefault()}
                             >
-                                <button onClick={() => deleteDocument(document.id)}> Delete </button>
                                 <HexColorPicker 
                                     key={document.id}
                                     color={document.backgroundColor}
@@ -181,10 +202,7 @@ export default function AuthorizedEditorComponent(props) {
                 }) : "unauthorizedData"
             }
                 </ul>
-                <button onClick={() => updateSettingsDocumentOnFirebase()}> 
-                {autoSave ? "Autosave: ON" : "Autosave: OFF"}
-                </button>
-                <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
+                
             </nav>
                 <div className="markdownEditorContainer">
                     {
