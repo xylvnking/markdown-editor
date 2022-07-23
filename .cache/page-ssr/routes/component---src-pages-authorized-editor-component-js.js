@@ -12589,8 +12589,10 @@ function AuthorizedEditorComponent(props) {
 
   const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
     console.log("selectDocumentAndSetCurrentEditorText");
+    console.log("this should not be called");
     setDocumentIdSelected(documentId);
     setCurrentEditorText(documentEntry); // updates the background color on firebase and offlineData
+    // updating doc with color change
 
     if (documentIdSelected) {
       const handleColorChange = async () => {
@@ -12638,10 +12640,12 @@ function AuthorizedEditorComponent(props) {
     }
 
     setOfflineData(x);
-  }; // update single document on firebase
+  }; // update single document on firebase when typing
 
 
   const updateDocumentOnFirebase = async (documentId, eventValue) => {
+    console.log('why is this being called'); // updating doc with new entry
+
     if (documentIdSelected === documentId) {
       clearTimeout(filterTimeout);
       filterTimeout = setTimeout(() => {
@@ -12679,9 +12683,9 @@ function AuthorizedEditorComponent(props) {
   };
 
   const deleteDocument = async documentId => {
-    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`));
-    setCurrentEditorText("");
     setDocumentIdSelected("");
+    setCurrentEditorText("");
+    await (0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.deleteDoc)((0,firebase_firestore__WEBPACK_IMPORTED_MODULE_0__.doc)(props.db, `${props.userInfo.uid}`, `${documentId}`));
     props.reloadAllData();
   };
 
@@ -12694,7 +12698,13 @@ function AuthorizedEditorComponent(props) {
     className: "app"
   }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "layout"
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? offlineData.map(document => {
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("nav", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => updateSettingsDocumentOnFirebase()
+  }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => addNewDocumentOnFirebase()
+  }, "Add new document"), documentIdSelected ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
+    onClick: () => deleteDocument(documentIdSelected)
+  }, " Delete ") : "", /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("ul", null, offlineData ? offlineData.map(document => {
     return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("li", {
       className: document.id === 'userSettings' ? "hidden" : "navItem",
       key: document.id,
@@ -12707,19 +12717,13 @@ function AuthorizedEditorComponent(props) {
     }, " \u2699\uFE0F "), documentSettingsOpen && documentIdSelected === document.id ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
       className: "documentSettings",
       onMouseLeave: () => hideDocumentSettingsAndSetTempColorToDefault()
-    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
-      onClick: () => deleteDocument(document.id)
-    }, " Delete "), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_colorful__WEBPACK_IMPORTED_MODULE_3__.HexColorPicker, {
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement(react_colorful__WEBPACK_IMPORTED_MODULE_3__.HexColorPicker, {
       key: document.id,
       color: document.backgroundColor,
       onChange: setTempColor // this syntax sets the value of the color picker to tempColor
 
     })) : ""));
-  }) : "unauthorizedData"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
-    onClick: () => updateSettingsDocumentOnFirebase()
-  }, autoSave ? "Autosave: ON" : "Autosave: OFF"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("button", {
-    onClick: () => addNewDocumentOnFirebase()
-  }, "Add new document")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
+  }) : "unauthorizedData")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("div", {
     className: "markdownEditorContainer"
   }, documentIdSelected ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default().createElement("textarea", {
     className: "textarea",

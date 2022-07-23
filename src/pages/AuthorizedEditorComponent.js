@@ -3,6 +3,9 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
 import { HexColorPicker } from "react-colorful";
+import SyntaxHighlighter from 'react-syntax-highlighter';
+// import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import {zenburn} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 
 let filterTimeout
@@ -63,6 +66,7 @@ export default function AuthorizedEditorComponent(props) {
                     updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
                         backgroundColor:tempColor
                     })
+                    setTempColor("")
                 }, 500)
                 // maybe just make this update and not sort
                 // so that changing the color doesn't put it to the top of the list
@@ -147,6 +151,7 @@ export default function AuthorizedEditorComponent(props) {
     const hideDocumentSettingsAndSetTempColorToDefault = () => {
         setDocumentSettingsOpen(!documentSettingsOpen)
         setTempColor("")
+        props.reloadAllData()
     }
 
     return (
@@ -175,11 +180,11 @@ export default function AuthorizedEditorComponent(props) {
                             onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
                             style={{backgroundColor: document.backgroundColor}}>
                             {document.entry ? document.entry : ""} 
-                            <p>{document.lastEdited ? document.lastEdited : "no edit"} </p>
+                            {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
 
                             <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
                             
-                            {/* <button onClick={() => deleteDocument(document.id)}> Delete </button> */}
+                            {/* <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button> */}
                             {
                             documentSettingsOpen && (documentIdSelected === document.id)
                             ? 
@@ -214,10 +219,41 @@ export default function AuthorizedEditorComponent(props) {
                     />
                         : ""
                     }
-                    <ReactMarkdown 
+                    {/* <ReactMarkdown 
                     children={currentEditorText}
                     className="markdown"
-                    />
+                    /> */}
+
+                   <ReactMarkdown
+                        children={currentEditorText}
+                        className="markdown"
+                        components={{
+                        code({node, inline, className, children, ...props}) {
+                            const match = /language-(\w+)/.exec(className || '')
+                            return !inline && match ? (
+                            <SyntaxHighlighter
+                                children={String(children).replace(/\n$/, '')}
+                                style={zenburn}
+                                language={match[1]}
+                                PreTag="div"
+                                showLineNumbers={true}
+                                wrapLines="false"
+                                wrapLongLines="false"
+                                //probly lots more I could do here
+                                {...props}
+                            />
+                            
+                            ) : (
+                            <code className="markdown" {...props}>
+                                {children}
+                            </code>
+                            )
+                        }
+                        }}
+                    /> 
+
+
+
                 </div>
             
             </div>

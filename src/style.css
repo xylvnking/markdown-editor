@@ -156,7 +156,12 @@ li p {
     font-size: 1rem;
     outline: none;
     font-family: 'Roboto Mono', monospace;
-    overflow-wrap:break-word;
+
+    overflow-x: scroll;
+    /* overflow-wrap:break-word; */
+
+
+
     min-width: 50%; 
     /* text-align: center; */
     margin: 5px;
