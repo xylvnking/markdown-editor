@@ -258,3 +258,30 @@ const updateAndSortOfflineData = (documentId, eventValue) => {
     // )
 }
 ```
+
+# fixing when you commit a large file by accident
+
+Here's something I found super helpful if you've already been messing around with your repo before you asked for help. First type:
+
+git status
+After this, you should see something along the lines of
+
+On branch master
+Your branch is ahead of 'origin/master' by 2 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+The important part is the "2 commits"! From here, go ahead and type in:
+
+git reset HEAD~<HOWEVER MANY COMMITS YOU WERE BEHIND>
+So, for the example above, one would type:
+
+git reset HEAD~2
+After you typed that, your "git status" should say:
+
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+From there, you can delete the large file (assuming you haven't already done so), and you should be able to re-commit everything without losing your work.
+I know this isn't a super fancy reply, but I hope it helps!

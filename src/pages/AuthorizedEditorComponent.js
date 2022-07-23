@@ -3,9 +3,9 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
 import { HexColorPicker } from "react-colorful";
-import SyntaxHighlighter from 'react-syntax-highlighter';
-// import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
-import {zenburn} from 'react-syntax-highlighter/dist/esm/styles/prism'
+// import SyntaxHighlighter from 'react-syntax-highlighter';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
+import {zenburn, nightOwl} from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 
 let filterTimeout
@@ -172,14 +172,15 @@ export default function AuthorizedEditorComponent(props) {
             {offlineData ?
                 offlineData.map((document) => {
                     return (
-                        <div>
+                        <div >
 
                             <li 
                             className={(document.id === 'userSettings') ? "hidden" : "navItem"}
                             key={document.id}
                             onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
                             style={{backgroundColor: document.backgroundColor}}>
-                            {document.entry ? document.entry : ""} 
+                                <p className='documentPreviewText'>{document.entry ? document.entry : ""} </p>
+                            
                             {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
 
                             <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
@@ -233,12 +234,12 @@ export default function AuthorizedEditorComponent(props) {
                             return !inline && match ? (
                             <SyntaxHighlighter
                                 children={String(children).replace(/\n$/, '')}
-                                style={zenburn}
+                                style={nightOwl}
                                 language={match[1]}
                                 PreTag="div"
                                 showLineNumbers={true}
-                                wrapLines="false"
-                                wrapLongLines="false"
+                                // wrapLines="true"
+                                // wrapLongLines="true"
                                 //probly lots more I could do here
                                 {...props}
                             />
