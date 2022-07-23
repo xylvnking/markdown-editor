@@ -261,6 +261,8 @@ const updateAndSortOfflineData = (documentId, eventValue) => {
 
 # fixing when you commit a large file by accident
 
+![link to so thread](https://stackoverflow.com/questions/19573031/cant-push-to-github-because-of-large-file-which-i-already-deleted)
+
 Here's something I found super helpful if you've already been messing around with your repo before you asked for help. First type:
 
 git status
@@ -285,3 +287,8 @@ Your branch is up to date with 'origin/master'.
 nothing to commit, working tree clean
 From there, you can delete the large file (assuming you haven't already done so), and you should be able to re-commit everything without losing your work.
 I know this isn't a super fancy reply, but I hope it helps!
+
+
+# syntax highlighter stuff
+![https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/prism.html](https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/prism.html)
+![https://github.com/react-syntax-highlighter/react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter)

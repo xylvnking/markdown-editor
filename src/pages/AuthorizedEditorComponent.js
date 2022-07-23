@@ -175,11 +175,11 @@ export default function AuthorizedEditorComponent(props) {
                         <div >
 
                             <li 
-                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
+                            className={(document.id === 'userSettings') ? "hidden" : ""}
                             key={document.id}
                             onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
                             style={{backgroundColor: document.backgroundColor}}>
-                                <p className='documentPreviewText'>{document.entry ? document.entry : ""} </p>
+                                <p>{document.entry ? document.entry : ""} </p>
                             
                             {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
 
@@ -190,7 +190,7 @@ export default function AuthorizedEditorComponent(props) {
                             documentSettingsOpen && (documentIdSelected === document.id)
                             ? 
                             <div 
-                            className='documentSettings'
+                            
                             onMouseLeave={() => hideDocumentSettingsAndSetTempColorToDefault()}
                             >
                                 <HexColorPicker 
