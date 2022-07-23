@@ -67,7 +67,7 @@ export default function AuthorizedEditorComponent(props) {
                         backgroundColor:tempColor
                     })
                     setTempColor("")
-                }, 500)
+                }, 100) // had to set this shorter than the typing delay or else sometimes the user would select color and it wouldn't save in time and be reset
                 // maybe just make this update and not sort
                 // so that changing the color doesn't put it to the top of the list
                 // updateAndSortOfflineData(documentId, documentEntry, tempColor)
@@ -158,6 +158,7 @@ export default function AuthorizedEditorComponent(props) {
         <main className="app">
             <div className="layout">
             <nav>
+                <button onClick={props.signOut}>Sign Out</button>
             <button onClick={() => updateSettingsDocumentOnFirebase()}> 
                 {autoSave ? "Autosave: ON" : "Autosave: OFF"}
                 </button>
@@ -175,10 +176,11 @@ export default function AuthorizedEditorComponent(props) {
                         <div >
 
                             <li 
-                            className={(document.id === 'userSettings') ? "hidden" : ""}
+                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
                             key={document.id}
                             onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
-                            style={{backgroundColor: document.backgroundColor}}>
+                            // style={{backgroundColor: document.backgroundColor}}>
+                            style={{borderColor: document.backgroundColor}}>
                                 <p>{document.entry ? document.entry : ""} </p>
                             
                             {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
@@ -210,7 +212,6 @@ export default function AuthorizedEditorComponent(props) {
                 </ul>
                 
             </nav>
-                <div className="markdownEditorContainer">
                     {
                         documentIdSelected ?
                     <textarea
@@ -252,10 +253,6 @@ export default function AuthorizedEditorComponent(props) {
                         }
                         }}
                     /> 
-
-
-
-                </div>
             
             </div>
             </main>   

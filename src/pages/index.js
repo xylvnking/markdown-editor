@@ -91,10 +91,10 @@ const IndexPage = () => {
   }, [userInfo, reloadData])
   
   return (
-    <div>
+    <div className='index'>
       {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
       {
-        userInfo ? <button onClick={signUserOut}>Sign Out</button> : <button onClick={signInWithGoogle}>Sign In with Google</button>
+        userInfo ? "" : <button onClick={signInWithGoogle}>Sign In with Google</button>
       }
       {
         userInfo ?
@@ -103,6 +103,7 @@ const IndexPage = () => {
           db={db}
           userInfo={userInfo}
           reloadAllData={() => reloadAllData()}
+          signOut={() => signUserOut()}
         />
         :
         ""
