@@ -138,7 +138,9 @@ export default function AuthorizedEditorComponent(props) {
                     {documentIdSelected
                     ?
                     <button onClick={() => deleteDocument(documentIdSelected)}
-                    className="button6"> Delete current document</button>
+                    className="button6"
+                    
+                    > Delete current document</button>
                     :
                     ""
                     }
