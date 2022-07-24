@@ -30,6 +30,11 @@ body{
     background-color: white;
 }
 
+.buttonsTop {
+    /* background-color: black; */
+    padding-bottom: 20px;
+}
+
 .layout {
     /* display: flex; */
     display: grid;
@@ -51,17 +56,24 @@ nav {
 }
 
 .navItem {
-    /* border-style: solid; */
+    
     border-right-style: solid;
     
     border-color: black;
     /* border-radius: 2px; */
     border-width: 25px;
     /* max-width: 50px; */
-    overflow: hidden;
-    overflow-wrap:break-word;
     /* padding-right: 25px; */
-    max-height: ;
+    border-bottom-style:dotted;
+    border-bottom-width: 1px;
+    /* border-color: black; */
+}
+
+.navItemEntry {
+    overflow: scroll;
+    overflow-wrap:break-word;
+    max-height: 100px;
+
 }
 
 ul {

@@ -67,7 +67,7 @@ export default function AuthorizedEditorComponent(props) {
                         backgroundColor:tempColor
                     })
                     setTempColor("")
-                }, 100) // had to set this shorter than the typing delay or else sometimes the user would select color and it wouldn't save in time and be reset
+                }, 50) // had to set this shorter than the typing delay or else sometimes the user would select color and it wouldn't save in time and be reset
                 // maybe just make this update and not sort
                 // so that changing the color doesn't put it to the top of the list
                 // updateAndSortOfflineData(documentId, documentEntry, tempColor)
@@ -148,64 +148,57 @@ export default function AuthorizedEditorComponent(props) {
         props.reloadAllData()
     }
 
-    const hideDocumentSettingsAndSetTempColorToDefault = () => {
-        setDocumentSettingsOpen(!documentSettingsOpen)
-        setTempColor("")
-        props.reloadAllData()
-    }
-
     return (
         <main className="app">
+            <section className='buttonsTop'>
+                <button onClick={props.signOut}>Sign Out</button>
+                <button onClick={() => updateSettingsDocumentOnFirebase()}> 
+                    {autoSave ? "Autosave: ON" : "Autosave: OFF"}
+                </button>
+            </section>
             <div className="layout">
             <nav>
-                <button onClick={props.signOut}>Sign Out</button>
-            <button onClick={() => updateSettingsDocumentOnFirebase()}> 
-                {autoSave ? "Autosave: ON" : "Autosave: OFF"}
-                </button>
-                <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
-                {documentIdSelected
-                ?
-                <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button>
-                :
-                ""
-                }
+                    <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
+                    {documentIdSelected
+                    ?
+                    <button onClick={() => deleteDocument(documentIdSelected)}> Delete current document</button>
+                    :
+                    ""
+                    }
                 <ul>
             {offlineData ?
                 offlineData.map((document) => {
                     return (
-                        <div >
+                        <li 
+                        className={(document.id === 'userSettings') ? "hidden" : "navItem"}
+                        key={document.id}
+                        onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
+                        // style={{backgroundColor: document.backgroundColor}}>
+                        style={{borderRightColor: document.backgroundColor}}>
+                            <p className='navItemEntry'>{document.entry ? document.entry : ""} </p>
+                            
+                        {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
 
-                            <li 
-                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
-                            key={document.id}
-                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
-                            // style={{backgroundColor: document.backgroundColor}}>
-                            style={{borderColor: document.backgroundColor}}>
-                                <p>{document.entry ? document.entry : ""} </p>
+                        <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
                             
-                            {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
-
-                            <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
+                        {/* <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button> */}
+                        {
+                        documentSettingsOpen && (documentIdSelected === document.id)
+                        ? 
+                        <div 
                             
-                            {/* <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button> */}
-                            {
-                            documentSettingsOpen && (documentIdSelected === document.id)
-                            ? 
-                            <div 
-                            
-                            onMouseLeave={() => hideDocumentSettingsAndSetTempColorToDefault()}
-                            >
-                                <HexColorPicker 
-                                    key={document.id}
-                                    color={document.backgroundColor}
-                                    onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
-                                />
-                            </div>
-                            : 
-                            ""
-                            }
-                            </li>
+                        onMouseLeave={() => setDocumentSettingsOpen(!documentSettingsOpen)}
+                        >
+                            <HexColorPicker 
+                                key={document.id}
+                                color={document.backgroundColor}
+                                onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
+                            />
                         </div>
+                        : 
+                        ""
+                        }
+                        </li>
                     )
                 }) : "unauthorizedData"
             }
