@@ -56,25 +56,6 @@ export default function AuthorizedEditorComponent(props) {
         console.log("this should not be called")
         setDocumentIdSelected(documentId)
         setCurrentEditorText(documentEntry)
-        // updates the background color on firebase and offlineData
-
-        // updating doc with color change
-        if (documentIdSelected) {
-            const handleColorChange = async () => {
-                clearTimeout(colorSelectionTimeout)
-                colorSelectionTimeout = setTimeout(() => {
-                    updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
-                        backgroundColor:tempColor
-                    })
-                    setTempColor("")
-                }, 50) // had to set this shorter than the typing delay or else sometimes the user would select color and it wouldn't save in time and be reset
-                // maybe just make this update and not sort
-                // so that changing the color doesn't put it to the top of the list
-                // updateAndSortOfflineData(documentId, documentEntry, tempColor)
-                updateOfflineData(documentId, documentEntry, tempColor, false)
-            }
-            handleColorChange()
-        }
     }
 
     // 
@@ -101,7 +82,6 @@ export default function AuthorizedEditorComponent(props) {
 
     // update single document on firebase when typing
     const updateDocumentOnFirebase = async (documentId, eventValue) => {
-        console.log('why is this being called')
 
         // updating doc with new entry
         if(documentIdSelected === documentId) {
@@ -122,7 +102,6 @@ export default function AuthorizedEditorComponent(props) {
     }
 
     const handleTyping = (eventValue) => {
-        // setCurrentEditorText(eventValue) // this is also being done in updateDocumentOnFirebase()
         updateOfflineData(documentIdSelected, eventValue, null, true)
         if (autoSave) {
             updateDocumentOnFirebase(documentIdSelected, eventValue)
@@ -151,20 +130,34 @@ export default function AuthorizedEditorComponent(props) {
     return (
         <main className="app">
             <section className='buttonsTop'>
-                <button onClick={props.signOut}>Sign Out</button>
-                <button onClick={() => updateSettingsDocumentOnFirebase()}> 
-                    {autoSave ? "Autosave: ON" : "Autosave: OFF"}
-                </button>
-            </section>
-            <div className="layout">
-            <nav>
-                    <button onClick={() => addNewDocumentOnFirebase()}>Add new document</button>
+                <div>
+
+                    <button 
+                    onClick={() => addNewDocumentOnFirebase()}
+                    className="button6">Add new document</button>
                     {documentIdSelected
                     ?
-                    <button onClick={() => deleteDocument(documentIdSelected)}> Delete current document</button>
+                    <button onClick={() => deleteDocument(documentIdSelected)}
+                    className="button6"> Delete current document</button>
                     :
                     ""
                     }
+                </div>
+
+                <div>
+                    {/* <button onClick={() => updateSettingsDocumentOnFirebase()}
+                            className="button6"> 
+                        {autoSave ? "Autosave: ON" : "Autosave: OFF"}
+                    </button> */}
+                    <button onClick={props.signOut}
+                            className="button6"
+                            style={{color: 'grey'}}
+                            >Sign Out</button>
+                </div>
+
+            </section>
+            <div className="layout">
+            <nav>
                 <ul>
             {offlineData ?
                 offlineData.map((document) => {
@@ -179,25 +172,8 @@ export default function AuthorizedEditorComponent(props) {
                             
                         {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
 
-                        <h1 onClick={() => setDocumentSettingsOpen(!documentSettingsOpen)}> ⚙️ </h1>
                             
                         {/* <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button> */}
-                        {
-                        documentSettingsOpen && (documentIdSelected === document.id)
-                        ? 
-                        <div 
-                            
-                        onMouseLeave={() => setDocumentSettingsOpen(!documentSettingsOpen)}
-                        >
-                            <HexColorPicker 
-                                key={document.id}
-                                color={document.backgroundColor}
-                                onChange={setTempColor} // this syntax sets the value of the color picker to tempColor
-                            />
-                        </div>
-                        : 
-                        ""
-                        }
                         </li>
                     )
                 }) : "unauthorizedData"
