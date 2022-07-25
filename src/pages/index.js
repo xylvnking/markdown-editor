@@ -93,10 +93,9 @@ const IndexPage = () => {
   
   return (
     <div className='index'>
-      {/* <h1 className="headerTitle">Collaborative Markdown Editor 🔥</h1> */}
-      {
+      {/* {
         userInfo ? "" : <button onClick={signInWithGoogle}>Sign In with Google</button>
-      }
+      } */}
       {
         userInfo ?
         <AuthorizedEditorComponent 
@@ -108,6 +107,7 @@ const IndexPage = () => {
         />
         :
         <UnauthorizedEditorComponent 
+          signIn={() => signInWithGoogle()}
           // userData={userData}
           // db={db}
           // userInfo={userInfo}

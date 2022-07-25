@@ -4,12 +4,13 @@ import '../style.css'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { nightOwl } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { stringify } from '@firebase/util'
+import { Center } from '@react-three/drei'
 
 
 
 const dataLoad = [
     {
-        entry: `# thanks for checking out my portfolio project!\n\n### This is the unauthorized version of the project\n\nIt is fully functional, but doesn't make any calls to or from firebase unless you sign in with Google, so any changes made here will not persist if the page is reloaded.\n \n If you sign in, you have full CRUD functionality with the data being stored in a Google Firestore backend.`,
+        entry: `# Thanks for checking out my portfolio project!\n\n### This is the unauthorized version of the project\n\nIt is fully functional, but doesn't make any calls to or from firebase unless you sign in with Google, so any changes made here will not persist if the page is reloaded.\n \n If you sign in, you have full CRUD functionality with the data being stored in a Google Firestore backend.`,
         lastEdited: 1658756930912,
         id: 'DGTQsw2dKlWO9kVbBGtp'
     },
@@ -85,31 +86,35 @@ export default function AuthorizedEditorComponent(props) {
         <main className="app">
             <section className='buttonsTop'>
                 <div>
+                    <button onClick={props.signIn}
+                        className="button6"
                     
+                    > Sign In</button>
                     <button 
-                    onClick={() => addNewDocument()}
-                    className="button6">Add</button>
+                        onClick={() => addNewDocument()}
+                        className="button6">Add</button>
                     {documentIdSelected
                     ?
                     <button onClick={() => deleteDocument(documentIdSelected)}
-                    className="button6"
-                    
+                        className="button6"
                     > Delete</button>
                     :
                     ""
                     }
                 </div>
-                <div>
+                <div style={{
+                    display: 'flex',justifyContent:'center', alignContent:'center'
+                }}>
                     {/* <button onClick={() => updateSettingsDocumentOnFirebase()}
                             className="button6"> 
                         {autoSave ? "Autosave: ON" : "Autosave: OFF"}
                     </button> */}
-                    <button 
+                    {/* <button 
                         onClick={props.signOut}
                         className="button6"
                         style={{color: 'grey'}}
                         >Sign Out
-                    </button>
+                    </button> */}
                     <h1
                         className='button6 mobileHamburger'
                         onClick={() => setDocumentsListShowing(!documentsListShowing)}>
