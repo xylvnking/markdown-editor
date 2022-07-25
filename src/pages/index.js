@@ -5,6 +5,7 @@ import { getDatabase, ref, set, onValue, update } from "firebase/database";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs, setDoc, collectionGroup, enableIndexedDbPersistence} from "firebase/firestore";
 import AuthorizedEditorComponent from './AuthorizedEditorComponent';
+import UnauthorizedEditorComponent from './UnauthorizedEditorComponent'
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth'
 
 import { db, auth, provider } from '../firebase-config';
@@ -106,7 +107,13 @@ const IndexPage = () => {
           signOut={() => signUserOut()}
         />
         :
-        ""
+        <UnauthorizedEditorComponent 
+          // userData={userData}
+          // db={db}
+          // userInfo={userInfo}
+          // reloadAllData={() => reloadAllData()}
+          // signOut={() => signUserOut()}
+        />
       }
     </div>
     )
