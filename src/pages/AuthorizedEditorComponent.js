@@ -1,20 +1,16 @@
-import { doc, updateDoc, collection, getDocs, documentId, setDoc, addDoc, deleteDoc } from 'firebase/firestore'
+import { doc, updateDoc, collection, addDoc, deleteDoc } from 'firebase/firestore'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import '../style.css'
-import { HexColorPicker } from "react-colorful";
-// import SyntaxHighlighter from 'react-syntax-highlighter';
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter'
-import {zenburn, nightOwl} from 'react-syntax-highlighter/dist/esm/styles/prism'
+
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { nightOwl } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 
 let filterTimeout
-let colorSelectionTimeout
+
 export default function AuthorizedEditorComponent(props) {
 
-    // unauthorized mode
-    // security rules
-    // refactor and write notes about what we've learned
 
     const [documentIdSelected, setDocumentIdSelected] = React.useState()
     const [currentEditorText, setCurrentEditorText] = React.useState()
@@ -23,6 +19,7 @@ export default function AuthorizedEditorComponent(props) {
     const [reloadTrigger, setReloadTrigger] = React.useState(true) 
     const [tempColor, setTempColor] = React.useState("")
     const [documentSettingsOpen, setDocumentSettingsOpen] = React.useState(false)
+    const [documentsListShowing, setDocumentsListShowing] = React.useState(true)
 
 
 
@@ -56,6 +53,7 @@ export default function AuthorizedEditorComponent(props) {
         console.log("this should not be called")
         setDocumentIdSelected(documentId)
         setCurrentEditorText(documentEntry)
+        // setDocumentsListShowing(false)
     }
 
     // 
@@ -131,65 +129,69 @@ export default function AuthorizedEditorComponent(props) {
         <main className="app">
             <section className='buttonsTop'>
                 <div>
-
+                    
                     <button 
                     onClick={() => addNewDocumentOnFirebase()}
-                    className="button6">Add new document</button>
+                    className="button6">Add</button>
                     {documentIdSelected
                     ?
                     <button onClick={() => deleteDocument(documentIdSelected)}
                     className="button6"
                     
-                    > Delete current document</button>
+                    > Delete</button>
                     :
                     ""
                     }
                 </div>
-
                 <div>
                     {/* <button onClick={() => updateSettingsDocumentOnFirebase()}
                             className="button6"> 
                         {autoSave ? "Autosave: ON" : "Autosave: OFF"}
                     </button> */}
-                    <button onClick={props.signOut}
-                            className="button6"
-                            style={{color: 'grey'}}
-                            >Sign Out</button>
+                    <button 
+                        onClick={props.signOut}
+                        className="button6"
+                        style={{color: 'grey'}}
+                        >Sign Out
+                    </button>
+                    <h1
+                        className='button6 mobileHamburger'
+                        onClick={() => setDocumentsListShowing(!documentsListShowing)}>
+                        ☰
+                    </h1>
                 </div>
-
             </section>
             <div className="layout">
-            <nav>
-                <ul>
-            {offlineData ?
-                offlineData.map((document) => {
-                    return (
-                        <li 
-                        className={(document.id === 'userSettings') ? "hidden" : "navItem"}
-                        key={document.id}
-                        onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
-                        // style={{backgroundColor: document.backgroundColor}}>
-                        style={{borderRightColor: document.backgroundColor}}>
-                            <p className='navItemEntry'>{document.entry ? document.entry : ""} </p>
-                            
-                        {/* <p>{document.lastEdited ? document.lastEdited : "no edit"} </p> */}
-
-                            
-                        {/* <button onClick={() => deleteDocument(documentIdSelected)}> Delete </button> */}
-                        </li>
-                    )
-                }) : "unauthorizedData"
-            }
-                </ul>
-                
-            </nav>
+                <nav>
+                        
+                    <ul
+                        className={(documentsListShowing) ? "" : "hidden"}>
+                            {offlineData &&
+                                offlineData.map((document) => {
+                                    return (
+                                        <li 
+                                            className={(document.id === 'userSettings') ? "hidden" : "navItem"}
+                                            key={document.id}
+                                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
+                                            style={{borderRightColor: document.backgroundColor}}>
+                                            <p 
+                                                className='navItemEntry'>
+                                                    {document.entry ? document.entry : ""} 
+                                            </p>
+                                        </li>
+                                    )
+                                }) 
+                            }
+                    </ul>
+                    
+                </nav>
                     {
                         documentIdSelected ?
-                    <textarea
-                        className="textarea"
-                        value={currentEditorText}
-                        onChange={(e) => handleTyping(e.target.value)} 
-                    />
+                        <textarea
+                            className="textarea"
+                            value={currentEditorText}
+                            onChange={(e) => handleTyping(e.target.value)} 
+                        />
                         : ""
                     }
                     {/* <ReactMarkdown 
@@ -212,10 +214,8 @@ export default function AuthorizedEditorComponent(props) {
                                 showLineNumbers={true}
                                 // wrapLines="true"
                                 // wrapLongLines="true"
-                                //probly lots more I could do here
                                 {...props}
                             />
-                            
                             ) : (
                             <code className="markdown" {...props}>
                                 {children}
@@ -224,8 +224,7 @@ export default function AuthorizedEditorComponent(props) {
                         }
                         }}
                     /> 
-            
             </div>
-            </main>   
+        </main>   
   )
 }

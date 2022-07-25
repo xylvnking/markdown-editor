@@ -352,3 +352,4 @@ I know this isn't a super fancy reply, but I hope it helps!
 # unresolved issues
 If embedding a lot of images, it can get annoying that the editor and markdown preview don't scroll together. 
 
+![good css buttons](https://getcssscan.com/css-buttons-examples)

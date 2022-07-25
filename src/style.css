@@ -47,6 +47,10 @@ body{
     min-height: 100vh;
 } */
 
+.mobileHamburger {
+    visibility: hidden;
+}
+
 .navItem {
     border-color: black;
     border-bottom-style:dotted;
@@ -141,7 +145,7 @@ li:hover {
   justify-content: center;
   line-height: 1.25;
   margin: 5px;
-  min-height: 3rem;
+  /* min-height: 3rem; */
   padding: calc(.875rem - 1px) calc(1.5rem - 1px);
   position: relative;
   text-decoration: none;
@@ -180,17 +184,15 @@ li:hover {
         margin: 0px;
         background-color: white;
     }
-    .buttonsTop {
-        background-color: #00A3FF;
-    }
+
     .layout {
         display: flex;
         flex-direction: column;
     }
+    
     ul {
         list-style: none;
         font-family: 'Roboto Mono', monospace;
-        background-color: rgb(196, 196, 196);
         padding: 0px;
         margin: 0px;
         position:relative;
@@ -198,32 +200,42 @@ li:hover {
         overflow: scroll;
         
     }
+
     li {
         padding: 10px;
         margin: 10px;
     }
+
     .markdownEditorContainer { 
         display: flex;
         flex-direction: column;
     }
+
     .textarea {
         border-style: none;
         overflow-wrap:break-word;
         padding: 10px;
         margin: 10px;
         height: 90vh;
-        
     }
     .markdown {
         position: relative;
-        
-        
         font-family: 'Roboto Mono', monospace;
         overflow: scroll;
         padding: 25px;
         margin: 0px;
-        background-color: rgb(41, 41, 41);
+        /* background-color: rgb(41, 41, 41); */
         color: rgb(213, 213, 213)
+        
+    }
+    .mobileHamburger {
+        visibility:visible;
+        text-align: end;
+        /* padding-right: 25px;
+        padding-left: 15px; */
+        color: rgb(0, 0, 0);
+        display: inline;
+        /* height: 50px; */
         
     }
 
