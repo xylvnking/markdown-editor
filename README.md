@@ -353,3 +353,5 @@ I know this isn't a super fancy reply, but I hope it helps!
 If embedding a lot of images, it can get annoying that the editor and markdown preview don't scroll together. 
 
 ![good css buttons](https://getcssscan.com/css-buttons-examples)
+
+![firestore svg](https://raw.githubusercontent.com/kaizoku-oh/firestore/0fc5940cf3f8b280a7cfea44766415506bfb3697/docs/images/firebase-logo.svg)

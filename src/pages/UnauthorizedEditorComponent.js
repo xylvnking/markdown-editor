@@ -10,7 +10,7 @@ import { Center } from '@react-three/drei'
 
 const dataLoad = [
     {
-        entry: `# Thanks for checking out my portfolio project!\n\n### This is the unauthorized version of the project\n\nIt is fully functional, but doesn't make any calls to or from firebase unless you sign in with Google, so any changes made here will not persist if the page is reloaded.\n \n If you sign in, you have full CRUD functionality with the data being stored in a Google Firestore backend.`,
+        entry: `# Thanks for checking out my portfolio project!\n\n### This is the unauthorized version of the project\n\nIt is fully functional, but doesn't make any calls to or from firebase unless you sign in with Google, so any changes made here will not persist if the page is reloaded.\n \n If you sign in, you have full CRUD functionality with the data being stored in a Google Firestore backend.\n\n![](https://i.ytimg.com/vi/QcsAb2RR52c/maxresdefault.jpg)`,
         lastEdited: 1658756930912,
         id: 'DGTQsw2dKlWO9kVbBGtp'
     },

@@ -17,8 +17,6 @@ export default function AuthorizedEditorComponent(props) {
     const [offlineData, setOfflineData] = React.useState(props.userData)
     const [autoSave, setAutoSave] = React.useState()
     const [reloadTrigger, setReloadTrigger] = React.useState(true) 
-    const [tempColor, setTempColor] = React.useState("")
-    const [documentSettingsOpen, setDocumentSettingsOpen] = React.useState(false)
     const [documentsListShowing, setDocumentsListShowing] = React.useState(true)
 
 
@@ -129,7 +127,12 @@ export default function AuthorizedEditorComponent(props) {
         <main className="app">
             <section className='buttonsTop'>
                 <div>
-                    
+                    <button 
+                        onClick={props.signOut}
+                        className="button6"
+                        style={{color: 'grey'}}
+                        >Sign Out
+                    </button>
                     <button 
                     onClick={() => addNewDocumentOnFirebase()}
                     className="button6">Add</button>
@@ -148,12 +151,7 @@ export default function AuthorizedEditorComponent(props) {
                             className="button6"> 
                         {autoSave ? "Autosave: ON" : "Autosave: OFF"}
                     </button> */}
-                    <button 
-                        onClick={props.signOut}
-                        className="button6"
-                        style={{color: 'grey'}}
-                        >Sign Out
-                    </button>
+                    
                     <h1
                         className='button6 mobileHamburger'
                         onClick={() => setDocumentsListShowing(!documentsListShowing)}>
@@ -172,8 +170,7 @@ export default function AuthorizedEditorComponent(props) {
                                         <li 
                                             className={(document.id === 'userSettings') ? "hidden" : "navItem"}
                                             key={document.id}
-                                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry, document.backgroundColor)}
-                                            style={{borderRightColor: document.backgroundColor}}>
+                                            onClick={() => selectDocumentAndSetCurrentEditorText(document.id, document.entry)}>
                                             <p 
                                                 className='navItemEntry'>
                                                     {document.entry ? document.entry : ""} 
