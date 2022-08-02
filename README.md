@@ -1,359 +1,43 @@
-# CLEAN ME
+# Markdown Editor with Firebase Backend (CRUD & authentication) 
 
-# Markdown Editor
+React | Firebase | unifiedjs | PrismJS | Gatsby
 
-[react-markdown](https://www.npmjs.com/package/react-markdown)
-[react-syntax-highlighter styles](https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/)
-[react-scroll-sync](https://github.com/okonet/react-scroll-sync)
-[bloom triangles post processing](https://codesandbox.io/s/jflps?file=/src/App.js)
-[rotating cube r3f](https://codesandbox.io/s/github/onion2k/r3f-by-example/tree/develop/examples/hooks/rotating-cube?file=/src/index.js)
-[I want this to apply to <Html>](https://github.com/pmndrs/react-postprocessing)
-[html label stick to object but didn't use](https://codesandbox.io/s/github/onion2k/r3f-by-example/tree/develop/examples/other/html-labels?file=/src/index.js:259-363)
+[Visit the live site](www.thiswillbearealwebsite.com)
 
+**note:** *the app works without signing in, but authentication is required to save data on refresh*
 
-```shell
-# Markdown editor hellow world
+![](/src/images/screenshot1.png)
 
-import * as React from "react"
-import ReactMarkdown from 'react-markdown'
+# About
 
-const markdown = "Hello **world!**"
+I've learned other subjects online, and knew to avoid tutorial hell. I knew every other developer was making a notes app, so I decided to take that classic a few steps further while also not using any tutorials.
 
-// markup
-const IndexPage = () => {
-  return (
-    <ReactMarkdown children={markdown} />
-  )
-}
+I was delighted to find that I didn't have to create my own markdown parser and instead opted to implement unified's. I finished that in an afternoon and felt like I cheated so I decided to add a backend for the first time. I chose firebase because I knew it would be great for a small project like this and figured Google would have excellent documentation.
 
-export default IndexPage
-```
+It took me rewriting the application a few times to get it right but I'm really happy with where it ended up, especially with my solution for reducing api read calls, which is detailed in the next section.
 
-#misc
+I originally had a bunch of three.js graphics going, but it felt goofy to introduce that much of a performance hit to what should be such a lightweight app so I got rid of it. When you know the three.js hammer, it's difficult to not look at every application like a three.js nail.
 
-```shell
-# this is required to remove the margin/padding from gatsby sites, I guess?
-html, 
-body{
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-```
+# Lessons Learned
 
+<details>
+<summary>Asynchronous programming requires special considerations, especially when relying on the data for core functionality</summary>
+  <ul>
+    <li>Poke jianbing asymmetrical vice. Occupy readymade retro bitters. Beard yuccie edison bulb, pok pok kitsch salvia flannel fashion axe post-ironic chia crucifix ethical readymade hell of unicorn. Trust fund pinterest godard, raw denim bespoke wolf hell of ennui tattooed.Poke jianbing asymmetrical vice. Occupy readymade retro bitters. Beard yuccie edison bulb, pok pok kitsch salvia flannel fashion axe post-ironic chia crucifix ethical readymade hell of unicorn. Trust fund pinterest godard, raw denim bespoke wolf hell of ennui tattooed.</li>
+  </ul>
+</details>
 
-getting scroll position for window (didn't need because i neede it for element)
-```js
- 
-const [scrollPosition, setScrollPosition] = React.useState(0);
-  const handleScroll = () => {
-    const position = window.pageYOffset;
-    setScrollPosition(position);
-  }
+<details>
+<summary>Reducing API calls to the backend requires creativity</summary>
+  <ul>
+    <li>I solved this by making a copy of the users data when the application loads, and then updating that every time a write is made to firebase. This works well for this portfolio project, but introduces a problem. If the user opens the project in multiple tabs, they don't stay in sync. The solution is to disable this 'local client user data copy' mode and just drive everything from firebase, but this increases reads by a degree which felt excessive, since the all the users documents would need to be read after every (debounced) write is made. I decided this trade off was good, and that in a real application this decision would be made according to monetization goals, which obviously don't exist for the application in its current state.</li>
+  </ul>
+</details>
 
-  React.useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+<details>
+<summary>Securing the backend is complicated, but thankfully easier with Firebase security rules</summary>
+  <ul>
+    <li>I solved this by making a copy of the users data when the application loads, and then updating that every time a write is made to firebase. This works well for this portfolio project, but introduces a problem. If the user opens the project in multiple tabs, they don't stay in sync. The solution is to disable this 'local client user data copy' mode and just drive everything from firebase, but this increases reads by a degree which felt excessive, since the all the users documents would need to be read after every (debounced) write is made. I decided this trade off was good, and that in a real application this decision would be made according to monetization goals, which obviously don't exist for the application in its current state.</li>
+  </ul>
+</details>
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-```
-
-
-# learned:
-
-I was trying to load data from a firestore document into state (input) whenever the page loaded, but was also using the same state to drive the value of what was being used to update the value. This caused the issue where the updateDoc() function required a defined value, but I couldn't provide a default for the input state or else it would over write. I solved this simply by adding an if (input) logic check so that it wouldn't update the doc unless input was defined. The solution was simple but I was doing some net level stuff trying to use all these async functions and depenedancy arrays with triggers and it was a mess. The solution is very elegant if i do say so myself.
-
-```js
-const docDefault = doc(db, "Collection1", "document1")
-
-    const [input, setInput] = React.useState();
-
-    React.useEffect(() => {
-      const waitForDoc = async () => {
-        const docSnap = await getDoc(docDefault)
-        const dataTemp = docSnap.data()
-        setInput(dataTemp.entry)
-      }
-      waitForDoc()
-    }, [])
-
-    const updatePost = async () => {
-      const document1Reference = doc(db, "Collection1", "document1")
-      if (input) { 
-        await updateDoc(document1Reference, {
-          entry: input
-        })
-      }
-    }
-    React.useEffect(() => {
-      updatePost()
-    }, [input])
-```
-
-```js
-  // prettify object data when logging it to the console:
-  console.log(JSON.stringify(YOUR_OBJECT_HERE, null, 2))
-```
-
-```js
-  /*
-  I was using the index of the current document which was selected in multiple places
-  Each time I'd needed it, I'd find it right before I needed it, meaning I was repeating code a lot
-  At first I tried solving this with a useEffect and useState which would happen with almost every action on the page
-  This was the wrong approach because I didn't need to hold the value in state, I just needed to know what it currently is. I only needed to read the index, not write it.
-  I was overcomplicating the situation. I already had a function that got the index whenever I needed it, so all I had to do was write that as a normal function, not a useEffect
-  When the only tool you've got is a hammer every problem looks like a nail
-  */
-  const getIndex = () => {
-    const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
-      return x.id === docSelected
-    })
-    return documentIndexBeingEdited
-  }
-
-  const [docIndexEditing, setDocIndexEditing] = React.useState()
-  React.useEffect(() => {
-    const documentIndexBeingEdited = unauthorizedData.findIndex(x => {
-      return x.id === docSelected
-    })
-    setDocIndexEditing(documentIndexBeingEdited) 
-  },[input, collectionSelection, unauthorizedData])
-```
-
-# firebase security rules
-
-[good article with some example rules - needed tweaking to get working but overall helpful](https://medium.com/@juliomacr/10-firebase-realtime-database-rule-templates-d4894a118a98)
-
-
-# learned
-
-most if not all firebase functions have to be done async
-
-```js
-  const signUserOut = async () => {
-      await signOut(auth).then(() => { // this would fail to sign the user out unless await is specified
-        setIsAuthorized(false)
-      })
-    }
-```
-keeping user signed in on refresh
-```js
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-      // User is signed in.
-    } else {
-      // No user is signed in.
-    }
-});
-```
-
-you cannot .listCollections() client side with firebase. this is inconvenient.
-i'd have to do server side programming which is beyond the scope of this project.
-[Get Firstore documents in nested collections](https://cloud.google.com/firestore/docs/samples/firestore-data-get-sub-collections)
-
-
-# [updating an array of objects held in state](https://bobbyhadz.com/blog/react-update-state-array-of-objects)
-```js
-  const updateObjectInArray = (documentId, currentEditorText, eventValue) => {
-      setOfflineData(current =>
-        current.map(obj => {
-          if (obj.id === documentId) {
-            return {...obj, entry: eventValue};
-          }
-
-          return obj;
-        }),
-      );
-    };
-```
-
-```js
-// get index within states array of object currently being edited ::
-const objIndex = offlineData.findIndex((document => document.id == documentId));
-```
-
-```js
-  // using (e) => somefunction(e.target.value) 
-  // allows us to get the current value of the textarea
-  // and not just the last character typed, which I found interesting at the time
-  <textarea
-    value={currentEditorText}
-    onChange={(e) => setCurrentEditorText(e.target.value)} 
-  />
-```
-
-```js
-// to use timeout it has to contain a promise. it wouldn't work if the function within it was console.log() instead of updateDoc, which is async and returns a promise.
-// the 'filterTimeout' also has to be defined outside of the "main" function or else it gets reset every rerender and causes the timeout to just not work, meaning the api call is made on every key stroke instead of after the stated delay
-let filterTimeout
-export default function AuthorizedEditorComponent(props) {
-  const updateDocumentOnFirebase = async (documentId, eventValue) => {
-      if(documentIdSelected === documentId) {
-          clearTimeout(filterTimeout)
-          filterTimeout = setTimeout(() => {
-              updateDoc(doc(props.db, props.userInfo.uid, documentIdSelected), {
-                  entry: eventValue
-              })
-          }, 1000)
-             
-      }
-  }
-  return(
-    //etc
-  )
-}
-```
-
-hi again again
-
-```js
-// sorting an array of objects coming from firebase and going into state within a subcomponent
-// sorting mutates the original array so in order to sort the document from firebase according to their data I had
-// to make a copy of the data i got from firebase temporarily, sort that, and then assign that sorted data to the 'offlineData'
-// array which is then used throughout the component
-
-// index.js
-const currentCollection = collection(db, userInfo.uid)
-        const data = await getDocs(currentCollection);
-        setUserData(data.docs.map((doc) => ({
-          ...doc.data(), id: doc.id 
-        })))
-
-// AuthorizedEditorComponent.js
-React.useEffect(() => {
-    let x = []
-    x = props.userData
-    if (x) {
-        x.sort((a, b) => b.lastEdited - a.lastEdited)
-    }
-    setOfflineData(x) // OfflineData written to whenever firestore is so that we don't need an api call to get any new data
-}, [props.userData])
-```
-
-```js
-// how to update an object within an state array then sort
-const updateAndSortOfflineData = (documentId, eventValue) => {
-    // create a new empty array
-    let x = []
-    // copy offlineData to the new array
-    x = offlineData
-    // update the new array according to current editor text
-    x = x.map(obj => {
-        if (obj.id === documentId) {
-          return {...obj, entry: eventValue, lastEdited: Date.now()}
-        }
-        return obj
-      })
-    // sort the new array so that the documents are ordered by recent edit date/time
-    x.sort((a, b) => b.lastEdited - a.lastEdited)
-    setOfflineData(x)
-    // setOfflineData(current =>
-    //   current.map(obj => {
-    //     if (obj.id === documentId) {
-    //       return {...obj, entry: eventValue}
-    //     }
-    //     return obj
-    //   }),
-    // )
-}
-```
-
-# fixing when you commit a large file by accident
-
-![link to so thread](https://stackoverflow.com/questions/19573031/cant-push-to-github-because-of-large-file-which-i-already-deleted)
-
-Here's something I found super helpful if you've already been messing around with your repo before you asked for help. First type:
-
-git status
-After this, you should see something along the lines of
-
-On branch master
-Your branch is ahead of 'origin/master' by 2 commits.
-  (use "git push" to publish your local commits)
-
-nothing to commit, working tree clean
-The important part is the "2 commits"! From here, go ahead and type in:
-
-git reset HEAD~<HOWEVER MANY COMMITS YOU WERE BEHIND>
-So, for the example above, one would type:
-
-git reset HEAD~2
-After you typed that, your "git status" should say:
-
-On branch master
-Your branch is up to date with 'origin/master'.
-
-nothing to commit, working tree clean
-From there, you can delete the large file (assuming you haven't already done so), and you should be able to re-commit everything without losing your work.
-I know this isn't a super fancy reply, but I hope it helps!
-
-
-# syntax highlighter stuff
-![https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/prism.html](https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/prism.html)
-![https://github.com/react-syntax-highlighter/react-syntax-highlighter](https://github.com/react-syntax-highlighter/react-syntax-highlighter)
-
-# button styles
-
-![button 6](https://getcssscan.com/css-buttons-examples)
-```css
-<!-- HTML !-->
-<button class="button-6" role="button">Button 6</button>
-
-/* CSS */
-.button-6 {
-  align-items: center;
-  background-color: #FFFFFF;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: .25rem;
-  box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
-  box-sizing: border-box;
-  color: rgba(0, 0, 0, 0.85);
-  cursor: pointer;
-  display: inline-flex;
-  font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  justify-content: center;
-  line-height: 1.25;
-  margin: 0;
-  min-height: 3rem;
-  padding: calc(.875rem - 1px) calc(1.5rem - 1px);
-  position: relative;
-  text-decoration: none;
-  transition: all 250ms;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: baseline;
-  width: auto;
-}
-
-.button-6:hover,
-.button-6:focus {
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
-  color: rgba(0, 0, 0, 0.65);
-}
-
-.button-6:hover {
-  transform: translateY(-1px);
-}
-
-.button-6:active {
-  background-color: #F0F0F1;
-  border-color: rgba(0, 0, 0, 0.15);
-  box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
-  color: rgba(0, 0, 0, 0.65);
-  transform: translateY(0);
-}
-```
-
-# unresolved issues
-If embedding a lot of images, it can get annoying that the editor and markdown preview don't scroll together. 
-
-![good css buttons](https://getcssscan.com/css-buttons-examples)
-
-![firestore svg](https://raw.githubusercontent.com/kaizoku-oh/firestore/0fc5940cf3f8b280a7cfea44766415506bfb3697/docs/images/firebase-logo.svg)

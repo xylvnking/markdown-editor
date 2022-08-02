@@ -15,7 +15,7 @@ export default function AuthorizedEditorComponent(props) {
     const [documentIdSelected, setDocumentIdSelected] = React.useState()
     const [currentEditorText, setCurrentEditorText] = React.useState()
     const [offlineData, setOfflineData] = React.useState(props.userData)
-    const [autoSave, setAutoSave] = React.useState()
+    const [autoSave, setAutoSave] = React.useState(true)
     const [reloadTrigger, setReloadTrigger] = React.useState(true) 
     const [documentsListShowing, setDocumentsListShowing] = React.useState(true)
 
@@ -30,10 +30,11 @@ export default function AuthorizedEditorComponent(props) {
         if (x) { // if statement makes sure data loaded in already from firebase before attempting to sort it
             x.sort((a, b) => b.lastEdited - a.lastEdited)
         }
-        if (props.userData) {        
-            const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
-            setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
-        }
+
+        // if (props.userData) {        
+        //     const indexOfSettingsDocumentFromFirebase = props.userData.findIndex((document => document.id == "userSettings"));
+        //     setAutoSave(props.userData[indexOfSettingsDocumentFromFirebase].autoSave)
+        // }
         setOfflineData(x)
     }, [props.userData])
 
@@ -48,7 +49,6 @@ export default function AuthorizedEditorComponent(props) {
     // handle list item clicked
     const selectDocumentAndSetCurrentEditorText = (documentId, documentEntry) => {
         console.log("selectDocumentAndSetCurrentEditorText")
-        console.log("this should not be called")
         setDocumentIdSelected(documentId)
         setCurrentEditorText(documentEntry)
         // setDocumentsListShowing(false)
