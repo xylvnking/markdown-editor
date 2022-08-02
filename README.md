@@ -18,12 +18,19 @@ It took me rewriting the application a few times to get it right but I'm really 
 
 I originally had a bunch of three.js graphics going, but it felt goofy to introduce that much of a performance hit to what should be such a lightweight app so I got rid of it. When you know the three.js hammer, it's difficult to not look at every application like a three.js nail.
 
-# Lessons Learned
+# Learned how to:
+
+- Write asynchronous functions 
+- Make queries to a backend database using an SDK
+- Authenticate users but provide an unauthorized mode for recruiters/hiring managers
+- Manage a complex state driven dynamic ui
+- Reduce API calls using debouncing and copying the users data client side on-load which is updated whenever firebase is written to so that reads can be made locally (this means that opening the application in multiple tabs isn't possible, but for this projects scope the tradeoff felt reasonable.)
 
 <details>
 <summary>Asynchronous programming requires special considerations, especially when relying on the data for core functionality</summary>
   <ul>
-    <li>Poke jianbing asymmetrical vice. Occupy readymade retro bitters. Beard yuccie edison bulb, pok pok kitsch salvia flannel fashion axe post-ironic chia crucifix ethical readymade hell of unicorn. Trust fund pinterest godard, raw denim bespoke wolf hell of ennui tattooed.Poke jianbing asymmetrical vice. Occupy readymade retro bitters. Beard yuccie edison bulb, pok pok kitsch salvia flannel fashion axe post-ironic chia crucifix ethical readymade hell of unicorn. Trust fund pinterest godard, raw denim bespoke wolf hell of ennui tattooed.</li>
+    <li>I first wrote the program as a client side only application, so didn't have to think much about asynchronous functions when passing the data around</li>
+    <li>After deciding to introduce firebase I had to rewrite everything</li>
   </ul>
 </details>
 

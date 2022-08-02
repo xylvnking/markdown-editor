@@ -105,14 +105,25 @@ export default function AuthorizedEditorComponent(props) {
     }
 
     const addNewDocumentOnFirebase = async () => {
-        const newDocument = {
-            entry: "here is a new document, create something",
-            lastEdited: Date.now(),
-            backgroundColor: '#000000'
+
+        // if (offlineData.length)
+        console.log(offlineData.length)
+
+        if (offlineData.length > 9) {
+            alert("Hey thanks for either using my app or seeing if it breaks. I've limited the number of documents that can be created to avoid any potential abuse, as I'm still learning. I apprecite you diving this deep. Thanks and I hope you have a lovely day!")
+            return
+        } else {
+
+            const newDocument = {
+                entry: "here is a new document, create something",
+                lastEdited: Date.now(),
+                backgroundColor: '#000000'
+            }
+            await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
+            setCurrentEditorText(newDocument.entry)
+            props.reloadAllData()
         }
-        await addDoc(collection(props.db, `${props.userInfo.uid}`), newDocument);
-        setCurrentEditorText(newDocument.entry)
-        props.reloadAllData()
+
     }
 
     const deleteDocument = async (documentId) => {
