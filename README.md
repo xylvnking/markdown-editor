@@ -25,26 +25,14 @@ I originally had a bunch of three.js graphics going, but it felt goofy to introd
 - Authenticate users but provide an unauthorized mode for recruiters/hiring managers
 - Manage a complex state driven dynamic ui
 - Reduce API calls using debouncing and copying the users data client side on-load which is updated whenever firebase is written to so that reads can be made locally (this means that opening the application in multiple tabs isn't possible, but for this projects scope the tradeoff felt reasonable.)
+- Monitor network activity to made sure no loops cause extraneous API calls, especially when using useEffect
+- Used firebase security rules to prevent users from crud-ing anybody else's data
+- Keep a form's values and pieces of state in sync
 
-<details>
-<summary>Asynchronous programming requires special considerations, especially when relying on the data for core functionality</summary>
-  <ul>
-    <li>I first wrote the program as a client side only application, so didn't have to think much about asynchronous functions when passing the data around</li>
-    <li>After deciding to introduce firebase I had to rewrite everything</li>
-  </ul>
-</details>
+# Next steps:
 
-<details>
-<summary>Reducing API calls to the backend requires creativity</summary>
-  <ul>
-    <li>I solved this by making a copy of the users data when the application loads, and then updating that every time a write is made to firebase. This works well for this portfolio project, but introduces a problem. If the user opens the project in multiple tabs, they don't stay in sync. The solution is to disable this 'local client user data copy' mode and just drive everything from firebase, but this increases reads by a degree which felt excessive, since the all the users documents would need to be read after every (debounced) write is made. I decided this trade off was good, and that in a real application this decision would be made according to monetization goals, which obviously don't exist for the application in its current state.</li>
-  </ul>
-</details>
+- The ui is lackluster, but I want to move on to a more advanced project and won't be including this one after I'm done that anyways. I had originally used three.js with a nice fancy ui but it was overkill and performance intensive
 
-<details>
-<summary>Securing the backend is complicated, but thankfully easier with Firebase security rules</summary>
-  <ul>
-    <li>I solved this by making a copy of the users data when the application loads, and then updating that every time a write is made to firebase. This works well for this portfolio project, but introduces a problem. If the user opens the project in multiple tabs, they don't stay in sync. The solution is to disable this 'local client user data copy' mode and just drive everything from firebase, but this increases reads by a degree which felt excessive, since the all the users documents would need to be read after every (debounced) write is made. I decided this trade off was good, and that in a real application this decision would be made according to monetization goals, which obviously don't exist for the application in its current state.</li>
-  </ul>
-</details>
+- Learn about security rules for more advanced applications. Learning how to use firebase to make applications which are public facing but don't require authentication, allowing multiple users to securely access the same data, and also using the realtime database are important for me to learn next. This app is secure, but if I was required to add a ton of more functionality like that I'd need to first focus on security.
 
+- Mobile-first. The app is responsive, but I could do more to make it 'feel like an app'. The scope of this project was purely to create the editor/crud functionality, so I'm comfortable with it not looking beautiful

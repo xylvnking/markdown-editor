@@ -102,8 +102,10 @@ li:hover {
     /* min-width: 50%;  */
     padding: 25px;
     margin: 5px;
+    /* margin-bottom: 100px; */
     background-color: rgb(255, 255, 255);
     color: black;
+
     
 }
 
