@@ -107,7 +107,7 @@ ul {
     
     overflow: scroll;
 
-    height: 90%;
+    height: 75vh;
     /* max-height: 50vh; */
     
 }
@@ -154,8 +154,8 @@ li:hover {
     border-radius: 5px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 
-    height: 70vh;
-    max-height: 70vh;
+    height: 75vh;
+    max-height: 75vh;
 
     
 }
@@ -185,8 +185,8 @@ li:hover {
     border-radius: 5px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 
-    height: 70vh;
-    max-height: 70vh;
+    height: 75vh;
+    max-height: 75vh;
     
 }
 
