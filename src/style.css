@@ -225,7 +225,7 @@ li:hover {
         margin: 0px;
         position:relative;
         height: auto;
-        overflow: scroll;
+        overflow: hidden;
         
     }
 
@@ -249,7 +249,7 @@ li:hover {
     .markdown {
         position: relative;
         font-family: 'Roboto Mono', monospace;
-        overflow: scroll;
+        overflow: hidden;
         padding: 25px;
         margin: 10px;
         /* background-color: rgb(41, 41, 41); */
