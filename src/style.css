@@ -64,6 +64,7 @@ body{
 .layout {
     display: grid;
     grid-template-columns: 250px 1fr 1fr;
+    grid-template-rows: 75vh;
     position: relative;
 }
 
@@ -102,11 +103,12 @@ ul {
     margin: 0px;
     position:sticky;
     top: 0px;
+    /* padding-bottom: 0px; */
     
     overflow: scroll;
 
-    height: 80vh;
-    max-height: 80vh;
+    height: 90%;
+    /* max-height: 50vh; */
     
 }
 
