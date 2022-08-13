@@ -6,7 +6,7 @@ React | Firebase | unifiedjs | PrismJS | Gatsby
 
 **note:** *the app works without signing in, but authentication is required to save data on refresh*
 
-![](/src/images/screenshot1.png)
+![](/src/images/screenshot2.png)
 
 # About
 
