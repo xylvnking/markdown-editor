@@ -55,6 +55,8 @@ body{
     padding-top: 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    height: 10vh;
     
     
 }
@@ -100,9 +102,11 @@ ul {
     margin: 0px;
     position:sticky;
     top: 0px;
-    height: 75vh;
-    max-height: 75vh;
+    
     overflow: scroll;
+
+    height: 80vh;
+    max-height: 80vh;
     
 }
 
@@ -148,7 +152,8 @@ li:hover {
     border-radius: 5px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 
-    max-height: 75vh;
+    height: 70vh;
+    max-height: 70vh;
 
     
 }
@@ -178,7 +183,8 @@ li:hover {
     border-radius: 5px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 
-    max-height: 75vh;
+    height: 70vh;
+    max-height: 70vh;
     
 }
 
