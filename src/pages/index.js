@@ -1,8 +1,8 @@
 import React from 'react'
 import '../style.css'
-import { getDatabase, ref, set, onValue, update } from "firebase/database";
+// import { getDatabase, ref, set, onValue, update } from "firebase/database";
 
-import { initializeApp } from "firebase/app";
+// import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs, setDoc, collectionGroup, enableIndexedDbPersistence} from "firebase/firestore";
 import AuthorizedEditorComponent from './AuthorizedEditorComponent';
 import UnauthorizedEditorComponent from './UnauthorizedEditorComponent'
