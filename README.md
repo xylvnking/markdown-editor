@@ -31,7 +31,7 @@ I originally had a bunch of three.js graphics going, but it felt goofy to introd
 
 # Next steps:
 
-- The ui is lackluster, but I want to move on to a more advanced project and won't be including this one after I'm done that anyways. I had originally used three.js with a nice fancy ui but it was overkill and performance intensive
+- The UI is too minimal and not slick enough, but I want to move on to a more advanced project and won't be including this one after I'm done that anyways. I had originally used three.js with a nice fancy ui but it was overkill and performance intensive
 
 - Learn about security rules for more advanced applications. Learning how to use firebase to make applications which are public facing but don't require authentication, allowing multiple users to securely access the same data, and also using the realtime database are important for me to learn next. This app is secure, but if I was required to add a ton of more functionality like that I'd need to first focus on security.
 
