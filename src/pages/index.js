@@ -44,7 +44,7 @@ const IndexPage = () => {
       autoSaveString: "this is a string"
     });
     await setDoc(doc(db, `${user.uid}`, "Default Document"), {
-      entry: "thank you for being here I love you",
+      entry: "Here's a new document, create something!",
       lastEdited: Date.now(),
       backgroundColor: '#000000'
     });
