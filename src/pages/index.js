@@ -7,6 +7,7 @@ import { getFirestore, collection, addDoc, updateDoc, doc, getDoc, data, getDocs
 import AuthorizedEditorComponent from './AuthorizedEditorComponent';
 import UnauthorizedEditorComponent from './UnauthorizedEditorComponent'
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth'
+import { Helmet } from 'react-helmet';
 
 import { db, auth, provider } from '../firebase-config';
 
@@ -93,6 +94,9 @@ const IndexPage = () => {
   
   return (
     <div className='index'>
+      <Helmet>
+        <title>Markdown Editor and Storage</title>
+      </Helmet>
       {/* {
         userInfo ? "" : <button onClick={signInWithGoogle}>Sign In with Google</button>
       } */}
