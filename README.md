@@ -2,7 +2,7 @@
 
 React | Firebase | unifiedjs | PrismJS | Gatsby
 
-[Visit the live site](www.thiswillbearealwebsite.com)
+[Visit the live site](https://enchanting-kataifi-62b291.netlify.app/)
 
 **note:** *the app works without signing in, but authentication is required to save data on refresh*
 
